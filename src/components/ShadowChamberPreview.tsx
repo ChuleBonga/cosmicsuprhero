@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ExternalLink, Flame, Music, Store } from "lucide-react";
 import { platformLinks, releases } from "../data/releases";
+import { AssetCreditNote } from "./AssetCreditNote";
 import { ChamberVisualLayer } from "./ChamberVisualLayer";
 import { TransmissionPlayer } from "./TransmissionPlayer";
 
@@ -63,6 +64,11 @@ export function ShadowChamberPreview() {
             appleUrl={badGuys.appleUrl}
             embedUrl={badGuys.embedUrl}
             variant="shadow"
+          />
+          <AssetCreditNote
+            credit={badGuys.visualAssets?.credit}
+            license={badGuys.visualAssets?.license}
+            sourceUrl={badGuys.visualAssets?.sourceUrl}
           />
           <div className="shadow-artifact" aria-hidden="true">
             <Flame className="text-red-200/80" size={34} />

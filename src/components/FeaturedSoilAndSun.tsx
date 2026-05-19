@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Footprints, SunMedium } from "lucide-react";
 import { releases, trackJourney } from "../data/releases";
+import { AssetCreditNote } from "./AssetCreditNote";
 import { ChamberVisualLayer } from "./ChamberVisualLayer";
 import { FieldNote } from "./FieldNote";
 import { TransmissionPlayer } from "./TransmissionPlayer";
@@ -70,6 +71,11 @@ export function FeaturedSoilAndSun() {
             appleUrl={soilAndSun.appleUrl}
             embedUrl={soilAndSun.embedUrl}
             variant="earth"
+          />
+          <AssetCreditNote
+            credit={soilAndSun.visualAssets?.credit}
+            license={soilAndSun.visualAssets?.license}
+            sourceUrl={soilAndSun.visualAssets?.sourceUrl}
           />
 
           <div>

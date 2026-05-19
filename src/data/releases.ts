@@ -39,6 +39,12 @@ export const releases: Release[] = [
     spotifyUrl: "",
     // Add the official iframe embed URL here when this chamber becomes a full room.
     embedUrl: "",
+    // visualAssets: {
+    //   posterImage: "/assets/chambers/celestial-multiverse/poster.jpg",
+    //   backgroundVideoWebm: "/assets/chambers/celestial-multiverse/background.webm",
+    //   backgroundVideoMp4: "/assets/chambers/celestial-multiverse/background.mp4",
+    //   textureImage: "/assets/chambers/celestial-multiverse/texture.jpg",
+    // },
     visualPrompt:
       "Public-domain cosmic observatory chamber with antique star maps, telescope glass, drifting archive cards, galaxy dust, inherited-memory fragments, and intermittent recovered-signal interference.",
     status: "Main Chamber",
@@ -55,6 +61,12 @@ export const releases: Release[] = [
     spotifyUrl: "",
     // Add the official iframe embed URL here when this chamber becomes a full room.
     embedUrl: "",
+    // visualAssets: {
+    //   posterImage: "/assets/chambers/stargazing-vol-3/poster.jpg",
+    //   backgroundVideoWebm: "/assets/chambers/stargazing-vol-3/background.webm",
+    //   backgroundVideoMp4: "/assets/chambers/stargazing-vol-3/background.mp4",
+    //   textureImage: "/assets/chambers/stargazing-vol-3/texture.jpg",
+    // },
     visualPrompt:
       "Blue-black intimate star field with distant pin lights, suspended night air, soft constellations, quiet reflective space, and subtle cosmic loneliness without neon or sci-fi gloss.",
     status: "Main Chamber",
@@ -71,6 +83,12 @@ export const releases: Release[] = [
     spotifyUrl: "",
     // Add the official iframe embed URL here when this chamber becomes a full room.
     embedUrl: "",
+    // visualAssets: {
+    //   posterImage: "/assets/chambers/just-sounds-really/poster.jpg",
+    //   backgroundVideoWebm: "/assets/chambers/just-sounds-really/background.webm",
+    //   backgroundVideoMp4: "/assets/chambers/just-sounds-really/background.mp4",
+    //   textureImage: "/assets/chambers/just-sounds-really/texture.jpg",
+    // },
     visualPrompt:
       "Minimal experimental sound-object room with blank dark space, faint analog signal lines, soft waveform sculptures, paper texture, and tiny pulsing details that feel tactile and stripped down.",
     status: "Main Chamber",
@@ -87,6 +105,12 @@ export const releases: Release[] = [
     spotifyUrl: "",
     // Add the official iframe embed URL here when this chamber becomes a full room.
     embedUrl: "",
+    // visualAssets: {
+    //   posterImage: "/assets/chambers/enter-aquarius/poster.jpg",
+    //   backgroundVideoWebm: "/assets/chambers/enter-aquarius/background.webm",
+    //   backgroundVideoMp4: "/assets/chambers/enter-aquarius/background.mp4",
+    //   textureImage: "/assets/chambers/enter-aquarius/texture.jpg",
+    // },
     visualPrompt:
       "Threshold ritual chamber with electric blue, violet, and cosmic gold weather, slow planetary lift, storm particles, celestial pressure, and a feeling of impermanence and ascent.",
     status: "Main Chamber",
@@ -102,6 +126,12 @@ export const releases: Release[] = [
     appleUrl: "https://music.apple.com/za/album/soil-and-sun/1714215266",
     spotifyUrl: "",
     embedUrl: "https://embed.music.apple.com/za/album/soil-and-sun/1714215266",
+    // visualAssets: {
+    //   posterImage: "/assets/chambers/soil-and-sun/poster.jpg",
+    //   backgroundVideoWebm: "/assets/chambers/soil-and-sun/background.webm",
+    //   backgroundVideoMp4: "/assets/chambers/soil-and-sun/background.mp4",
+    //   textureImage: "/assets/chambers/soil-and-sun/texture.jpg",
+    // },
     visualPrompt:
       "Warm earth-memory chamber with amber sunlight, dust, concrete, South African transit textures, river-edge prayer, old photo grain, walking routes, taxi-window haze, and ancestral softness.",
     status: "Featured Chamber",
@@ -118,6 +148,12 @@ export const releases: Release[] = [
     spotifyUrl: "",
     // Add the official iframe embed URL here when this chamber becomes a full room.
     embedUrl: "",
+    // visualAssets: {
+    //   posterImage: "/assets/chambers/songs-i-made-at-night/poster.jpg",
+    //   backgroundVideoWebm: "/assets/chambers/songs-i-made-at-night/background.webm",
+    //   backgroundVideoMp4: "/assets/chambers/songs-i-made-at-night/background.mp4",
+    //   textureImage: "/assets/chambers/songs-i-made-at-night/texture.jpg",
+    // },
     visualPrompt:
       "Nocturnal reflection chamber with airport glass, laptop glow, moonlit streets, migration insomnia, deep blue interior drift, private thought, and slow dreamlike motion.",
     status: "Main Chamber",
@@ -133,6 +169,12 @@ export const releases: Release[] = [
     appleUrl: "https://music.apple.com/za/album/bad-guys-finish-last/1818998518",
     spotifyUrl: "",
     embedUrl: "https://embed.music.apple.com/za/album/bad-guys-finish-last/1818998518",
+    // visualAssets: {
+    //   posterImage: "/assets/chambers/bad-guys-finish-last/poster.jpg",
+    //   backgroundVideoWebm: "/assets/chambers/bad-guys-finish-last/background.webm",
+    //   backgroundVideoMp4: "/assets/chambers/bad-guys-finish-last/background.mp4",
+    //   textureImage: "/assets/chambers/bad-guys-finish-last/texture.jpg",
+    // },
     visualPrompt:
       "Shadow chamber with dim ember, wet pavement, cracked glass, rain streaks, red-black darkness, antihero reflection, ego collapse, betrayal, masks, and spiritual consequence.",
     status: "Latest Transmission",
