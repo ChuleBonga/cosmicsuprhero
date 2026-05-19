@@ -170,12 +170,13 @@ export const releases: Release[] = [
     appleUrl: "https://music.apple.com/za/album/bad-guys-finish-last/1818998518",
     spotifyUrl: "",
     embedUrl: "https://embed.music.apple.com/za/album/bad-guys-finish-last/1818998518",
-    // visualAssets: {
-    //   posterImage: "/assets/chambers/bad-guys-finish-last/poster.jpg",
-    //   backgroundVideoWebm: "/assets/chambers/bad-guys-finish-last/background.webm",
-    //   backgroundVideoMp4: "/assets/chambers/bad-guys-finish-last/background.mp4",
-    //   textureImage: "/assets/chambers/bad-guys-finish-last/texture.jpg",
-    // },
+    visualAssets: {
+      posterImage: "/assets/chambers/bad-guys-finish-last/poster.webp",
+      textureImage: "/assets/chambers/bad-guys-finish-last/texture.webp",
+      credit: "Bad Guys Finish Last chamber visuals generated for Cosmicsuprhero",
+      license: "Owned/generated project asset",
+      sourceUrl: "/assets/chambers/bad-guys-finish-last/poster.webp",
+    },
     visualPrompt:
       "Shadow chamber with dim ember, wet pavement, cracked glass, rain streaks, red-black darkness, antihero reflection, ego collapse, betrayal, masks, and spiritual consequence.",
     status: "Latest Transmission",

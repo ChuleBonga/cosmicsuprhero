@@ -28,4 +28,22 @@ export const assetCredits: AssetCredit[] = [
     notes:
       "Generated locally for the Soil and Sun chamber. Not sourced from third-party copyrighted imagery.",
   },
+  {
+    title: "Bad Guys Finish Last Poster Atmosphere",
+    source: "public/assets/chambers/bad-guys-finish-last/poster.webp",
+    sourceUrl: "/assets/chambers/bad-guys-finish-last/poster.webp",
+    creator: "Cosmicsuprhero / Codex-generated procedural visual asset",
+    license: "Owned/generated project asset",
+    notes:
+      "Generated locally for the Bad Guys Finish Last chamber. Not sourced from third-party copyrighted imagery.",
+  },
+  {
+    title: "Bad Guys Finish Last Rain Texture",
+    source: "public/assets/chambers/bad-guys-finish-last/texture.webp",
+    sourceUrl: "/assets/chambers/bad-guys-finish-last/texture.webp",
+    creator: "Cosmicsuprhero / Codex-generated procedural visual asset",
+    license: "Owned/generated project asset",
+    notes:
+      "Generated locally for the Bad Guys Finish Last chamber. Not sourced from third-party copyrighted imagery.",
+  },
 ];
