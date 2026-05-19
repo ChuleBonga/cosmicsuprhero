@@ -459,6 +459,7 @@ a {
 .chamber-card {
   position: relative;
   overflow: hidden;
+  isolation: isolate;
   border: 1px solid rgba(240, 191, 114, 0.16);
   border-radius: 8px;
   background:
@@ -468,10 +469,20 @@ a {
   box-shadow: 0 26px 88px rgba(0, 0, 0, 0.34);
 }
 
+.chamber-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  opacity: 0.34;
+  pointer-events: none;
+}
+
 .chamber-card::after {
   content: "";
   position: absolute;
   inset: 1rem;
+  z-index: 1;
   border: 1px solid rgba(240, 191, 114, 0.08);
   border-radius: 6px;
   pointer-events: none;
@@ -480,6 +491,7 @@ a {
 .chamber-card__aura {
   position: absolute;
   inset: 0;
+  z-index: 0;
   opacity: 0.86;
 }
 
@@ -487,6 +499,7 @@ a {
   position: absolute;
   right: -0.7rem;
   top: 6.2rem;
+  z-index: 1;
   color: rgba(240, 191, 114, 0.18);
   transition: transform 500ms ease;
 }
@@ -502,16 +515,36 @@ a {
     linear-gradient(135deg, rgba(67, 57, 95, 0.5), rgba(95, 68, 40, 0.18), transparent) !important;
 }
 
+.chamber-card--celestial::before {
+  background:
+    linear-gradient(118deg, transparent 0 43%, rgba(240, 191, 114, 0.16) 43.1% 43.35%, transparent 43.45%),
+    radial-gradient(circle at 24% 32%, rgba(244, 234, 217, 0.36) 0 1px, transparent 2px),
+    radial-gradient(circle at 62% 58%, rgba(240, 191, 114, 0.28) 0 1px, transparent 2px);
+}
+
 .chamber-card--stargazing .chamber-card__aura {
   background:
     radial-gradient(circle at 26% 24%, rgba(120, 157, 255, 0.18), transparent 7rem),
     linear-gradient(145deg, rgba(16, 26, 54, 0.75), rgba(74, 58, 118, 0.24), transparent) !important;
 }
 
+.chamber-card--stargazing::before {
+  background:
+    radial-gradient(circle at 22% 28%, rgba(244, 234, 217, 0.38) 0 1px, transparent 2px),
+    radial-gradient(circle at 50% 18%, rgba(157, 177, 255, 0.28) 0 1px, transparent 2px),
+    radial-gradient(circle at 78% 64%, rgba(244, 234, 217, 0.24) 0 1px, transparent 2px);
+}
+
 .chamber-card--sound-object .chamber-card__aura {
   background:
     repeating-linear-gradient(90deg, transparent 0 16px, rgba(244, 234, 217, 0.035) 17px 18px),
     linear-gradient(145deg, rgba(245, 245, 245, 0.07), rgba(10, 10, 10, 0.05), transparent) !important;
+}
+
+.chamber-card--sound-object::before {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 18px, rgba(244, 234, 217, 0.055) 19px 20px),
+    linear-gradient(90deg, transparent 0 18%, rgba(244, 234, 217, 0.1) 18.2% 18.5%, transparent 18.7%);
 }
 
 .chamber-card--aquarius .chamber-card__aura {
@@ -521,10 +554,22 @@ a {
     linear-gradient(145deg, rgba(25, 72, 94, 0.46), rgba(101, 70, 154, 0.2), transparent) !important;
 }
 
+.chamber-card--aquarius::before {
+  background:
+    linear-gradient(102deg, transparent 0 54%, rgba(65, 211, 220, 0.11) 54.2% 54.55%, transparent 54.75%),
+    radial-gradient(circle at 72% 22%, rgba(124, 111, 213, 0.22), transparent 5rem);
+}
+
 .chamber-card--soil .chamber-card__aura {
   background:
     radial-gradient(circle at 16% 22%, rgba(243, 191, 114, 0.26), transparent 10rem),
     linear-gradient(145deg, rgba(96, 63, 37, 0.72), rgba(59, 38, 21, 0.28), transparent) !important;
+}
+
+.chamber-card--soil::before {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 42px, rgba(240, 191, 114, 0.055) 43px 44px),
+    radial-gradient(circle at 18% 72%, rgba(240, 191, 114, 0.15), transparent 8rem);
 }
 
 .chamber-card--night .chamber-card__aura {
@@ -533,11 +578,23 @@ a {
     linear-gradient(145deg, rgba(6, 10, 30, 0.88), rgba(16, 21, 39, 0.28), transparent) !important;
 }
 
+.chamber-card--night::before {
+  background:
+    linear-gradient(100deg, transparent 0 35%, rgba(142, 163, 255, 0.08) 35.2% 35.6%, transparent 35.8%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent 34%);
+}
+
 .chamber-card--shadow .chamber-card__aura {
   background:
     repeating-linear-gradient(105deg, transparent 0 18px, rgba(255, 210, 190, 0.035) 19px 20px),
     radial-gradient(circle at 12% 16%, rgba(200, 82, 26, 0.16), transparent 8rem),
     linear-gradient(145deg, rgba(82, 9, 10, 0.68), rgba(11, 3, 4, 0.32), transparent) !important;
+}
+
+.chamber-card--shadow::before {
+  background:
+    repeating-linear-gradient(105deg, transparent 0 24px, rgba(255, 210, 190, 0.052) 25px 26px),
+    radial-gradient(circle at 80% 18%, rgba(200, 82, 26, 0.14), transparent 7rem);
 }
 
 .soil-section {
@@ -914,6 +971,42 @@ a {
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
+.signal-return {
+  border-top: 1px solid rgba(240, 191, 114, 0.13);
+}
+
+.signal-return__field {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 18% 36%, rgba(240, 191, 114, 0.13), transparent 18rem),
+    radial-gradient(circle at 80% 10%, rgba(124, 111, 213, 0.11), transparent 22rem),
+    linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(200, 82, 26, 0.045));
+  pointer-events: none;
+}
+
+.signal-return__seal {
+  display: grid;
+  gap: 0.7rem;
+  width: min(100%, 17rem);
+  margin-top: 2.25rem;
+}
+
+.signal-return__seal span {
+  height: 1px;
+  background: linear-gradient(90deg, rgba(240, 191, 114, 0.58), transparent);
+}
+
+.signal-return__seal span:nth-child(2) {
+  width: 74%;
+  opacity: 0.62;
+}
+
+.signal-return__seal span:nth-child(3) {
+  width: 46%;
+  opacity: 0.42;
+}
+
 .signal-links a {
   display: flex;
   align-items: center;
@@ -1037,11 +1130,27 @@ a {
   }
 
   .chamber-card {
-    padding: 1rem;
+    padding: 0.9rem;
   }
 
   .chamber-card h3 {
     overflow-wrap: anywhere;
+  }
+
+  .chamber-card::after {
+    inset: 0.7rem;
+  }
+
+  .chamber-card__orbit {
+    right: -1.1rem;
+    top: 5.4rem;
+    opacity: 0.72;
+  }
+
+  .chamber-card__actions a {
+    min-height: 2.65rem;
+    padding-inline: 0.9rem;
+    letter-spacing: 0.11em;
   }
 
   .manifesto-fragment {

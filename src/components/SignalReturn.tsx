@@ -12,20 +12,26 @@ const signalLinks = [
 
 export function SignalReturn() {
   return (
-    <footer id="signal-return" className="section-shell relative overflow-hidden py-16 md:py-24" aria-labelledby="return-heading">
+    <footer id="signal-return" className="signal-return section-shell relative overflow-hidden py-16 md:py-24" aria-labelledby="return-heading">
+      <div className="signal-return__field" aria-hidden="true" />
       <div className="relative z-10 grid gap-8 md:gap-10 lg:grid-cols-[0.78fr_1.22fr]">
         <div>
           <p className="section-kicker">Signal Return</p>
           <h2 id="return-heading" className="section-title">
-            Follow the Signal
+            Signal Return
           </h2>
           <p className="mt-5 max-w-lg text-base leading-7 text-stone-300 md:mt-6 md:text-lg md:leading-8">
-            Follow the signal across platforms, listen deeper, or return through the archive.
+            Follow the signal across platforms, listen deeper, or return to the first transmission.
           </p>
           <a className="mt-6 inline-flex items-center gap-2 text-sm uppercase tracking-[0.22em] text-archive-amber hover:text-stone-100 md:mt-8" href="#entry-signal">
             <ArrowUp size={16} aria-hidden="true" />
             Return to Entry Signal
           </a>
+          <div className="signal-return__seal" aria-hidden="true">
+            <span />
+            <span />
+            <span />
+          </div>
         </div>
 
         <nav aria-label="Cosmicsuprhero platform links" className="signal-links">

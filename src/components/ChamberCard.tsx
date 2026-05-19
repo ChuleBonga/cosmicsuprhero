@@ -26,10 +26,17 @@ const chamberClass: Record<string, string> = {
   "Bad Guys Finish Last": "chamber-card--shadow",
 };
 
+function chamberId(release: Release) {
+  return `chamber-${release.title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")}`;
+}
+
 function chamberTarget(release: Release) {
   if (release.title === "Soil and Sun") return "#soil-and-sun";
   if (release.title === "Bad Guys Finish Last") return "#bad-guys-finish-last";
-  return release.appleUrl;
+  return `#${chamberId(release)}`;
 }
 
 export function ChamberCard({ release }: ChamberCardProps) {
@@ -38,6 +45,7 @@ export function ChamberCard({ release }: ChamberCardProps) {
 
   return (
     <motion.article
+      id={chamberId(release)}
       className={`chamber-card ${chamberClass[release.title]} group`}
       initial={{ opacity: 0, y: 32 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -48,7 +56,7 @@ export function ChamberCard({ release }: ChamberCardProps) {
       <div className="chamber-card__orbit" aria-hidden="true">
         <Orbit size={54} />
       </div>
-      <div className="relative z-10 flex min-h-[270px] flex-col justify-between sm:min-h-[320px] lg:min-h-[360px]">
+      <div className="relative z-10 flex min-h-[235px] flex-col justify-between sm:min-h-[300px] lg:min-h-[350px]">
         <div>
           <div className="flex items-center justify-between gap-4">
             <p className="font-body text-[0.66rem] uppercase tracking-[0.28em] text-archive-amber/70">{release.status}</p>
@@ -56,20 +64,21 @@ export function ChamberCard({ release }: ChamberCardProps) {
               {release.year}
             </span>
           </div>
-          <h3 className="mt-7 font-display text-3xl leading-[0.95] text-stone-100 md:mt-9 md:text-5xl">{release.title}</h3>
-          <p className="mt-4 font-body text-xs uppercase tracking-[0.22em] text-archive-amber">{release.chamber}</p>
-          <p className="mt-4 max-w-[28rem] text-sm leading-7 text-stone-300 md:mt-5">{release.mood}</p>
+          <h3 className="mt-5 font-display text-[2rem] leading-[0.95] text-stone-100 md:mt-8 md:text-5xl">{release.title}</h3>
+          <p className="mt-3 font-body text-xs uppercase tracking-[0.22em] text-archive-amber md:mt-4">{release.chamber}</p>
+          <p className="mt-3 max-w-[28rem] text-sm leading-6 text-stone-300 md:mt-5 md:leading-7">{release.mood}</p>
         </div>
 
         <div>
-          <div className="my-4 h-px w-full bg-gradient-to-r from-transparent via-archive-amber/35 to-transparent md:my-7" />
-          <p className="mb-4 text-xs uppercase tracking-[0.2em] text-stone-500 md:mb-5">{release.motion}</p>
-          <div className="flex flex-wrap gap-3">
+          <div className="my-3 h-px w-full bg-gradient-to-r from-transparent via-archive-amber/35 to-transparent md:my-7" />
+          <p className="mb-3 text-xs uppercase tracking-[0.2em] text-stone-500 md:mb-5">{release.motion}</p>
+          <div className="chamber-card__actions flex flex-wrap gap-3">
             <a
               className="inline-flex items-center gap-2 rounded-full bg-archive-amber px-4 py-2.5 font-body text-xs font-semibold uppercase tracking-[0.15em] text-black transition hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-archive-amber focus:ring-offset-2 focus:ring-offset-archive-void"
               href={target}
               target={isInternal ? undefined : "_blank"}
               rel={isInternal ? undefined : "noreferrer"}
+              aria-label={`Enter the ${release.title} chamber`}
             >
               <DoorOpen size={15} aria-hidden="true" />
               Enter Chamber

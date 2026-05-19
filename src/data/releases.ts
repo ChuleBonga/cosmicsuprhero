@@ -126,12 +126,13 @@ export const releases: Release[] = [
     appleUrl: "https://music.apple.com/za/album/soil-and-sun/1714215266",
     spotifyUrl: "",
     embedUrl: "https://embed.music.apple.com/za/album/soil-and-sun/1714215266",
-    // visualAssets: {
-    //   posterImage: "/assets/chambers/soil-and-sun/poster.jpg",
-    //   backgroundVideoWebm: "/assets/chambers/soil-and-sun/background.webm",
-    //   backgroundVideoMp4: "/assets/chambers/soil-and-sun/background.mp4",
-    //   textureImage: "/assets/chambers/soil-and-sun/texture.jpg",
-    // },
+    visualAssets: {
+      posterImage: "/assets/chambers/soil-and-sun/poster.webp",
+      textureImage: "/assets/chambers/soil-and-sun/texture.webp",
+      credit: "Soil and Sun chamber visuals generated for Cosmicsuprhero",
+      license: "Project-owned generated asset",
+      sourceUrl: "/assets/chambers/soil-and-sun/poster.webp",
+    },
     visualPrompt:
       "Warm earth-memory chamber with amber sunlight, dust, concrete, South African transit textures, river-edge prayer, old photo grain, walking routes, taxi-window haze, and ancestral softness.",
     status: "Featured Chamber",

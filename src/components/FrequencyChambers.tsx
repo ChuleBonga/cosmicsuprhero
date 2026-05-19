@@ -12,8 +12,7 @@ export function FrequencyChambers() {
           </h2>
         </div>
         <p className="max-w-xl text-sm leading-7 text-stone-300 md:text-base md:leading-8">
-          Releases are not stacked as a discography here. They open as rooms, each with its own atmosphere, pressure,
-          memory, and motion.
+          Each release opens as a room with its own atmosphere, pressure, memory, and motion.
         </p>
       </div>
 
