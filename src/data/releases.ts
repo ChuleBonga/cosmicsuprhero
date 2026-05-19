@@ -130,7 +130,7 @@ export const releases: Release[] = [
       posterImage: "/assets/chambers/soil-and-sun/poster.webp",
       textureImage: "/assets/chambers/soil-and-sun/texture.webp",
       credit: "Soil and Sun chamber visuals generated for Cosmicsuprhero",
-      license: "Project-owned generated asset",
+      license: "Owned/generated project asset",
       sourceUrl: "/assets/chambers/soil-and-sun/poster.webp",
     },
     visualPrompt:

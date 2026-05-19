@@ -14,18 +14,18 @@ export const assetCredits: AssetCredit[] = [
     title: "Soil and Sun Poster Atmosphere",
     source: "public/assets/chambers/soil-and-sun/poster.webp",
     sourceUrl: "/assets/chambers/soil-and-sun/poster.webp",
-    creator: "Codex for Cosmicsuprhero",
-    license: "Project-owned generated asset",
+    creator: "Cosmicsuprhero / Codex-generated procedural visual asset",
+    license: "Owned/generated project asset",
     notes:
-      "Procedural amber sunlight, concrete shadow, and old-photo warmth generated locally for the Soil and Sun chamber.",
+      "Generated locally for the Soil and Sun chamber. Not sourced from third-party copyrighted imagery.",
   },
   {
     title: "Soil and Sun Dust Texture",
     source: "public/assets/chambers/soil-and-sun/texture.webp",
     sourceUrl: "/assets/chambers/soil-and-sun/texture.webp",
-    creator: "Codex for Cosmicsuprhero",
-    license: "Project-owned generated asset",
+    creator: "Cosmicsuprhero / Codex-generated procedural visual asset",
+    license: "Owned/generated project asset",
     notes:
-      "Procedural dust and earth texture overlay generated locally for subtle warmth and tactile grain.",
+      "Generated locally for the Soil and Sun chamber. Not sourced from third-party copyrighted imagery.",
   },
 ];
