@@ -100,4 +100,22 @@ export const assetCredits: AssetCredit[] = [
     notes:
       "Generated locally for the Celestial Multiverse chamber. Not sourced from third-party copyrighted imagery.",
   },
+  {
+    title: "Stargazing, Vol. 3 Poster Atmosphere",
+    source: "public/assets/chambers/stargazing-vol-3/poster.webp",
+    sourceUrl: "/assets/chambers/stargazing-vol-3/poster.webp",
+    creator: "Cosmicsuprhero / Codex-generated procedural visual asset",
+    license: "Owned/generated project asset",
+    notes:
+      "Generated locally for the Stargazing, Vol. 3 chamber. Not sourced from third-party copyrighted imagery.",
+  },
+  {
+    title: "Stargazing, Vol. 3 Night Air Texture",
+    source: "public/assets/chambers/stargazing-vol-3/texture.webp",
+    sourceUrl: "/assets/chambers/stargazing-vol-3/texture.webp",
+    creator: "Cosmicsuprhero / Codex-generated procedural visual asset",
+    license: "Owned/generated project asset",
+    notes:
+      "Generated locally for the Stargazing, Vol. 3 chamber. Not sourced from third-party copyrighted imagery.",
+  },
 ];

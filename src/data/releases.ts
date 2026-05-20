@@ -64,12 +64,15 @@ export const releases: Release[] = [
     spotifyUrl: "",
     // Add the official iframe embed URL here when this chamber becomes a full room.
     embedUrl: "",
-    // visualAssets: {
-    //   posterImage: "/assets/chambers/stargazing-vol-3/poster.jpg",
-    //   backgroundVideoWebm: "/assets/chambers/stargazing-vol-3/background.webm",
-    //   backgroundVideoMp4: "/assets/chambers/stargazing-vol-3/background.mp4",
-    //   textureImage: "/assets/chambers/stargazing-vol-3/texture.jpg",
-    // },
+    visualAssets: {
+      posterImage: "/assets/chambers/stargazing-vol-3/poster.webp",
+      // backgroundVideoWebm: "/assets/chambers/stargazing-vol-3/background.webm",
+      // backgroundVideoMp4: "/assets/chambers/stargazing-vol-3/background.mp4",
+      textureImage: "/assets/chambers/stargazing-vol-3/texture.webp",
+      credit: "Stargazing, Vol. 3 chamber visuals generated for Cosmicsuprhero",
+      license: "Owned/generated project asset",
+      sourceUrl: "/assets/chambers/stargazing-vol-3/poster.webp",
+    },
     visualPrompt:
       "Blue-black intimate star field with distant pin lights, suspended night air, soft constellations, quiet reflective space, and subtle cosmic loneliness without neon or sci-fi gloss.",
     status: "Main Chamber",
