@@ -105,12 +105,15 @@ export const releases: Release[] = [
     spotifyUrl: "",
     // Add the official iframe embed URL here when this chamber becomes a full room.
     embedUrl: "",
-    // visualAssets: {
-    //   posterImage: "/assets/chambers/enter-aquarius/poster.jpg",
-    //   backgroundVideoWebm: "/assets/chambers/enter-aquarius/background.webm",
-    //   backgroundVideoMp4: "/assets/chambers/enter-aquarius/background.mp4",
-    //   textureImage: "/assets/chambers/enter-aquarius/texture.jpg",
-    // },
+    visualAssets: {
+      posterImage: "/assets/chambers/enter-aquarius/poster.webp",
+      // backgroundVideoWebm: "/assets/chambers/enter-aquarius/background.webm",
+      // backgroundVideoMp4: "/assets/chambers/enter-aquarius/background.mp4",
+      textureImage: "/assets/chambers/enter-aquarius/texture.webp",
+      credit: "Enter Aquarius chamber visuals generated for Cosmicsuprhero",
+      license: "Owned/generated project asset",
+      sourceUrl: "/assets/chambers/enter-aquarius/poster.webp",
+    },
     visualPrompt:
       "Threshold ritual chamber with electric blue, violet, and cosmic gold weather, slow planetary lift, storm particles, celestial pressure, and a feeling of impermanence and ascent.",
     status: "Main Chamber",

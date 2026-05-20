@@ -64,4 +64,22 @@ export const assetCredits: AssetCredit[] = [
     notes:
       "Generated locally for the Songs I Made At Night chamber. Not sourced from third-party copyrighted imagery.",
   },
+  {
+    title: "Enter Aquarius Poster Atmosphere",
+    source: "public/assets/chambers/enter-aquarius/poster.webp",
+    sourceUrl: "/assets/chambers/enter-aquarius/poster.webp",
+    creator: "Cosmicsuprhero / Codex-generated procedural visual asset",
+    license: "Owned/generated project asset",
+    notes:
+      "Generated locally for the Enter Aquarius chamber. Not sourced from third-party copyrighted imagery.",
+  },
+  {
+    title: "Enter Aquarius Threshold Texture",
+    source: "public/assets/chambers/enter-aquarius/texture.webp",
+    sourceUrl: "/assets/chambers/enter-aquarius/texture.webp",
+    creator: "Cosmicsuprhero / Codex-generated procedural visual asset",
+    license: "Owned/generated project asset",
+    notes:
+      "Generated locally for the Enter Aquarius chamber. Not sourced from third-party copyrighted imagery.",
+  },
 ];
