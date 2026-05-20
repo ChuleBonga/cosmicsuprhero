@@ -89,12 +89,15 @@ export const releases: Release[] = [
     spotifyUrl: "",
     // Add the official iframe embed URL here when this chamber becomes a full room.
     embedUrl: "",
-    // visualAssets: {
-    //   posterImage: "/assets/chambers/just-sounds-really/poster.jpg",
-    //   backgroundVideoWebm: "/assets/chambers/just-sounds-really/background.webm",
-    //   backgroundVideoMp4: "/assets/chambers/just-sounds-really/background.mp4",
-    //   textureImage: "/assets/chambers/just-sounds-really/texture.jpg",
-    // },
+    visualAssets: {
+      posterImage: "/assets/chambers/just-sounds-really/poster.webp",
+      // backgroundVideoWebm: "/assets/chambers/just-sounds-really/background.webm",
+      // backgroundVideoMp4: "/assets/chambers/just-sounds-really/background.mp4",
+      textureImage: "/assets/chambers/just-sounds-really/texture.webp",
+      credit: "Just Sounds Really chamber visuals generated for Cosmicsuprhero",
+      license: "Owned/generated project asset",
+      sourceUrl: "/assets/chambers/just-sounds-really/poster.webp",
+    },
     visualPrompt:
       "Minimal experimental sound-object room with blank dark space, faint analog signal lines, soft waveform sculptures, paper texture, and tiny pulsing details that feel tactile and stripped down.",
     status: "Main Chamber",

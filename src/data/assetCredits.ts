@@ -118,4 +118,22 @@ export const assetCredits: AssetCredit[] = [
     notes:
       "Generated locally for the Stargazing, Vol. 3 chamber. Not sourced from third-party copyrighted imagery.",
   },
+  {
+    title: "Just Sounds Really Poster Atmosphere",
+    source: "public/assets/chambers/just-sounds-really/poster.webp",
+    sourceUrl: "/assets/chambers/just-sounds-really/poster.webp",
+    creator: "Cosmicsuprhero / Codex-generated procedural visual asset",
+    license: "Owned/generated project asset",
+    notes:
+      "Generated locally for the Just Sounds Really chamber. Not sourced from third-party copyrighted imagery.",
+  },
+  {
+    title: "Just Sounds Really Signal Texture",
+    source: "public/assets/chambers/just-sounds-really/texture.webp",
+    sourceUrl: "/assets/chambers/just-sounds-really/texture.webp",
+    creator: "Cosmicsuprhero / Codex-generated procedural visual asset",
+    license: "Owned/generated project asset",
+    notes:
+      "Generated locally for the Just Sounds Really chamber. Not sourced from third-party copyrighted imagery.",
+  },
 ];
