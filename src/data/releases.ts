@@ -39,12 +39,15 @@ export const releases: Release[] = [
     spotifyUrl: "",
     // Add the official iframe embed URL here when this chamber becomes a full room.
     embedUrl: "",
-    // visualAssets: {
-    //   posterImage: "/assets/chambers/celestial-multiverse/poster.jpg",
-    //   backgroundVideoWebm: "/assets/chambers/celestial-multiverse/background.webm",
-    //   backgroundVideoMp4: "/assets/chambers/celestial-multiverse/background.mp4",
-    //   textureImage: "/assets/chambers/celestial-multiverse/texture.jpg",
-    // },
+    visualAssets: {
+      posterImage: "/assets/chambers/celestial-multiverse/poster.webp",
+      // backgroundVideoWebm: "/assets/chambers/celestial-multiverse/background.webm",
+      // backgroundVideoMp4: "/assets/chambers/celestial-multiverse/background.mp4",
+      textureImage: "/assets/chambers/celestial-multiverse/texture.webp",
+      credit: "Celestial Multiverse chamber visuals generated for Cosmicsuprhero",
+      license: "Owned/generated project asset",
+      sourceUrl: "/assets/chambers/celestial-multiverse/poster.webp",
+    },
     visualPrompt:
       "Public-domain cosmic observatory chamber with antique star maps, telescope glass, drifting archive cards, galaxy dust, inherited-memory fragments, and intermittent recovered-signal interference.",
     status: "Main Chamber",

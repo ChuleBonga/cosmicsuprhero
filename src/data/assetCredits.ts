@@ -82,4 +82,22 @@ export const assetCredits: AssetCredit[] = [
     notes:
       "Generated locally for the Enter Aquarius chamber. Not sourced from third-party copyrighted imagery.",
   },
+  {
+    title: "Celestial Multiverse Poster Atmosphere",
+    source: "public/assets/chambers/celestial-multiverse/poster.webp",
+    sourceUrl: "/assets/chambers/celestial-multiverse/poster.webp",
+    creator: "Cosmicsuprhero / Codex-generated procedural visual asset",
+    license: "Owned/generated project asset",
+    notes:
+      "Generated locally for the Celestial Multiverse chamber. Not sourced from third-party copyrighted imagery.",
+  },
+  {
+    title: "Celestial Multiverse Archive Texture",
+    source: "public/assets/chambers/celestial-multiverse/texture.webp",
+    sourceUrl: "/assets/chambers/celestial-multiverse/texture.webp",
+    creator: "Cosmicsuprhero / Codex-generated procedural visual asset",
+    license: "Owned/generated project asset",
+    notes:
+      "Generated locally for the Celestial Multiverse chamber. Not sourced from third-party copyrighted imagery.",
+  },
 ];
