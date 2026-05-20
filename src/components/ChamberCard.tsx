@@ -42,6 +42,7 @@ function chamberTarget(release: Release) {
 export function ChamberCard({ release }: ChamberCardProps) {
   const target = chamberTarget(release);
   const isInternal = target.startsWith("#");
+  const { visualAssets } = release;
 
   return (
     <motion.article
@@ -53,6 +54,26 @@ export function ChamberCard({ release }: ChamberCardProps) {
       viewport={{ once: true, amount: 0.16 }}
     >
       <div className={`chamber-card__aura bg-gradient-to-br ${chamberAccent[release.title]}`} aria-hidden="true" />
+      {visualAssets?.posterImage ? (
+        <img
+          className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-[0.14] mix-blend-screen brightness-[0.46] contrast-125 saturate-[0.72] transition-opacity duration-500 group-hover:opacity-[0.2]"
+          src={visualAssets.posterImage}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+        />
+      ) : null}
+      {visualAssets?.textureImage ? (
+        <img
+          className="pointer-events-none absolute inset-0 z-[1] h-full w-full object-cover opacity-[0.08] mix-blend-overlay contrast-125 grayscale"
+          src={visualAssets.textureImage}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+        />
+      ) : null}
       <div className="chamber-card__orbit" aria-hidden="true">
         <Orbit size={54} />
       </div>
