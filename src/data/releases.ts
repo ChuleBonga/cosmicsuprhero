@@ -149,12 +149,15 @@ export const releases: Release[] = [
     spotifyUrl: "",
     // Add the official iframe embed URL here when this chamber becomes a full room.
     embedUrl: "",
-    // visualAssets: {
-    //   posterImage: "/assets/chambers/songs-i-made-at-night/poster.jpg",
-    //   backgroundVideoWebm: "/assets/chambers/songs-i-made-at-night/background.webm",
-    //   backgroundVideoMp4: "/assets/chambers/songs-i-made-at-night/background.mp4",
-    //   textureImage: "/assets/chambers/songs-i-made-at-night/texture.jpg",
-    // },
+    visualAssets: {
+      posterImage: "/assets/chambers/songs-i-made-at-night/poster.webp",
+      // backgroundVideoWebm: "/assets/chambers/songs-i-made-at-night/background.webm",
+      // backgroundVideoMp4: "/assets/chambers/songs-i-made-at-night/background.mp4",
+      textureImage: "/assets/chambers/songs-i-made-at-night/texture.webp",
+      credit: "Songs I Made At Night chamber visuals generated for Cosmicsuprhero",
+      license: "Owned/generated project asset",
+      sourceUrl: "/assets/chambers/songs-i-made-at-night/poster.webp",
+    },
     visualPrompt:
       "Nocturnal reflection chamber with airport glass, laptop glow, moonlit streets, migration insomnia, deep blue interior drift, private thought, and slow dreamlike motion.",
     status: "Main Chamber",

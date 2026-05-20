@@ -46,4 +46,22 @@ export const assetCredits: AssetCredit[] = [
     notes:
       "Generated locally for the Bad Guys Finish Last chamber. Not sourced from third-party copyrighted imagery.",
   },
+  {
+    title: "Songs I Made At Night Poster Atmosphere",
+    source: "public/assets/chambers/songs-i-made-at-night/poster.webp",
+    sourceUrl: "/assets/chambers/songs-i-made-at-night/poster.webp",
+    creator: "Cosmicsuprhero / Codex-generated procedural visual asset",
+    license: "Owned/generated project asset",
+    notes:
+      "Generated locally for the Songs I Made At Night chamber. Not sourced from third-party copyrighted imagery.",
+  },
+  {
+    title: "Songs I Made At Night Window Texture",
+    source: "public/assets/chambers/songs-i-made-at-night/texture.webp",
+    sourceUrl: "/assets/chambers/songs-i-made-at-night/texture.webp",
+    creator: "Cosmicsuprhero / Codex-generated procedural visual asset",
+    license: "Owned/generated project asset",
+    notes:
+      "Generated locally for the Songs I Made At Night chamber. Not sourced from third-party copyrighted imagery.",
+  },
 ];
