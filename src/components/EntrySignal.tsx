@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ArrowDown, Headphones, RadioTower } from "lucide-react";
 import { platformLinks } from "../data/releases";
+import { ObservatorySceneSpike } from "./ObservatorySceneSpike";
 
 const signalRows = ["SIGNAL DETECTED", "SOURCE: COSMICSUPRHERO", "STATUS: AWAKENING"];
 
@@ -8,9 +9,10 @@ export function EntrySignal() {
   return (
     <section
       id="entry-signal"
-      className="section-shell relative flex min-h-[84svh] items-center overflow-hidden py-10 md:min-h-[90svh] md:py-14"
+      className="entry-signal--scene-spike section-shell relative flex min-h-[84svh] items-center overflow-hidden py-10 md:min-h-[90svh] md:py-14"
       aria-labelledby="entry-heading"
     >
+      <ObservatorySceneSpike />
       <div className="absolute inset-0 bg-radial-signal" aria-hidden="true" />
       <div className="ember-source" aria-hidden="true" />
       <div className="signal-orb" aria-hidden="true" />

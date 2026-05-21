@@ -186,6 +186,7 @@ a {
 }
 
 .bg-radial-signal,
+.observatory-scene-spike,
 .signal-ring,
 .ember-source,
 .signal-orb,
@@ -197,6 +198,309 @@ a {
 .rain-field,
 .shadow-artifact {
   pointer-events: none;
+}
+
+.entry-signal--scene-spike {
+  perspective: 1400px;
+  border-inline: 1px solid rgba(240, 191, 114, 0.06);
+  background:
+    radial-gradient(ellipse at 22% 52%, rgba(0, 0, 0, 0.84), transparent 36rem),
+    linear-gradient(180deg, rgba(4, 4, 5, 0.1), rgba(4, 4, 5, 0.5));
+}
+
+.observatory-scene-spike {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 68% 34%, rgba(240, 191, 114, 0.1), transparent 20rem),
+    radial-gradient(circle at 90% 18%, rgba(200, 82, 26, 0.2), transparent 26rem),
+    linear-gradient(120deg, rgba(5, 6, 10, 0.52), rgba(12, 8, 6, 0.24), rgba(5, 6, 10, 0.72));
+}
+
+.observatory-scene-spike::before,
+.observatory-scene-spike::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.observatory-scene-spike::before {
+  background:
+    linear-gradient(90deg, rgba(240, 191, 114, 0.055) 1px, transparent 1px),
+    linear-gradient(0deg, rgba(124, 111, 213, 0.04) 1px, transparent 1px),
+    radial-gradient(circle at 24% 30%, rgba(244, 234, 217, 0.28) 0 1px, transparent 2px),
+    radial-gradient(circle at 74% 22%, rgba(240, 191, 114, 0.32) 0 1px, transparent 2px),
+    radial-gradient(circle at 84% 72%, rgba(124, 111, 213, 0.24) 0 1px, transparent 2px);
+  background-size:
+    96px 96px,
+    96px 96px,
+    auto,
+    auto,
+    auto;
+  opacity: 0.72;
+  mask-image: radial-gradient(ellipse at 66% 44%, #000, transparent 76%);
+}
+
+.observatory-scene-spike::after {
+  background:
+    linear-gradient(90deg, rgba(4, 4, 5, 0.82), rgba(4, 4, 5, 0.08) 42%, rgba(4, 4, 5, 0.08) 70%, rgba(4, 4, 5, 0.55)),
+    linear-gradient(180deg, rgba(4, 4, 5, 0.12), transparent 55%, rgba(4, 4, 5, 0.7));
+  z-index: 6;
+}
+
+.oss-depth-field {
+  position: absolute;
+  inset: clamp(0.75rem, 2vw, 1.8rem);
+  z-index: 1;
+  border: 1px solid rgba(240, 191, 114, 0.1);
+  border-radius: 28px;
+  background:
+    linear-gradient(112deg, transparent 0 40%, rgba(240, 191, 114, 0.14) 40.1% 40.18%, transparent 40.28%),
+    linear-gradient(28deg, transparent 0 58%, rgba(124, 111, 213, 0.12) 58.1% 58.2%, transparent 58.32%),
+    repeating-linear-gradient(90deg, transparent 0 72px, rgba(240, 191, 114, 0.035) 73px 74px);
+  box-shadow:
+    inset 0 0 120px rgba(240, 191, 114, 0.035),
+    inset 0 0 180px rgba(0, 0, 0, 0.46);
+  opacity: 0.95;
+}
+
+.oss-ember-wake {
+  position: absolute;
+  right: -18vw;
+  top: -22vh;
+  z-index: 1;
+  width: min(85vw, 1120px);
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 42% 42%, rgba(255, 184, 103, 0.28), transparent 10%),
+    radial-gradient(circle at 43% 43%, rgba(200, 82, 26, 0.42), rgba(200, 82, 26, 0.13) 34%, transparent 70%);
+  filter: blur(1px);
+  animation: oss-breathe 10s ease-in-out infinite;
+}
+
+.oss-receiver-map {
+  position: absolute;
+  right: clamp(0.5rem, 8vw, 8rem);
+  top: 9%;
+  z-index: 3;
+  width: min(48vw, 42rem);
+  height: min(63vw, 42rem);
+  border-radius: 50%;
+  transform: perspective(900px) rotateY(-16deg) rotateX(5deg) rotate(-8deg);
+  transform-origin: center;
+  background:
+    conic-gradient(from 72deg, transparent 0 10%, rgba(240, 191, 114, 0.22) 10.3% 10.75%, transparent 11.05% 42%, rgba(124, 111, 213, 0.18) 42.3% 42.75%, transparent 43.05%),
+    radial-gradient(circle at 50% 50%, rgba(240, 191, 114, 0.12), transparent 64%);
+  opacity: 0.86;
+  animation: oss-slow-orbit 58s linear infinite;
+}
+
+.oss-receiver-map span {
+  position: absolute;
+  border: 1px solid rgba(240, 191, 114, 0.12);
+  border-radius: 999px;
+}
+
+.oss-receiver-map span:nth-child(1) {
+  inset: 6%;
+}
+
+.oss-receiver-map span:nth-child(2) {
+  inset: 24%;
+  border-color: rgba(124, 111, 213, 0.18);
+}
+
+.oss-receiver-map span:nth-child(3) {
+  inset: 42%;
+  border-color: rgba(240, 191, 114, 0.22);
+  background: radial-gradient(circle, rgba(240, 191, 114, 0.16), transparent 72%);
+}
+
+.oss-signal-dish {
+  position: absolute;
+  right: clamp(0rem, 7vw, 8rem);
+  top: 12%;
+  z-index: 4;
+  width: min(48vw, 38rem);
+  height: min(64vw, 42rem);
+  transform: perspective(1000px) rotateY(-18deg) rotateX(4deg);
+  transform-origin: center;
+}
+
+.oss-dish-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(240, 191, 114, 0.18);
+  background:
+    radial-gradient(ellipse at 48% 50%, transparent 42%, rgba(240, 191, 114, 0.12) 43%, rgba(240, 191, 114, 0.04) 58%, transparent 72%),
+    linear-gradient(90deg, rgba(240, 191, 114, 0.06), rgba(124, 111, 213, 0.08), rgba(240, 191, 114, 0.04));
+  box-shadow:
+    inset 0 0 80px rgba(240, 191, 114, 0.06),
+    0 0 90px rgba(240, 191, 114, 0.08);
+}
+
+.oss-dish-ring--outer {
+  inset: 0 8%;
+  opacity: 0.78;
+}
+
+.oss-dish-ring--mid {
+  inset: 11% 20%;
+  border-color: rgba(124, 111, 213, 0.22);
+  opacity: 0.75;
+}
+
+.oss-dish-ring--inner {
+  inset: 26% 34%;
+  opacity: 0.9;
+}
+
+.oss-dish-beam {
+  position: absolute;
+  left: 2%;
+  right: 38%;
+  top: 46%;
+  height: 9%;
+  background: linear-gradient(90deg, rgba(124, 111, 213, 0), rgba(124, 111, 213, 0.28), rgba(240, 191, 114, 0.18), transparent);
+  filter: blur(8px);
+  transform: rotate(-3deg);
+  animation: oss-signal-pulse 7s ease-in-out infinite;
+}
+
+.oss-core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  width: min(18vw, 13rem);
+  min-width: 9rem;
+  aspect-ratio: 1;
+  border: 1px solid rgba(240, 191, 114, 0.24);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(240, 191, 114, 0.18), transparent 36%),
+    rgba(4, 4, 5, 0.72);
+  box-shadow:
+    inset 0 0 48px rgba(0, 0, 0, 0.8),
+    0 0 70px rgba(240, 191, 114, 0.16);
+  transform: translate(-50%, -50%);
+}
+
+.oss-core-glow {
+  width: 3.4rem;
+  aspect-ratio: 1;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(240, 191, 114, 0.78), rgba(240, 191, 114, 0.16) 48%, transparent 72%);
+  filter: blur(4px);
+}
+
+.oss-core-mark {
+  width: 2.2rem;
+  height: 2.2rem;
+  margin-top: -2.8rem;
+  border: 4px solid rgba(240, 191, 114, 0.82);
+  border-bottom-color: transparent;
+  border-radius: 50%;
+}
+
+.oss-core-line {
+  display: block;
+  width: 6rem;
+  height: 1px;
+  margin-top: 0.6rem;
+  background: linear-gradient(90deg, transparent, rgba(240, 191, 114, 0.55), transparent);
+}
+
+.oss-core-line:nth-of-type(4) {
+  width: 4.4rem;
+  opacity: 0.6;
+}
+
+.oss-core-line:nth-of-type(5) {
+  width: 2.8rem;
+  opacity: 0.4;
+}
+
+.oss-console-slab {
+  position: absolute;
+  right: clamp(1rem, 7vw, 8rem);
+  bottom: 8%;
+  z-index: 5;
+  display: flex;
+  gap: 1rem;
+  border: 1px solid rgba(240, 191, 114, 0.14);
+  border-radius: 999px;
+  background: rgba(4, 4, 5, 0.42);
+  padding: 0.75rem 1rem;
+  color: rgba(240, 191, 114, 0.62);
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  backdrop-filter: blur(10px);
+}
+
+.oss-foreground-rail {
+  position: absolute;
+  left: 8%;
+  right: 8%;
+  bottom: 7%;
+  z-index: 5;
+  display: grid;
+  gap: 0.85rem;
+}
+
+.oss-foreground-rail span {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(240, 191, 114, 0.32), transparent);
+}
+
+.oss-foreground-rail span:last-child {
+  opacity: 0.42;
+  transform: scaleX(0.62);
+}
+
+.entry-signal--scene-spike .signal-console {
+  opacity: 0;
+  visibility: hidden;
+}
+
+@keyframes oss-breathe {
+  0%,
+  100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+
+@keyframes oss-slow-orbit {
+  to {
+    transform: perspective(900px) rotateY(-16deg) rotateX(5deg) rotate(352deg);
+  }
+}
+
+@keyframes oss-signal-pulse {
+  0%,
+  100% {
+    opacity: 0.34;
+    transform: rotate(-3deg) scaleX(0.82);
+  }
+  50% {
+    opacity: 0.82;
+    transform: rotate(-3deg) scaleX(1.05);
+  }
 }
 
 .signal-ring {
@@ -1037,6 +1341,36 @@ a {
 }
 
 @media (max-width: 900px) {
+  .oss-receiver-map {
+    right: 50%;
+    top: 45%;
+    width: 82vw;
+    height: 82vw;
+    transform: translateX(50%) perspective(780px) rotateX(60deg) rotate(-8deg);
+    opacity: 0.78;
+  }
+
+  .oss-signal-dish {
+    right: 50%;
+    top: 50%;
+    width: 86vw;
+    height: 86vw;
+    transform: translateX(50%) perspective(800px) rotateX(62deg);
+  }
+
+  .oss-core {
+    width: 34vw;
+    min-width: 8.5rem;
+  }
+
+  .oss-console-slab {
+    right: 50%;
+    bottom: 8%;
+    width: min(88vw, 24rem);
+    justify-content: center;
+    transform: translateX(50%);
+  }
+
   .signal-console {
     min-height: 320px;
     width: min(100%, 380px);
@@ -1113,6 +1447,70 @@ a {
     width: min(100%, 320px);
   }
 
+  .observatory-scene-spike {
+    background:
+      radial-gradient(circle at 66% 22%, rgba(200, 82, 26, 0.26), transparent 12rem),
+      linear-gradient(160deg, rgba(16, 9, 6, 0.58), rgba(5, 6, 10, 0.82));
+  }
+
+  .oss-depth-field {
+    inset: 0.45rem;
+    border-radius: 18px;
+    background-size: 58px 58px;
+  }
+
+  .oss-ember-wake {
+    right: -42vw;
+    top: -16vh;
+    width: 120vw;
+    opacity: 0.72;
+  }
+
+  .oss-receiver-map {
+    top: 48%;
+    width: 104vw;
+    height: 104vw;
+    opacity: 0.68;
+  }
+
+  .oss-signal-dish {
+    top: 54%;
+    width: 108vw;
+    height: 108vw;
+  }
+
+  .oss-dish-ring--outer {
+    inset: 2% 8%;
+  }
+
+  .oss-core {
+    width: 42vw;
+    min-width: 8rem;
+  }
+
+  .oss-core-glow {
+    width: 2.8rem;
+  }
+
+  .oss-core-mark {
+    width: 1.8rem;
+    height: 1.8rem;
+    margin-top: -2.35rem;
+    border-width: 3px;
+  }
+
+  .oss-core-line {
+    width: 5rem;
+  }
+
+  .oss-console-slab {
+    display: none;
+  }
+
+  .oss-foreground-rail {
+    bottom: 6%;
+  }
+
   .signal-orb {
     opacity: 0.55;
   }
@@ -1184,6 +1582,12 @@ a {
 
   .chamber-visual-layer__poster--reduced {
     display: block;
+  }
+
+  .oss-ember-wake,
+  .oss-receiver-map,
+  .oss-dish-beam {
+    animation: none !important;
   }
 
   *,
