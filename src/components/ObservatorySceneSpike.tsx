@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from "react";
-import type { PostProcessingPipeline } from "./PostProcessingPipeline";
 import type { Vector3 } from "three";
 
 type SceneState = "fallback" | "webgl";
@@ -34,8 +33,8 @@ export function ObservatorySceneSpike() {
     let disposed = false;
     let cleanup = () => {};
 
-    Promise.all([import("three"), import("./PostProcessingPipeline")])
-      .then(([THREE, { createPostProcessingPipeline }]) => {
+    import("three")
+      .then((THREE) => {
         if (disposed || !mountRef.current) return;
 
         const isMobile = window.matchMedia("(max-width: 760px)").matches;
@@ -189,14 +188,6 @@ export function ObservatorySceneSpike() {
         let height = 1;
         const targetPointer = { x: 0, y: 0 };
         const currentPointer = { x: 0, y: 0 };
-        let postProcessing: PostProcessingPipeline | null = createPostProcessingPipeline({
-          renderer,
-          scene,
-          camera,
-          width,
-          height,
-          isMobile,
-        });
 
         const resize = () => {
           if (!mountRef.current) return;
@@ -206,7 +197,6 @@ export function ObservatorySceneSpike() {
           renderer.setSize(width, height, false);
           camera.aspect = width / height;
           camera.updateProjectionMatrix();
-          postProcessing?.resize(width, height);
         };
 
         const onPointerMove = (event: PointerEvent) => {
@@ -240,11 +230,7 @@ export function ObservatorySceneSpike() {
           camera.position.y = (isMobile ? 1.15 : 0.7) - currentPointer.y * 0.12;
           camera.lookAt(0.45, -0.18, 0);
 
-          if (postProcessing) {
-            postProcessing.render(elapsed);
-          } else {
-            renderer.render(scene, camera);
-          }
+          renderer.render(scene, camera);
           animationFrame = window.requestAnimationFrame(animate);
         };
         animate();
@@ -253,8 +239,6 @@ export function ObservatorySceneSpike() {
           window.cancelAnimationFrame(animationFrame);
           resizeObserver.disconnect();
           mount.removeEventListener("pointermove", onPointerMove);
-          postProcessing?.dispose();
-          postProcessing = null;
           renderer.dispose();
           scene.traverse((object) => {
             const disposable = object as DisposableSceneObject;
