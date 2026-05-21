@@ -252,6 +252,47 @@ a {
   z-index: 6;
 }
 
+.oss-webgl-mount,
+.oss-css-fallback {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.oss-css-fallback {
+  z-index: 1;
+}
+
+.oss-webgl-mount {
+  z-index: 4;
+  opacity: 0;
+  transition: opacity 900ms ease;
+}
+
+.observatory-scene-spike--webgl .oss-webgl-mount {
+  opacity: 0.98;
+}
+
+.oss-webgl-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  filter: saturate(0.96) contrast(1.03);
+}
+
+.observatory-scene-spike--webgl .oss-receiver-map,
+.observatory-scene-spike--webgl .oss-signal-dish {
+  opacity: 0.22;
+}
+
+.observatory-scene-spike--webgl .oss-core {
+  opacity: 0.18;
+}
+
+.observatory-scene-spike--webgl .oss-dish-beam {
+  opacity: 0.45;
+}
+
 .oss-depth-field {
   position: absolute;
   inset: clamp(0.75rem, 2vw, 1.8rem);
