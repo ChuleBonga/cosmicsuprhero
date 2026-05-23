@@ -6,6 +6,7 @@ import { FrequencyChambers } from "./components/FrequencyChambers";
 import { GrainOverlay } from "./components/GrainOverlay";
 import { Observatory } from "./components/Observatory";
 import { ShadowChamberPreview } from "./components/ShadowChamberPreview";
+import { SignalLoader } from "./components/SignalLoader";
 import { SignalReturn } from "./components/SignalReturn";
 import { TransmissionMarquee } from "./components/TransmissionMarquee";
 import { Vessel } from "./components/Vessel";
@@ -34,6 +35,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen overflow-hidden bg-archive-void text-stone-100">
+      <SignalLoader />
       <a className="skip-link" href="#observatory">
         Skip to observatory
       </a>

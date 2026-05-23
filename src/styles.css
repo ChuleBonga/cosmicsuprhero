@@ -80,6 +80,125 @@ a {
   margin-inline: auto;
 }
 
+.entry-signal {
+  isolation: isolate;
+}
+
+.observatory-intro-video {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: #040405;
+}
+
+.observatory-intro-video__media {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 50%;
+  filter: saturate(0.86) contrast(1.08) brightness(0.72);
+}
+
+.observatory-intro-video__veil,
+.observatory-intro-video__grain {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.observatory-intro-video__veil {
+  background:
+    radial-gradient(circle at 68% 47%, transparent 0 18rem, rgba(4, 4, 5, 0.18) 30rem),
+    linear-gradient(90deg, rgba(4, 4, 5, 0.88), rgba(4, 4, 5, 0.35) 48%, rgba(4, 4, 5, 0.78)),
+    linear-gradient(180deg, rgba(4, 4, 5, 0.4), transparent 38%, rgba(4, 4, 5, 0.94));
+}
+
+.observatory-intro-video__grain {
+  opacity: 0.26;
+  mix-blend-mode: screen;
+  background-image:
+    radial-gradient(circle at 12% 24%, rgba(244, 234, 217, 0.55) 0 1px, transparent 1.6px),
+    radial-gradient(circle at 78% 19%, rgba(240, 191, 114, 0.42) 0 1px, transparent 1.7px),
+    radial-gradient(circle at 48% 71%, rgba(255, 255, 255, 0.34) 0 1px, transparent 1.6px);
+  background-size:
+    19px 23px,
+    31px 29px,
+    43px 47px;
+  animation: observatory-video-drift 18s ease-in-out infinite alternate;
+}
+
+.signal-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 44%, rgba(200, 82, 26, 0.13), transparent 20rem),
+    linear-gradient(180deg, #030304, #070606 62%, #030304);
+  color: var(--cream);
+}
+
+.signal-loader__field {
+  position: absolute;
+  inset: 10%;
+  border: 1px solid rgba(240, 191, 114, 0.11);
+  border-radius: 999px;
+  opacity: 0.72;
+  background:
+    radial-gradient(circle, transparent 0 22%, rgba(240, 191, 114, 0.08) 22.2% 22.45%, transparent 22.7% 38%, rgba(240, 191, 114, 0.06) 38.2% 38.45%, transparent 38.7%),
+    linear-gradient(90deg, transparent 49.9%, rgba(240, 191, 114, 0.1) 50%, transparent 50.1%),
+    linear-gradient(0deg, transparent 49.9%, rgba(240, 191, 114, 0.08) 50%, transparent 50.1%);
+  animation: loader-field 7s linear infinite;
+}
+
+.signal-loader__panel {
+  position: relative;
+  width: min(100% - 3rem, 28rem);
+  border: 1px solid rgba(240, 191, 114, 0.18);
+  background: rgba(5, 5, 7, 0.72);
+  padding: 1.6rem;
+  box-shadow: 0 0 90px rgba(200, 82, 26, 0.16);
+  backdrop-filter: blur(14px);
+}
+
+.signal-loader__label,
+.signal-loader__meta {
+  font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+  text-transform: uppercase;
+}
+
+.signal-loader__label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.34em;
+  color: #f0bf72;
+}
+
+.signal-loader__track {
+  height: 1px;
+  margin-top: 1.35rem;
+  overflow: hidden;
+  background: rgba(240, 191, 114, 0.18);
+}
+
+.signal-loader__track span {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(200, 82, 26, 0.7), #f0bf72);
+  box-shadow: 0 0 20px rgba(240, 191, 114, 0.55);
+}
+
+.signal-loader__meta {
+  margin-top: 1rem;
+  color: rgba(212, 190, 162, 0.72);
+  font-size: 0.66rem;
+  letter-spacing: 0.24em;
+}
+
 .section-kicker {
   font-family: "Inter", "Segoe UI", system-ui, sans-serif;
   font-size: 0.72rem;
@@ -281,6 +400,21 @@ a {
   50% {
     transform: scale(1.04);
     box-shadow: 0 0 78px rgba(200, 82, 26, 0.28);
+  }
+}
+
+@keyframes observatory-video-drift {
+  0% {
+    transform: translate3d(-0.45rem, -0.35rem, 0);
+  }
+  100% {
+    transform: translate3d(0.65rem, 0.5rem, 0);
+  }
+}
+
+@keyframes loader-field {
+  to {
+    transform: rotate(360deg);
   }
 }
 
@@ -1100,6 +1234,21 @@ a {
     width: min(100% - 1.25rem, 1440px);
   }
 
+  .observatory-intro-video__media {
+    object-position: 58% 50%;
+  }
+
+  .observatory-intro-video__veil {
+    background:
+      linear-gradient(180deg, rgba(4, 4, 5, 0.28), rgba(4, 4, 5, 0.58) 46%, rgba(4, 4, 5, 0.96)),
+      radial-gradient(circle at 54% 31%, rgba(240, 191, 114, 0.13), transparent 12rem);
+  }
+
+  .signal-loader__panel {
+    width: min(100% - 2rem, 24rem);
+    padding: 1.2rem;
+  }
+
   .button-primary,
   .button-secondary {
     width: 100%;
@@ -1178,6 +1327,11 @@ a {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .observatory-intro-video__grain,
+  .signal-loader__field {
+    animation: none !important;
+  }
+
   .chamber-visual-layer__video {
     display: none;
   }
