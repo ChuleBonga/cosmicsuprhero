@@ -8,6 +8,7 @@ import { Observatory } from "./components/Observatory";
 import { ShadowChamberPreview } from "./components/ShadowChamberPreview";
 import { SignalLoader } from "./components/SignalLoader";
 import { SignalReturn } from "./components/SignalReturn";
+import { SignalThreshold } from "./components/SignalThreshold";
 import { TransmissionMarquee } from "./components/TransmissionMarquee";
 import { Vessel } from "./components/Vessel";
 
@@ -52,6 +53,7 @@ export default function App() {
             "Choose the signal",
           ]}
         />
+        <SignalThreshold />
         <Observatory />
         <FrequencyChambers />
         <TransmissionMarquee

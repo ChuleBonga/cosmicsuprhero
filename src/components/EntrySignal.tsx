@@ -3,7 +3,8 @@ import { ArrowDown, Headphones, RadioTower } from "lucide-react";
 import { platformLinks } from "../data/releases";
 import { ObservatoryIntroVideo } from "./ObservatoryIntroVideo";
 
-const signalRows = ["SIGNAL DETECTED", "SOURCE: COSMICSUPRHERO", "STATUS: AWAKENING"];
+const signalRows = ["SIGNAL ACQUIRING", "ARCHIVE WARMING", "TRANSMISSION OPEN"];
+const identityFragments = ["Port Elizabeth", "Illinois", "Arcturus", "Earth / Night / Shadow"];
 
 export function EntrySignal() {
   return (
@@ -36,6 +37,19 @@ export function EntrySignal() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.1, ease: "easeOut" }}
         >
+          <div className="entry-signal__fragments" aria-label="Signal coordinates">
+            {identityFragments.map((fragment, index) => (
+              <motion.span
+                key={fragment}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.7, delay: 0.16 + index * 0.1 }}
+              >
+                {fragment}
+              </motion.span>
+            ))}
+          </div>
+
           <div className="mb-7 space-y-2 border-l border-archive-ember/40 pl-4 font-body text-[0.66rem] uppercase tracking-[0.3em] text-archive-amber/80 md:mb-10 md:text-[0.7rem] md:tracking-[0.34em]">
             {signalRows.map((row, index) => (
               <motion.p
@@ -56,6 +70,7 @@ export function EntrySignal() {
           <p className="mt-5 max-w-2xl text-base leading-7 text-stone-300 md:mt-8 md:text-2xl md:leading-10">
             A living sonic observatory for memory, spirit, shadow, and transmission.
           </p>
+          <p className="entry-signal__ritual-line">Tune in before the archive opens.</p>
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row md:mt-10">
             <a className="button-primary" href="#observatory">
@@ -87,6 +102,11 @@ export function EntrySignal() {
           </div>
         </motion.div>
       </div>
+
+      <a className="entry-signal__scroll-cue" href="#observatory">
+        <span>Swipe / scroll to enter</span>
+        <ArrowDown size={15} aria-hidden="true" />
+      </a>
     </section>
   );
 }

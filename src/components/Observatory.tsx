@@ -47,6 +47,33 @@ export function Observatory() {
         </motion.div>
 
         <div className="space-y-8">
+          <motion.div
+            className="observatory-room"
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.9, ease: "easeOut" }}
+            viewport={{ once: true, amount: 0.2 }}
+          >
+            <div className="observatory-room__receiver" aria-hidden="true">
+              <span />
+              <span />
+              <span />
+            </div>
+            <div className="observatory-room__copy">
+              <p>Receiver Room / Active</p>
+              <h3>Archive listening field</h3>
+              <span>
+                Earth memory, night migration, shadow consequence, threshold weather, and cosmological scale are held
+                inside one quiet instrument.
+              </span>
+            </div>
+            <div className="observatory-room__coordinates" aria-hidden="true">
+              <span>PE / 33.96S</span>
+              <span>IL / transit</span>
+              <span>ARCTURUS / myth</span>
+            </div>
+          </motion.div>
+
           <div className="grid gap-5 sm:grid-cols-2">
             {archiveObjects.map((object, index) => {
               const Icon = object.icon;
