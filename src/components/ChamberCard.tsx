@@ -27,6 +27,8 @@ const chamberClass: Record<string, string> = {
 };
 
 function chamberId(release: Release) {
+  if (release.slug) return `chamber-${release.slug}`;
+
   return `chamber-${release.title
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
@@ -43,21 +45,25 @@ export function ChamberCard({ release }: ChamberCardProps) {
   const target = chamberTarget(release);
   const isInternal = target.startsWith("#");
   const { visualAssets } = release;
+  const cardImage = visualAssets?.heroImage ?? visualAssets?.posterImage;
 
   return (
     <motion.article
       id={chamberId(release)}
       className={`chamber-card ${chamberClass[release.title]} group`}
+      data-chamber-card="true"
+      data-release-title={release.title}
+      data-release-slug={release.slug}
       initial={{ opacity: 0, y: 32 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8 }}
       viewport={{ once: true, amount: 0.16 }}
     >
       <div className={`chamber-card__aura bg-gradient-to-br ${chamberAccent[release.title]}`} aria-hidden="true" />
-      {visualAssets?.posterImage ? (
+      {cardImage ? (
         <img
           className="pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-[0.14] mix-blend-screen brightness-[0.46] contrast-125 saturate-[0.72] transition-opacity duration-500 group-hover:opacity-[0.2]"
-          src={visualAssets.posterImage}
+          src={cardImage}
           alt=""
           aria-hidden="true"
           loading="lazy"

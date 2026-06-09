@@ -6,8 +6,7 @@ Production cinematic arrival files should live here:
 - `observatory-intro.mp4`
 - `observatory-intro-poster.webp`
 
-The site will not request these files until `enabled` is set to `true` in
-`src/data/observatoryIntro.ts`. Keep this disabled while assets are missing or watermarked.
+The site currently uses `observatory-entry-hero.webp` as a production-safe static poster/background. Do not wire `observatory-intro.webm` or `observatory-intro.mp4` into `src/data/observatoryIntro.ts` until clean, non-watermarked loops exist.
 
 For local crop/motion testing only, place watermarked files in:
 

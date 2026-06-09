@@ -6,11 +6,11 @@ export type ObservatoryIntroSource = {
 };
 
 const productionIntro: ObservatoryIntroSource = {
-  // Set to true only after clean, non-watermarked production assets exist.
-  enabled: false,
-  posterImage: "/assets/observatory/observatory-intro-poster.webp",
-  webm: "/assets/observatory/observatory-intro.webm",
-  mp4: "/assets/observatory/observatory-intro.mp4",
+  enabled: true,
+  posterImage: "/assets/observatory/observatory-entry-hero.webp",
+  // Add clean non-watermarked cinematic loops here when available.
+  // webm: "/assets/observatory/observatory-intro.webm",
+  // mp4: "/assets/observatory/observatory-intro.mp4",
 };
 
 const localTestIntro: ObservatoryIntroSource = {
