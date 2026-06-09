@@ -190,9 +190,9 @@ export const releases: Release[] = [
     videoPrompt:
       "A nearly still sound object under one beam of light with faint signal-line pulses and slow dust.",
     assetCredit: {
-      credit: "Just Sounds Really chamber visuals generated for Cosmicsuprhero",
+      credit: "Just Sounds Really chamber atmosphere generated for Cosmicsuprhero",
       license: "Owned/generated project asset",
-      sourceUrl: "/assets/chambers/just-sounds-really/just-sounds-really-hero.webp",
+      sourceUrl: "/assets/chambers/just-sounds-really/poster.webp",
     },
     status: "Main Chamber",
   },
