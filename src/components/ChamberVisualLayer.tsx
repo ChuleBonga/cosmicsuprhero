@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import type { ReleaseVisualAssets } from "../data/releases";
+import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 
 export type ChamberVisualVariant = "cosmic" | "earth" | "shadow" | "night" | "aquarius" | "sound";
 
@@ -8,26 +8,11 @@ type ChamberVisualLayerProps = {
   variant?: ChamberVisualVariant;
 };
 
-function usePrefersReducedMotion() {
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setPrefersReducedMotion(mediaQuery.matches);
-
-    const handleChange = () => setPrefersReducedMotion(mediaQuery.matches);
-    mediaQuery.addEventListener("change", handleChange);
-
-    return () => mediaQuery.removeEventListener("change", handleChange);
-  }, []);
-
-  return prefersReducedMotion;
-}
-
 export function ChamberVisualLayer({ visualAssets, variant = "cosmic" }: ChamberVisualLayerProps) {
   const prefersReducedMotion = usePrefersReducedMotion();
   const hasVideo = Boolean(visualAssets?.backgroundVideoWebm || visualAssets?.backgroundVideoMp4);
-  const hasPoster = Boolean(visualAssets?.posterImage);
+  const primaryImage = visualAssets?.heroImage ?? visualAssets?.posterImage;
+  const hasPoster = Boolean(primaryImage);
   const hasTexture = Boolean(visualAssets?.textureImage);
   const shouldRenderVideo = hasVideo && !prefersReducedMotion;
 
@@ -40,7 +25,7 @@ export function ChamberVisualLayer({ visualAssets, variant = "cosmic" }: Chamber
           loop
           playsInline
           autoPlay
-          poster={visualAssets?.posterImage}
+          poster={primaryImage}
           preload="metadata"
         >
           {visualAssets?.backgroundVideoWebm ? <source src={visualAssets.backgroundVideoWebm} type="video/webm" /> : null}
@@ -51,7 +36,7 @@ export function ChamberVisualLayer({ visualAssets, variant = "cosmic" }: Chamber
       {hasPoster ? (
         <img
           className={`chamber-visual-layer__poster${shouldRenderVideo ? " chamber-visual-layer__poster--reduced" : ""}`}
-          src={visualAssets?.posterImage}
+          src={primaryImage}
           alt=""
           loading="lazy"
           decoding="async"

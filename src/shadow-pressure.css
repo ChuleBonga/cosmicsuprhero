@@ -1,0 +1,147 @@
+.shadow-pressure-field {
+  position: absolute;
+  inset: -8%;
+  z-index: 1;
+  overflow: hidden;
+  pointer-events: none;
+  opacity: 0.86;
+  mix-blend-mode: normal;
+  mask-image: radial-gradient(circle at 46% 44%, #000 0 62%, transparent 88%);
+}
+
+.shadow-pressure-field__core {
+  position: absolute;
+  left: 50%;
+  top: 48%;
+  width: min(64vw, 48rem);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%) rotate(-8deg);
+  border-radius: 999px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(245, 119, 72, 0.16), transparent 0 15%, rgba(107, 23, 21, 0.16) 15.5% 30%, transparent 31%),
+    conic-gradient(from 17deg, transparent 0 12%, rgba(180, 43, 27, 0.2) 14%, transparent 20%, rgba(255, 177, 128, 0.08) 28%, transparent 31%, rgba(107, 23, 21, 0.28) 40%, transparent 48%, rgba(200, 82, 26, 0.14) 59%, transparent 66%, rgba(255, 210, 190, 0.08) 76%, transparent 82%);
+  filter: blur(0.4px);
+  opacity: 0.56;
+  animation: shadow-core-pressure 13s ease-in-out infinite alternate;
+}
+
+.shadow-pressure-field__collapse {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 42% 36%, rgba(200, 82, 26, 0.14), transparent 16rem),
+    radial-gradient(circle at 66% 62%, rgba(95, 9, 12, 0.23), transparent 18rem),
+    repeating-linear-gradient(113deg, transparent 0 31px, rgba(255, 197, 168, 0.035) 32px 33px),
+    repeating-linear-gradient(72deg, transparent 0 46px, rgba(119, 29, 21, 0.09) 47px 48px);
+  opacity: 0.62;
+  animation: shadow-collapse-drift 18s ease-in-out infinite alternate;
+}
+
+.shadow-pressure-field__fault {
+  position: absolute;
+  left: calc(var(--x) * 1%);
+  top: calc(var(--y) * 1%);
+  width: var(--w);
+  height: 1px;
+  transform: translate3d(-50%, -50%, 0) rotate(var(--r));
+  transform-origin: center;
+  background: linear-gradient(90deg, transparent, rgba(255, 218, 198, calc(var(--o) * 0.65)), rgba(200, 82, 26, var(--o)), transparent);
+  box-shadow:
+    0 0 18px rgba(200, 82, 26, calc(var(--o) * 0.32)),
+    0 0 2px rgba(255, 218, 198, calc(var(--o) * 0.56));
+  opacity: var(--o);
+  animation: shadow-fault-snap var(--d) steps(2, end) infinite;
+  animation-delay: var(--delay);
+}
+
+.shadow-pressure-field__fault::after {
+  content: "";
+  position: absolute;
+  left: 54%;
+  top: -2px;
+  width: 18%;
+  height: 5px;
+  background: rgba(255, 210, 190, 0.16);
+  filter: blur(2px);
+}
+
+@keyframes shadow-core-pressure {
+  0% {
+    transform: translate(-50%, -50%) rotate(-8deg) scale(0.98);
+    opacity: 0.42;
+  }
+  47% {
+    transform: translate(-50%, -50%) rotate(-5deg) scale(1.015);
+    opacity: 0.64;
+  }
+  52% {
+    transform: translate(-50%, -50%) rotate(-10deg) scale(0.985);
+    opacity: 0.78;
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(-3deg) scale(1.04);
+    opacity: 0.5;
+  }
+}
+
+@keyframes shadow-collapse-drift {
+  0% {
+    transform: translate3d(-0.8rem, -0.4rem, 0) skewX(-1deg);
+    opacity: 0.45;
+  }
+  43% {
+    transform: translate3d(0.2rem, 0.1rem, 0) skewX(0.4deg);
+    opacity: 0.72;
+  }
+  47% {
+    transform: translate3d(0.8rem, -0.25rem, 0) skewX(-1.2deg);
+    opacity: 0.58;
+  }
+  100% {
+    transform: translate3d(0.65rem, 0.5rem, 0) skewX(0.9deg);
+    opacity: 0.66;
+  }
+}
+
+@keyframes shadow-fault-snap {
+  0%, 82%, 100% {
+    transform: translate3d(-50%, -50%, 0) rotate(var(--r)) scaleX(0.88);
+    filter: brightness(0.9);
+  }
+  86% {
+    transform: translate3d(calc(-50% + 0.35rem), calc(-50% - 0.12rem), 0) rotate(calc(var(--r) + 2deg)) scaleX(1.04);
+    filter: brightness(1.7);
+  }
+  88% {
+    transform: translate3d(calc(-50% - 0.18rem), calc(-50% + 0.2rem), 0) rotate(calc(var(--r) - 1deg)) scaleX(0.96);
+    filter: brightness(1.15);
+  }
+}
+
+@media (max-width: 640px) {
+  .shadow-pressure-field {
+    inset: -12%;
+    opacity: 0.72;
+  }
+
+  .shadow-pressure-field__core {
+    width: 105vw;
+    top: 38%;
+  }
+
+  .shadow-pressure-field__fault {
+    width: calc(var(--w) * 1.45);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shadow-pressure-field__core,
+  .shadow-pressure-field__collapse,
+  .shadow-pressure-field__fault {
+    animation: none !important;
+  }
+
+  .shadow-pressure-field {
+    opacity: 0.54;
+  }
+}

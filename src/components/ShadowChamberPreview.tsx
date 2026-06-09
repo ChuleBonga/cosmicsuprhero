@@ -3,6 +3,7 @@ import { ExternalLink, Flame, Music, Store } from "lucide-react";
 import { platformLinks, releases } from "../data/releases";
 import { AssetCreditNote } from "./AssetCreditNote";
 import { ChamberVisualLayer } from "./ChamberVisualLayer";
+import { ShadowPressureField } from "./ShadowPressureField";
 import { TransmissionPlayer } from "./TransmissionPlayer";
 
 const badGuys = releases.find((release) => release.title === "Bad Guys Finish Last")!;
@@ -15,6 +16,7 @@ export function ShadowChamberPreview() {
       aria-labelledby="shadow-heading"
     >
       <ChamberVisualLayer visualAssets={badGuys.visualAssets} variant="shadow" />
+      <ShadowPressureField />
       <div className="rain-field" aria-hidden="true" />
       <div className="relative z-10 grid items-end gap-9 md:gap-12 xl:grid-cols-[0.98fr_0.82fr]">
         <motion.div

@@ -1,0 +1,44 @@
+{
+  "project": "Cosmicsuprhero Sacred Observatory Archive",
+  "version": "asset-pack-v0.1",
+  "note": "These are generated cinematic assets for Codex integration. Treat as AI-generated visual assets, not documentary photography.",
+  "assets": {
+    "observatory": {
+      "entryHero": "/assets/observatory/observatory-entry-hero.webp",
+      "consolePortrait": "/assets/observatory/observatory-console-portrait.webp",
+      "exterior": "/assets/observatory/observatory-exterior.webp"
+    },
+    "chambers": {
+      "soil-and-sun": {
+        "heroImage": "/assets/chambers/soil-and-sun/soil-and-sun-hero.webp",
+        "secondaryImage": "/assets/chambers/soil-and-sun/soil-and-sun-walk.webp",
+        "artifactImage": "/assets/chambers/soil-and-sun/sound-system-speaker.webp"
+      },
+      "bad-guys-finish-last": {
+        "heroImage": "/assets/chambers/bad-guys-finish-last/bad-guys-finish-last-hero.webp",
+        "secondaryImage": "/assets/chambers/bad-guys-finish-last/bad-guys-finish-last-portrait.webp"
+      },
+      "songs-i-made-at-night": {
+        "heroImage": "/assets/chambers/songs-i-made-at-night/songs-i-made-at-night-hero.webp",
+        "secondaryImage": "/assets/chambers/songs-i-made-at-night/nocturnal-portrait.webp"
+      },
+      "enter-aquarius": {
+        "heroImage": "/assets/chambers/enter-aquarius/enter-aquarius-hero.webp",
+        "secondaryImage": "/assets/chambers/enter-aquarius/enter-aquarius-portrait.webp"
+      },
+      "celestial-multiverse": {
+        "heroImage": "/assets/chambers/celestial-multiverse/celestial-multiverse-hero.webp",
+        "artifactImage": "/assets/chambers/celestial-multiverse/arcturian-artifact.webp"
+      },
+      "stargazing-vol-3": {
+        "heroImage": "/assets/chambers/stargazing-vol-3/stargazing-vol-3-hero.webp"
+      },
+      "just-sounds-really": {
+        "heroImage": "/assets/chambers/just-sounds-really/just-sounds-really-hero.webp"
+      }
+    },
+    "openGraph": {
+      "image": "/assets/og/cosmicsuprhero-og.webp"
+    }
+  }
+}

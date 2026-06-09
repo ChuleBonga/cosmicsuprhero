@@ -43,3 +43,14 @@ Accepted asset sources:
 - generated project assets owned by the artist/project
 - public domain assets
 - Creative Commons assets with accurate credit and license notes
+
+The current generated cinematic pack is integrated for crop, atmosphere, and layout QA. Treat these images as generated project assets, not documentary photography. Some are temporary integration plates and are intentionally documented for later replacement with cleaner standalone character/world images.
+
+## Production Planning
+
+- Final product roadmap: `docs/FINAL_PRODUCT_ROADMAP.md`
+- Offline asset pipeline: `docs/ASSET_PIPELINE.md`
+- Chamber shot list: `prompts/chamber-shot-list.md`
+- Image prompts: `prompts/image-prompts.md`
+- Video prompts: `prompts/video-prompts.md`
+- Observatory intro prep helper: `scripts/prepare-observatory-intro.ps1`
