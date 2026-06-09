@@ -31,7 +31,10 @@ On Windows PowerShell, use `npm.cmd` if script execution blocks `npm`.
 npm install
 npm.cmd run dev
 npm.cmd run build
+npm.cmd run check
 ```
+
+`npm.cmd run check` validates referenced public assets and then runs the production build.
 
 ## Asset Notes
 

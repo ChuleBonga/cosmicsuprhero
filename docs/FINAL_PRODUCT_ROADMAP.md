@@ -136,7 +136,9 @@ Vite serves exact static filenames from `public/` at the root path, which is why
 
 Every release should pass:
 
+- `npm run validate:assets`
 - `npm run build`
+- or `npm run check` for both
 - desktop screenshot QA
 - mobile 390px screenshot QA
 - reduced-motion QA
