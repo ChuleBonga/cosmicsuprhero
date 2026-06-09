@@ -46,9 +46,12 @@ Accepted asset sources:
 
 The current generated cinematic pack is integrated for crop, atmosphere, and layout QA. Treat these images as generated project assets, not documentary photography. Some are temporary integration plates and are intentionally documented for later replacement with cleaner standalone character/world images.
 
+Chamber crop and readiness controls live in `src/data/releases.ts`. Use `focusPosition`, `mobileFocusPosition`, `readiness`, and `replacementNote` before editing components for asset swaps.
+
 ## Production Planning
 
 - Final product roadmap: `docs/FINAL_PRODUCT_ROADMAP.md`
+- v2 final asset queue: `docs/V2_FINAL_ASSET_QUEUE.md`
 - Offline asset pipeline: `docs/ASSET_PIPELINE.md`
 - Chamber shot list: `prompts/chamber-shot-list.md`
 - Image prompts: `prompts/image-prompts.md`

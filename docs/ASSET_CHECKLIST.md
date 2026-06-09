@@ -29,13 +29,15 @@
 
 These assets are safe for integration testing but should be regenerated as cleaner standalone final images before a final visual lock:
 
-- [ ] Just Sounds Really hero: remove source-text/contact-sheet residue.
+- [ ] Just Sounds Really hero: remove source-text/contact-sheet residue. The live card currently uses the procedural poster/texture atmosphere instead of this weak v0.1 plate.
 - [ ] Celestial Multiverse hero: replace with a cleaner single world plate.
 - [ ] Soil and Sun character walk: create identity-controlled final plate.
 - [ ] Bad Guys Finish Last shadow portrait: create identity-controlled final plate.
 - [ ] Songs I Made At Night nocturnal portrait: create identity-controlled final plate.
 - [ ] Enter Aquarius threshold portrait: create identity-controlled final plate.
 - [ ] Celestial Multiverse archive portrait: create identity-controlled final plate.
+
+Detailed v2 queue: `docs/V2_FINAL_ASSET_QUEUE.md`
 
 ## Prompt documents
 
