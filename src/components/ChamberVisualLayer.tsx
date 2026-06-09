@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import type { ReleaseVisualAssets } from "../data/releases";
 import { usePrefersReducedMotion } from "../hooks/usePrefersReducedMotion";
 
@@ -15,9 +16,15 @@ export function ChamberVisualLayer({ visualAssets, variant = "cosmic" }: Chamber
   const hasPoster = Boolean(primaryImage);
   const hasTexture = Boolean(visualAssets?.textureImage);
   const shouldRenderVideo = hasVideo && !prefersReducedMotion;
+  const focusPosition = visualAssets?.focusPosition ?? "50% 50%";
+  const mobileFocusPosition = visualAssets?.mobileFocusPosition ?? focusPosition;
+  const focusStyle = {
+    "--chamber-visual-focus": focusPosition,
+    "--chamber-visual-mobile-focus": mobileFocusPosition,
+  } as CSSProperties;
 
   return (
-    <div className={`chamber-visual-layer chamber-visual-layer--${variant}`} aria-hidden="true">
+    <div className={`chamber-visual-layer chamber-visual-layer--${variant}`} style={focusStyle} aria-hidden="true">
       {shouldRenderVideo ? (
         <video
           className="chamber-visual-layer__video"

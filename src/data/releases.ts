@@ -12,6 +12,10 @@ export type ReleaseVisualAssets = {
   license?: string;
   sourceUrl?: string;
   generationNote?: string;
+  readiness?: "production" | "candidate" | "temporary";
+  replacementNote?: string;
+  focusPosition?: string;
+  mobileFocusPosition?: string;
 };
 
 export type Release = {
@@ -81,6 +85,10 @@ export const releases: Release[] = [
       license: "Owned/generated project asset",
       sourceUrl: "/assets/chambers/celestial-multiverse/celestial-multiverse-hero.webp",
       generationNote: "Generated cinematic asset; use as mythic archive imagery, not documentary photography.",
+      readiness: "temporary",
+      replacementNote: "Replace with a cleaner single world plate before final visual lock.",
+      focusPosition: "50% 52%",
+      mobileFocusPosition: "50% 50%",
     },
     visualPrompt:
       "Public-domain cosmic observatory chamber with antique star maps, telescope glass, drifting archive cards, galaxy dust, inherited-memory fragments, and intermittent recovered-signal interference.",
@@ -125,6 +133,9 @@ export const releases: Release[] = [
       license: "Owned/generated project asset",
       sourceUrl: "/assets/chambers/stargazing-vol-3/stargazing-vol-3-hero.webp",
       generationNote: "Generated cinematic asset; use as mythic archive imagery, not documentary photography.",
+      readiness: "candidate",
+      focusPosition: "50% 45%",
+      mobileFocusPosition: "50% 50%",
     },
     visualPrompt:
       "Blue-black intimate star field with distant pin lights, suspended night air, soft constellations, quiet reflective space, and subtle cosmic loneliness without neon or sci-fi gloss.",
@@ -160,15 +171,19 @@ export const releases: Release[] = [
     // Add the official iframe embed URL here when this chamber becomes a full room.
     embedUrl: "",
     visualAssets: {
-      heroImage: "/assets/chambers/just-sounds-really/just-sounds-really-hero.webp",
       posterImage: "/assets/chambers/just-sounds-really/poster.webp",
       // backgroundVideoWebm: "/assets/chambers/just-sounds-really/background.webm",
       // backgroundVideoMp4: "/assets/chambers/just-sounds-really/background.mp4",
       textureImage: "/assets/chambers/just-sounds-really/texture.webp",
-      credit: "Just Sounds Really chamber visuals generated for Cosmicsuprhero",
+      credit: "Just Sounds Really chamber atmosphere generated for Cosmicsuprhero",
       license: "Owned/generated project asset",
-      sourceUrl: "/assets/chambers/just-sounds-really/just-sounds-really-hero.webp",
-      generationNote: "Generated cinematic asset; use as mythic archive imagery, not documentary photography.",
+      sourceUrl: "/assets/chambers/just-sounds-really/poster.webp",
+      generationNote:
+        "Using the procedural atmosphere for now because the v0.1 hero plate contains contact-sheet residue and should be regenerated.",
+      readiness: "temporary",
+      replacementNote: "Regenerate as a clean standalone sparse sound-object room with no labels, no grid, and no contact-sheet residue.",
+      focusPosition: "50% 50%",
+      mobileFocusPosition: "50% 50%",
     },
     visualPrompt:
       "Minimal experimental sound-object room with blank dark space, faint analog signal lines, soft waveform sculptures, paper texture, and tiny pulsing details that feel tactile and stripped down.",
@@ -214,6 +229,9 @@ export const releases: Release[] = [
       license: "Owned/generated project asset",
       sourceUrl: "/assets/chambers/enter-aquarius/enter-aquarius-hero.webp",
       generationNote: "Generated cinematic asset; use as mythic archive imagery, not documentary photography.",
+      readiness: "candidate",
+      focusPosition: "48% 48%",
+      mobileFocusPosition: "48% 50%",
     },
     visualPrompt:
       "Threshold ritual chamber with electric blue, violet, and cosmic gold weather, slow planetary lift, storm particles, celestial pressure, and a feeling of impermanence and ascent.",
@@ -257,6 +275,9 @@ export const releases: Release[] = [
       license: "Owned/generated project asset",
       sourceUrl: "/assets/chambers/soil-and-sun/soil-and-sun-hero.webp",
       generationNote: "Generated cinematic asset; use as mythic archive imagery, not documentary photography.",
+      readiness: "candidate",
+      focusPosition: "52% 50%",
+      mobileFocusPosition: "50% 50%",
     },
     visualPrompt:
       "Warm earth-memory chamber with amber sunlight, dust, concrete, South African transit textures, river-edge prayer, old photo grain, walking routes, taxi-window haze, and ancestral softness.",
@@ -302,6 +323,9 @@ export const releases: Release[] = [
       license: "Owned/generated project asset",
       sourceUrl: "/assets/chambers/songs-i-made-at-night/songs-i-made-at-night-hero.webp",
       generationNote: "Generated cinematic asset; use as mythic archive imagery, not documentary photography.",
+      readiness: "candidate",
+      focusPosition: "50% 48%",
+      mobileFocusPosition: "50% 50%",
     },
     visualPrompt:
       "Nocturnal reflection chamber with airport glass, laptop glow, moonlit streets, migration insomnia, deep blue interior drift, private thought, and slow dreamlike motion.",
@@ -344,6 +368,9 @@ export const releases: Release[] = [
       license: "Owned/generated project asset",
       sourceUrl: "/assets/chambers/bad-guys-finish-last/bad-guys-finish-last-hero.webp",
       generationNote: "Generated cinematic asset; use as mythic archive imagery, not documentary photography.",
+      readiness: "candidate",
+      focusPosition: "50% 50%",
+      mobileFocusPosition: "52% 50%",
     },
     visualPrompt:
       "Shadow chamber with dim ember, wet pavement, cracked glass, rain streaks, red-black darkness, antihero reflection, ego collapse, betrayal, masks, and spiritual consequence.",
