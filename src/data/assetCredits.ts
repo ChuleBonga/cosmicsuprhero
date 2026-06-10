@@ -38,6 +38,15 @@ export const assetCredits: AssetCredit[] = [
       "Generated cinematic observatory image for website integration. Treat as generated visual asset, not documentary photography.",
   },
   {
+    title: "Signal Listener Portrait Candidate",
+    source: "public/assets/observatory/signal-listener-portrait.png",
+    sourceUrl: "/assets/observatory/signal-listener-portrait.png",
+    creator: "Cosmicsuprhero / ChatGPT-generated cinematic identity asset",
+    license: "Owned/generated project asset",
+    notes:
+      "Rejected as a Soil and Sun chamber hero because it remained indoors/observatory-coded. Keep as an observatory Signal Listener portrait candidate only.",
+  },
+  {
     title: "Cosmicsuprhero Open Graph Preview",
     source: "public/assets/og/cosmicsuprhero-og.webp",
     sourceUrl: "/assets/og/cosmicsuprhero-og.webp",
