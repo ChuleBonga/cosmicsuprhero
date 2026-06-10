@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Footprints, SunMedium } from "lucide-react";
+import { DoorOpen, Footprints, SunMedium } from "lucide-react";
 import { releases, trackJourney } from "../data/releases";
 import { AssetCreditNote } from "./AssetCreditNote";
 import { ChamberVisualLayer } from "./ChamberVisualLayer";
@@ -37,6 +37,12 @@ export function FeaturedSoilAndSun() {
           <p className="mt-5 max-w-xl text-lg leading-8 text-stone-100 md:mt-8 md:text-xl md:leading-9">
             A warm archive of movement, prayer, soil, sunlight, and the sound of becoming human.
           </p>
+          <div className="mt-7 md:mt-9">
+            <a className="button-secondary w-full sm:w-auto" href={`/chambers/${soilAndSun.slug}`}>
+              <DoorOpen size={18} aria-hidden="true" />
+              Enter Full Chamber
+            </a>
+          </div>
 
           <div className="mt-8 grid gap-4 sm:grid-cols-2 md:mt-12 md:gap-5">
             <div className="memory-slab">

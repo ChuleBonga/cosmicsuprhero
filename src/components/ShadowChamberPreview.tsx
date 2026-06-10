@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ExternalLink, Flame, Music, Store } from "lucide-react";
+import { DoorOpen, ExternalLink, Flame, Music, Store } from "lucide-react";
 import { platformLinks, releases } from "../data/releases";
 import { AssetCreditNote } from "./AssetCreditNote";
 import { ChamberVisualLayer } from "./ChamberVisualLayer";
@@ -36,7 +36,11 @@ export function ShadowChamberPreview() {
           </p>
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap md:mt-10">
-            <a className="button-primary bg-red-200 text-black hover:bg-stone-100" href={badGuys.appleUrl} target="_blank" rel="noreferrer">
+            <a className="button-primary bg-red-200 text-black hover:bg-stone-100" href={`/chambers/${badGuys.slug}`}>
+              <DoorOpen size={18} aria-hidden="true" />
+              Enter Full Chamber
+            </a>
+            <a className="button-secondary border-red-200/35 text-red-100" href={badGuys.appleUrl} target="_blank" rel="noreferrer">
               <Music size={18} aria-hidden="true" />
               Listen on Apple Music
             </a>
