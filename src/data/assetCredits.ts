@@ -11,6 +11,51 @@ export type AssetCredit = {
 // Keep every visual file traceable before using it in a chamber's visualAssets field.
 export const assetCredits: AssetCredit[] = [
   {
+    title: "Observatory Entry Worldplate",
+    source: "public/assets/observatory/observatory-entry-worldplate.webp",
+    sourceUrl: "/assets/observatory/observatory-entry-worldplate.webp",
+    creator: "Cosmicsuprhero / generated cinematic v0.2 asset handoff",
+    license: "Owned/generated project asset",
+    notes:
+      "Approved temporary Entry Signal and Observatory world plate from the v0.2 handoff. Treat as generated cinematic world art, not documentary photography.",
+  },
+  {
+    title: "Signal Listener Portrait",
+    source: "public/assets/observatory/signal-listener-portrait.webp",
+    sourceUrl: "/assets/observatory/signal-listener-portrait.webp",
+    creator: "Cosmicsuprhero / generated cinematic v0.2 asset handoff",
+    license: "Owned/generated project asset",
+    notes:
+      "Approved identity-lock likeness test from the v0.2 handoff. Use for Vessel, narrator, or Observatory contexts only.",
+  },
+  {
+    title: "Signal Listener Wide 01",
+    source: "public/assets/observatory/signal-listener-wide-01.webp",
+    sourceUrl: "/assets/observatory/signal-listener-wide-01.webp",
+    creator: "Cosmicsuprhero / generated cinematic v0.2 asset handoff",
+    license: "Owned/generated project asset",
+    notes:
+      "Temporary observatory-context visual from the v0.2 handoff. Do not use as a chamber hero or Soil and Sun asset.",
+  },
+  {
+    title: "Signal Listener Wide 02",
+    source: "public/assets/observatory/signal-listener-wide-02.webp",
+    sourceUrl: "/assets/observatory/signal-listener-wide-02.webp",
+    creator: "Cosmicsuprhero / generated cinematic v0.2 asset handoff",
+    license: "Owned/generated project asset",
+    notes:
+      "Temporary observatory-context visual from the v0.2 handoff. Do not use as a chamber hero or Soil and Sun asset.",
+  },
+  {
+    title: "Cosmicsuprhero Open Graph Draft v0.2",
+    source: "public/assets/og/cosmicsuprhero-og-draft.webp",
+    sourceUrl: "/assets/og/cosmicsuprhero-og-draft.webp",
+    creator: "Cosmicsuprhero / generated cinematic v0.2 asset handoff",
+    license: "Owned/generated project asset",
+    notes:
+      "Draft Open Graph background from the v0.2 handoff. Keep current production OG unless this draft is explicitly promoted.",
+  },
+  {
     title: "Observatory Entry Hero",
     source: "public/assets/observatory/observatory-entry-hero.webp",
     sourceUrl: "/assets/observatory/observatory-entry-hero.webp",

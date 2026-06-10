@@ -28,8 +28,8 @@ export function Vessel() {
           viewport={{ once: true, amount: 0.15 }}
         >
           <img
-            src="/assets/vessel/cosmicsuprhero-vessel-portrait.jpg"
-            alt="Generated cinematic portrait of Cosmicsuprhero inside a vintage observatory study"
+            src="/assets/observatory/signal-listener-portrait.webp"
+            alt="Generated cinematic signal-listener portrait of Cosmicsuprhero inside a vintage observatory study"
             loading="lazy"
             decoding="async"
           />

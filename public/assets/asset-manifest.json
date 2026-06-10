@@ -1,12 +1,16 @@
 {
   "project": "Cosmicsuprhero Sacred Observatory Archive",
-  "version": "asset-pack-v0.1",
-  "note": "These are generated cinematic assets for Codex integration. Treat as AI-generated visual assets, not documentary photography.",
+  "version": "asset-pack-v0.2-integrated",
+  "note": "These are generated cinematic assets for Codex integration. Treat as generated visual assets, not documentary photography. v0.2 approves observatory and identity assets only; final chamber hero images still need separate generation.",
   "assets": {
     "observatory": {
-      "entryHero": "/assets/observatory/observatory-entry-hero.webp",
+      "entryWorldplate": "/assets/observatory/observatory-entry-worldplate.webp",
+      "legacyEntryHero": "/assets/observatory/observatory-entry-hero.webp",
       "consolePortrait": "/assets/observatory/observatory-console-portrait.webp",
-      "exterior": "/assets/observatory/observatory-exterior.webp"
+      "exterior": "/assets/observatory/observatory-exterior.webp",
+      "signalListenerPortrait": "/assets/observatory/signal-listener-portrait.webp",
+      "signalListenerWide01": "/assets/observatory/signal-listener-wide-01.webp",
+      "signalListenerWide02": "/assets/observatory/signal-listener-wide-02.webp"
     },
     "chambers": {
       "soil-and-sun": {
@@ -48,7 +52,8 @@
       }
     },
     "openGraph": {
-      "image": "/assets/og/cosmicsuprhero-og.webp"
+      "image": "/assets/og/cosmicsuprhero-og.webp",
+      "draftV02": "/assets/og/cosmicsuprhero-og-draft.webp"
     }
   }
 }

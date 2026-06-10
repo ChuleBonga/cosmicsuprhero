@@ -12,7 +12,7 @@ export function ObservatoryIntro() {
   return (
     <AbsoluteFill style={{ backgroundColor: "#040405", overflow: "hidden" }}>
       <Img
-        src={staticFile("assets/observatory/observatory-entry-hero.webp")}
+        src={staticFile("assets/observatory/observatory-entry-worldplate.webp")}
         style={{
           position: "absolute",
           inset: 0,

@@ -7,7 +7,7 @@ export type ObservatoryIntroSource = {
 
 const productionIntro: ObservatoryIntroSource = {
   enabled: true,
-  posterImage: "/assets/observatory/observatory-entry-hero.webp",
+  posterImage: "/assets/observatory/observatory-entry-worldplate.webp",
   // Add clean non-watermarked cinematic loops here when available.
   // webm: "/assets/observatory/observatory-intro.webm",
   // mp4: "/assets/observatory/observatory-intro.mp4",

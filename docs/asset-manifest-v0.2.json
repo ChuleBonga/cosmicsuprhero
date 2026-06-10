@@ -1,0 +1,69 @@
+{
+  "version": "v0.2",
+  "project": "Cosmicsuprhero Sacred Observatory Archive",
+  "created_for": "Codex handoff",
+  "important_note": "This pack intentionally includes only accepted observatory/identity assets. It does not include rejected collages/contact sheets or failed likeness street image.",
+  "approved_assets": [
+    {
+      "path": "/assets/observatory/observatory-entry-worldplate.webp",
+      "source": "a_wide_cinematic_sci_fi_fantasy_interior_a_massiv.png",
+      "role": "Entry Signal / Observatory world plate",
+      "status": "approved-temp",
+      "width": 1537,
+      "height": 1023,
+      "notes": "Good cinematic observatory background. Use as a world plate, not as final character likeness."
+    },
+    {
+      "path": "/assets/observatory/signal-listener-portrait.webp",
+      "source": "contemplative_moment_in_a_vintage_study.png",
+      "role": "Signal Listener portrait",
+      "status": "approved-likeness-test",
+      "width": 1122,
+      "height": 1402,
+      "notes": "Best accepted identity-lock test. Use for Vessel, Observatory, or narrator portrait. Portrait crop."
+    },
+    {
+      "path": "/assets/observatory/signal-listener-wide-01.webp",
+      "source": "a_cinematic_warm_toned_interior_scene_in_a_dim_v.png",
+      "role": "Observatory portrait wide variant",
+      "status": "approved-temp",
+      "width": 1536,
+      "height": 1024,
+      "notes": "Strong observatory scene, not Soil and Sun. Use only in Observatory contexts."
+    },
+    {
+      "path": "/assets/observatory/signal-listener-wide-02.webp",
+      "source": "a_cinematic_moody_interior_scene_of_a_dimly_lit_v.png",
+      "role": "Observatory portrait wide variant",
+      "status": "approved-temp",
+      "width": 1536,
+      "height": 1024,
+      "notes": "Strong observatory scene, not Soil and Sun. Use only in Observatory contexts."
+    },
+    {
+      "path": "/assets/og/cosmicsuprhero-og-draft.webp",
+      "source": "a_wide_cinematic_sci_fi_fantasy_interior_a_massiv.png",
+      "role": "Open Graph draft image",
+      "status": "approved-temp",
+      "width": 1537,
+      "height": 1023,
+      "notes": "Draft OG background. Final OG may need typography designed by the site or by a separate design pass."
+    }
+  ],
+  "do_not_use": [
+    "Any collage/contact sheet asset generated earlier",
+    "Any image with baked-in titles, captions, labels, poster text, or grid layout",
+    "a_wide_cinematic_street_scene_at_golden_hour_in_a.png as a character asset because it failed likeness",
+    "Any image that makes Cosmicsuprhero look like a generic cinematic protagonist instead of preserving identity"
+  ],
+  "missing_final_chamber_assets": [
+    "/assets/chambers/soil-and-sun/soil-and-sun-hero.webp",
+    "/assets/chambers/bad-guys-finish-last/bad-guys-finish-last-hero.webp",
+    "/assets/chambers/songs-i-made-at-night/songs-i-made-at-night-hero.webp",
+    "/assets/chambers/enter-aquarius/enter-aquarius-hero.webp",
+    "/assets/chambers/celestial-multiverse/celestial-multiverse-hero.webp",
+    "/assets/chambers/stargazing-vol-3/stargazing-vol-3-hero.webp",
+    "/assets/chambers/just-sounds-really/just-sounds-really-hero.webp"
+  ],
+  "identity_reference": "/source/reference/cosmicsuprhero-character-reference-sheet.jpeg"
+}

@@ -67,6 +67,8 @@ Chamber crop and readiness controls live in `src/data/releases.ts`. Use `focusPo
 - v2 final asset queue: `docs/V2_FINAL_ASSET_QUEUE.md`
 - Offline asset pipeline: `docs/ASSET_PIPELINE.md`
 - Remotion render pipeline: `docs/REMOTION_PIPELINE.md`
+- v0.2 asset handoff manifest: `docs/asset-manifest-v0.2.json`
+- v0.2 character identity lock: `docs/character-identity-lock.md`
 - Chamber shot list: `prompts/chamber-shot-list.md`
 - Image prompts: `prompts/image-prompts.md`
 - Video prompts: `prompts/video-prompts.md`
