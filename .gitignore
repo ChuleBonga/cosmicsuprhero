@@ -1,6 +1,7 @@
 node_modules/
 dist/
 .qa/
+output/
 
 *.zip
 *.tsbuildinfo

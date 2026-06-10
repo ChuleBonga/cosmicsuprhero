@@ -1,6 +1,7 @@
 import { MotionConfig } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AmbientParticles } from "./components/AmbientParticles";
+import { ChamberWorldPage } from "./components/ChamberWorldPage";
 import { EntrySignal } from "./components/EntrySignal";
 import { FeaturedSoilAndSun } from "./components/FeaturedSoilAndSun";
 import { FrequencyChambers } from "./components/FrequencyChambers";
@@ -13,9 +14,109 @@ import { SignalReturn } from "./components/SignalReturn";
 import { SignalThreshold } from "./components/SignalThreshold";
 import { TransmissionMarquee } from "./components/TransmissionMarquee";
 import { Vessel } from "./components/Vessel";
+import { getChamberWorld } from "./data/chamberWorlds";
+
+function getCurrentPath() {
+  return window.location.pathname;
+}
+
+function HomeArchive() {
+  useEffect(() => {
+    document.title = "Cosmicsuprhero | Sonic Observatory";
+  }, []);
+
+  return (
+    <main className="relative z-10">
+      <EntrySignal />
+      <TransmissionMarquee
+        items={[
+          "Transmission active",
+          "Frequency locked",
+          "Archive breathing",
+          "Memory preserved",
+          "No autoplay",
+          "Choose the signal",
+        ]}
+      />
+      <SignalThreshold />
+      <Observatory />
+      <FrequencyChambers />
+      <TransmissionMarquee
+        tone="cosmic"
+        items={[
+          "Cosmological expansion",
+          "Intimate star field",
+          "Sound object room",
+          "Threshold ritual",
+          "Earth memory",
+          "Nocturnal reflection",
+          "Shadow chamber",
+        ]}
+      />
+      <FeaturedSoilAndSun />
+      <ShadowChamberPreview />
+      <TransmissionMarquee
+        tone="shadow"
+        items={["Ego", "Mask", "Consequence", "Prayer", "Transit", "Return", "Awakening"]}
+      />
+      <Vessel />
+    </main>
+  );
+}
+
+function ChamberNotFound() {
+  useEffect(() => {
+    document.title = "Chamber Not Found | Cosmicsuprhero";
+  }, []);
+
+  return (
+    <main className="chamber-world chamber-world--not-found" aria-labelledby="chamber-world-heading">
+      <section className="chamber-world__hero section-shell">
+        <div className="chamber-world__intro">
+          <p className="section-kicker">Signal Drift</p>
+          <h1 id="chamber-world-heading" className="chamber-world__title">
+            Chamber Not Found
+          </h1>
+          <p className="chamber-world__invocation">
+            This transmission does not resolve inside the current archive. Return to the frequency index and choose a
+            known chamber.
+          </p>
+          <div className="chamber-world__actions">
+            <a className="button-primary" href="/#frequency-chambers">
+              Return to Frequency Index
+            </a>
+            <a className="button-secondary" href="/">
+              Return to Observatory
+            </a>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
+}
 
 export default function App() {
+  const [path, setPath] = useState(getCurrentPath);
+  const chamberMatch = useMemo(() => path.match(/^\/chambers\/([^/]+)\/?$/), [path]);
+  const chamberRoute = chamberMatch ? getChamberWorld(decodeURIComponent(chamberMatch[1])) : undefined;
+  const isChamberPath = Boolean(chamberMatch);
+  const isHomePage = !isChamberPath;
+
   useEffect(() => {
+    const syncPath = () => setPath(getCurrentPath());
+    window.addEventListener("popstate", syncPath);
+
+    return () => {
+      window.removeEventListener("popstate", syncPath);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!isHomePage) {
+      window.scrollTo({ top: 0, behavior: "auto" });
+      return;
+    }
+
     const scrollToHash = () => {
       const id = decodeURIComponent(window.location.hash.slice(1));
       if (!id) return;
@@ -34,60 +135,24 @@ export default function App() {
       window.clearTimeout(timeoutId);
       window.removeEventListener("hashchange", scrollToHash);
     };
-  }, []);
+  }, [isHomePage, path]);
 
   return (
     <MotionConfig reducedMotion="user">
       <div className="min-h-screen overflow-hidden bg-archive-void text-stone-100">
-        <SignalLoader />
-        <ScrollChoreography />
-        <a className="skip-link" href="#observatory">
-          Skip to observatory
+        {isHomePage ? <SignalLoader /> : null}
+        {isHomePage ? <ScrollChoreography /> : null}
+        <a className="skip-link" href={isHomePage ? "#observatory" : "#chamber-world-heading"}>
+          {isHomePage ? "Skip to observatory" : "Skip to chamber"}
         </a>
         <AmbientParticles />
-        <main className="relative z-10">
-          <EntrySignal />
-          <TransmissionMarquee
-            items={[
-              "Transmission active",
-              "Frequency locked",
-              "Archive breathing",
-              "Memory preserved",
-              "No autoplay",
-              "Choose the signal",
-            ]}
-          />
-          <SignalThreshold />
-          <Observatory />
-          <FrequencyChambers />
-          <TransmissionMarquee
-            tone="cosmic"
-            items={[
-              "Cosmological expansion",
-              "Intimate star field",
-              "Sound object room",
-              "Threshold ritual",
-              "Earth memory",
-              "Nocturnal reflection",
-              "Shadow chamber",
-            ]}
-          />
-          <FeaturedSoilAndSun />
-          <ShadowChamberPreview />
-          <TransmissionMarquee
-            tone="shadow"
-            items={[
-              "Ego",
-              "Mask",
-              "Consequence",
-              "Prayer",
-              "Transit",
-              "Return",
-              "Awakening",
-            ]}
-          />
-          <Vessel />
-        </main>
+        {chamberRoute ? (
+          <ChamberWorldPage release={chamberRoute.release} world={chamberRoute.world} />
+        ) : isChamberPath ? (
+          <ChamberNotFound />
+        ) : (
+          <HomeArchive />
+        )}
         <SignalReturn />
         <GrainOverlay />
       </div>

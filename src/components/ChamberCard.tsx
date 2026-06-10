@@ -37,14 +37,11 @@ function chamberId(release: Release) {
 }
 
 function chamberTarget(release: Release) {
-  if (release.title === "Soil and Sun") return "#soil-and-sun";
-  if (release.title === "Bad Guys Finish Last") return "#bad-guys-finish-last";
-  return `#${chamberId(release)}`;
+  return `/chambers/${release.slug}`;
 }
 
 export function ChamberCard({ release }: ChamberCardProps) {
   const target = chamberTarget(release);
-  const isInternal = target.startsWith("#");
   const { visualAssets } = release;
   const cardImage = visualAssets?.heroImage ?? visualAssets?.posterImage;
   const imageFocus = visualAssets?.focusPosition ?? "50% 50%";
@@ -113,8 +110,6 @@ export function ChamberCard({ release }: ChamberCardProps) {
             <a
               className="inline-flex items-center gap-2 rounded-full bg-archive-amber px-4 py-2.5 font-body text-xs font-semibold uppercase tracking-[0.15em] text-black transition hover:bg-stone-100 focus:outline-none focus:ring-2 focus:ring-archive-amber focus:ring-offset-2 focus:ring-offset-archive-void"
               href={target}
-              target={isInternal ? undefined : "_blank"}
-              rel={isInternal ? undefined : "noreferrer"}
               aria-label={`Enter the ${release.title} chamber`}
             >
               <DoorOpen size={15} aria-hidden="true" />
