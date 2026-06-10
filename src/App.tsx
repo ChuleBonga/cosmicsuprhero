@@ -1,6 +1,7 @@
 import { MotionConfig } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
 import { AmbientParticles } from "./components/AmbientParticles";
+import { ArchiveNav } from "./components/ArchiveNav";
 import { ChamberWorldPage } from "./components/ChamberWorldPage";
 import { EntrySignal } from "./components/EntrySignal";
 import { FeaturedSoilAndSun } from "./components/FeaturedSoilAndSun";
@@ -22,7 +23,16 @@ function getCurrentPath() {
 
 function HomeArchive() {
   useEffect(() => {
-    document.title = "Cosmicsuprhero | Sonic Observatory";
+    const title = "Cosmicsuprhero | Sacred Observatory Archive";
+    const description =
+      "Cosmicsuprhero's Sacred Observatory Archive: seven sonic chambers for memory, spirit, shadow, and transmission.";
+
+    document.title = title;
+    document.querySelector('meta[name="description"]')?.setAttribute("content", description);
+    document.querySelector('meta[property="og:title"]')?.setAttribute("content", title);
+    document.querySelector('meta[property="og:description"]')?.setAttribute("content", description);
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", title);
+    document.querySelector('meta[name="twitter:description"]')?.setAttribute("content", description);
   }, []);
 
   return (
@@ -145,6 +155,7 @@ export default function App() {
         <a className="skip-link" href={isHomePage ? "#observatory" : "#chamber-world-heading"}>
           {isHomePage ? "Skip to observatory" : "Skip to chamber"}
         </a>
+        <ArchiveNav currentSlug={chamberRoute?.release.slug} />
         <AmbientParticles />
         {chamberRoute ? (
           <ChamberWorldPage release={chamberRoute.release} world={chamberRoute.world} />

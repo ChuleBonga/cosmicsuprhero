@@ -3,6 +3,7 @@ import { ArrowLeft, ArrowRight, ArrowUpRight, Disc3, Headphones, Home, Radio } f
 import { useEffect } from "react";
 import { getAdjacentChambers, type ChamberWorld } from "../data/chamberWorlds";
 import type { Release } from "../data/releases";
+import { releases } from "../data/releases";
 import { AssetCreditNote } from "./AssetCreditNote";
 import { ChamberVisualLayer } from "./ChamberVisualLayer";
 import { TransmissionPlayer } from "./TransmissionPlayer";
@@ -19,10 +20,16 @@ function chamberHref(slug: string) {
 export function ChamberWorldPage({ release, world }: ChamberWorldPageProps) {
   const { previous, next } = getAdjacentChambers(release);
   const pageTitle = `${release.title} | Cosmicsuprhero Chamber`;
+  const pageDescription = `${world.subtitle}: ${world.invocation}`;
 
   useEffect(() => {
     document.title = pageTitle;
-  }, [pageTitle]);
+    document.querySelector('meta[name="description"]')?.setAttribute("content", pageDescription);
+    document.querySelector('meta[property="og:title"]')?.setAttribute("content", pageTitle);
+    document.querySelector('meta[property="og:description"]')?.setAttribute("content", pageDescription);
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", pageTitle);
+    document.querySelector('meta[name="twitter:description"]')?.setAttribute("content", pageDescription);
+  }, [pageDescription, pageTitle]);
 
   return (
     <main className={`chamber-world chamber-world--${world.variant}`} aria-labelledby="chamber-world-heading">
@@ -51,12 +58,12 @@ export function ChamberWorldPage({ release, world }: ChamberWorldPageProps) {
           <p className="chamber-world__invocation">{world.invocation}</p>
 
           <div className="chamber-world__actions">
-            <a className="button-primary" href={release.appleUrl} target="_blank" rel="noreferrer">
-              <Headphones size={18} aria-hidden="true" />
-              Listen on Apple Music
+            <a className="button-primary" href="#chamber-transmission">
+              <Radio size={18} aria-hidden="true" />
+              Begin Chamber Transmission
             </a>
             <a className="button-secondary" href="/#frequency-chambers">
-              <Radio size={18} aria-hidden="true" />
+              <ArrowLeft size={18} aria-hidden="true" />
               Return to Index
             </a>
           </div>
@@ -91,6 +98,19 @@ export function ChamberWorldPage({ release, world }: ChamberWorldPageProps) {
         </motion.aside>
       </section>
 
+      <nav className="chamber-world__index section-shell" aria-label="Seven chamber signal index">
+        {releases.map((item, index) => (
+          <a
+            key={item.slug}
+            href={chamberHref(item.slug)}
+            aria-current={item.slug === release.slug ? "page" : undefined}
+          >
+            <span>{String(index + 1).padStart(2, "0")}</span>
+            {item.title}
+          </a>
+        ))}
+      </nav>
+
       <section className="chamber-world__body section-shell" aria-label={`${release.title} chamber world`}>
         <div className="chamber-world__spatial">
           <p className="section-kicker">{world.thresholdLabel}</p>
@@ -116,7 +136,7 @@ export function ChamberWorldPage({ release, world }: ChamberWorldPageProps) {
         </div>
       </section>
 
-      <section className="chamber-world__transmission section-shell">
+      <section id="chamber-transmission" className="chamber-world__transmission section-shell">
         <div className="chamber-world__object-list">
           <p className="section-kicker">Room Objects</p>
           <h2>Artifacts Inside the Chamber</h2>
@@ -142,6 +162,11 @@ export function ChamberWorldPage({ release, world }: ChamberWorldPageProps) {
             license={release.visualAssets?.license}
             sourceUrl={release.visualAssets?.sourceUrl}
           />
+          <a className="chamber-world__listen-link" href={release.appleUrl} target="_blank" rel="noreferrer">
+            <Headphones size={16} aria-hidden="true" />
+            Listen on Apple Music
+            <ArrowUpRight size={14} aria-hidden="true" />
+          </a>
         </div>
       </section>
 
