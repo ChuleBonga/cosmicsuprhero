@@ -2091,6 +2091,67 @@ a {
   opacity: 0.42;
 }
 
+.vessel-portrait {
+  position: relative;
+  overflow: hidden;
+  align-self: start;
+  border: 1px solid rgba(240, 191, 114, 0.18);
+  background:
+    linear-gradient(180deg, rgba(244, 234, 217, 0.055), rgba(5, 5, 7, 0.2)),
+    rgba(5, 5, 7, 0.72);
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.36);
+}
+
+.vessel-portrait::before,
+.vessel-portrait::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.vessel-portrait::before {
+  background:
+    radial-gradient(circle at 42% 18%, transparent 0 26%, rgba(5, 5, 7, 0.34) 54%, rgba(5, 5, 7, 0.72)),
+    linear-gradient(180deg, transparent 0 62%, rgba(5, 5, 7, 0.68));
+}
+
+.vessel-portrait::after {
+  inset: 0.9rem;
+  border: 1px solid rgba(240, 191, 114, 0.14);
+  mix-blend-mode: screen;
+}
+
+.vessel-portrait img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  object-position: 52% 42%;
+  filter: saturate(0.86) contrast(1.08) brightness(0.78);
+}
+
+.vessel-portrait__plate {
+  position: absolute;
+  left: 1.1rem;
+  right: 1.1rem;
+  bottom: 1.1rem;
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.65rem;
+  border-top: 1px solid rgba(240, 191, 114, 0.18);
+  padding-top: 0.85rem;
+  color: rgba(244, 234, 217, 0.7);
+  font-family: var(--font-body);
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
 .vessel-list {
   display: grid;
   gap: 1rem;

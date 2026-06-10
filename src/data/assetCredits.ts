@@ -47,6 +47,15 @@ export const assetCredits: AssetCredit[] = [
       "Generated social preview image for website sharing. Treat as generated visual asset, not documentary photography.",
   },
   {
+    title: "Cosmicsuprhero Vessel Portrait",
+    source: "public/assets/vessel/cosmicsuprhero-vessel-portrait.jpg",
+    sourceUrl: "/assets/vessel/cosmicsuprhero-vessel-portrait.jpg",
+    creator: "Cosmicsuprhero / ChatGPT-generated cinematic portrait asset",
+    license: "Owned/generated project asset",
+    notes:
+      "Generated portrait asset for the Vessel section. Use as cinematic identity artwork, not documentary photography.",
+  },
+  {
     title: "Soil and Sun Hero",
     source: "public/assets/chambers/soil-and-sun/soil-and-sun-hero.webp",
     sourceUrl: "/assets/chambers/soil-and-sun/soil-and-sun-hero.webp",

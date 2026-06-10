@@ -19,11 +19,30 @@ const facts = [
 export function Vessel() {
   return (
     <section id="the-vessel" className="section-shell py-16 md:py-24" aria-labelledby="vessel-heading">
-      <div className="grid gap-9 md:gap-12 lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="grid gap-9 md:gap-12 lg:grid-cols-[0.88fr_1.12fr]">
         <motion.div
+          className="vessel-portrait"
           initial={{ opacity: 0, y: 34 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.85 }}
+          viewport={{ once: true, amount: 0.15 }}
+        >
+          <img
+            src="/assets/vessel/cosmicsuprhero-vessel-portrait.jpg"
+            alt="Generated cinematic portrait of Cosmicsuprhero inside a vintage observatory study"
+            loading="lazy"
+            decoding="async"
+          />
+          <div className="vessel-portrait__plate" aria-hidden="true">
+            <span>Vessel portrait</span>
+            <span>Memory / signal / archive</span>
+          </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 34 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.85, delay: 0.08 }}
           viewport={{ once: true, amount: 0.15 }}
         >
           <p className="section-kicker">The Vessel</p>
@@ -35,25 +54,24 @@ export function Vessel() {
             The work moves between earth and cosmos, between South African memory and inner mythology, between shadow
             and awakening.
           </p>
+          <motion.ul
+            className="vessel-list mt-8 md:mt-10"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.15 }}
+            viewport={{ once: true, amount: 0.15 }}
+          >
+            {facts.map((fact) => {
+              const Icon = fact.icon;
+              return (
+                <li key={fact.text}>
+                  <Icon size={22} aria-hidden="true" />
+                  <span>{fact.text}</span>
+                </li>
+              );
+            })}
+          </motion.ul>
         </motion.div>
-
-        <motion.ul
-          className="vessel-list"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.15 }}
-          viewport={{ once: true, amount: 0.15 }}
-        >
-          {facts.map((fact) => {
-            const Icon = fact.icon;
-            return (
-              <li key={fact.text}>
-                <Icon size={22} aria-hidden="true" />
-                <span>{fact.text}</span>
-              </li>
-            );
-          })}
-        </motion.ul>
       </div>
     </section>
   );
