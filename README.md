@@ -36,6 +36,16 @@ npm.cmd run check
 
 `npm.cmd run check` validates referenced public assets and then runs the production build.
 
+Remotion is available for offline cinematic renders:
+
+```bash
+npm.cmd run remotion:studio
+npm.cmd run remotion:render:observatory
+npm.cmd run remotion:render:all
+```
+
+Renders go to `renders/`, which is ignored by Git. Use them for review first; only move approved videos into `public/assets/...`.
+
 ## Asset Notes
 
 Chamber assets live in `public/assets/chambers/`. Every visual asset used by the site should be tracked in `src/data/assetCredits.ts` before it is referenced in `src/data/releases.ts`.
@@ -56,6 +66,7 @@ Chamber crop and readiness controls live in `src/data/releases.ts`. Use `focusPo
 - Final product roadmap: `docs/FINAL_PRODUCT_ROADMAP.md`
 - v2 final asset queue: `docs/V2_FINAL_ASSET_QUEUE.md`
 - Offline asset pipeline: `docs/ASSET_PIPELINE.md`
+- Remotion render pipeline: `docs/REMOTION_PIPELINE.md`
 - Chamber shot list: `prompts/chamber-shot-list.md`
 - Image prompts: `prompts/image-prompts.md`
 - Video prompts: `prompts/video-prompts.md`
