@@ -1,12 +1,17 @@
 import { motion } from "framer-motion";
 import { ArrowDown, Headphones, RadioTower } from "lucide-react";
+import { artistIdentity } from "../data/contact";
 import { platformLinks } from "../data/releases";
+import { useAudioPlayer } from "../hooks/useAudioPlayer";
+import { FeaturedTransmission } from "./FeaturedTransmission";
 import { ObservatoryIntroVideo } from "./ObservatoryIntroVideo";
 
 const signalRows = ["SIGNAL ACQUIRING", "ARCHIVE WARMING", "TRANSMISSION OPEN"];
 const identityFragments = ["Port Elizabeth", "Illinois", "Arcturus", "Earth / Night / Shadow"];
 
 export function EntrySignal() {
+  const { unlockAudio } = useAudioPlayer();
+
   return (
     <section
       id="entry-signal"
@@ -70,10 +75,11 @@ export function EntrySignal() {
           <p className="mt-5 max-w-2xl text-base leading-7 text-stone-300 md:mt-8 md:text-2xl md:leading-10">
             A living sonic observatory for memory, spirit, shadow, and transmission.
           </p>
+          <p className="entry-signal__sound-line">{artistIdentity.plainSoundLine}</p>
           <p className="entry-signal__ritual-line">Tune in before the archive opens.</p>
 
           <div className="mt-7 flex flex-col gap-3 sm:flex-row md:mt-10">
-            <a className="button-primary" href="#observatory">
+            <a className="button-primary" href="#observatory" onClick={unlockAudio}>
               <ArrowDown size={18} aria-hidden="true" />
               Enter the Observatory
             </a>
@@ -85,21 +91,23 @@ export function EntrySignal() {
         </motion.div>
 
         <motion.div
-          className="signal-console"
+          className="entry-signal__instrument-stack"
           initial={{ opacity: 0, scale: 0.94, y: 30 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           transition={{ duration: 1.2, delay: 0.45 }}
-          aria-hidden="true"
         >
-          <div className="console-core">
-            <RadioTower className="mx-auto text-archive-amber" size={44} />
-            <div className="mt-8 space-y-3">
-              <span />
-              <span />
-              <span />
-              <span />
+          <div className="signal-console" aria-hidden="true">
+            <div className="console-core">
+              <RadioTower className="mx-auto text-archive-amber" size={44} />
+              <div className="mt-8 space-y-3">
+                <span />
+                <span />
+                <span />
+                <span />
+              </div>
             </div>
           </div>
+          <FeaturedTransmission />
         </motion.div>
       </div>
 

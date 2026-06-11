@@ -100,7 +100,9 @@ export function ChamberCard({ release }: ChamberCardProps) {
           </div>
           <h3 className="mt-5 font-display text-[2rem] leading-[0.95] text-stone-100 md:mt-8 md:text-5xl">{release.title}</h3>
           <p className="mt-3 font-body text-xs uppercase tracking-[0.22em] text-archive-amber md:mt-4">{release.chamber}</p>
-          <p className="mt-3 max-w-[28rem] text-sm leading-6 text-stone-300 md:mt-5 md:leading-7">{release.mood}</p>
+          <p className="mt-3 max-w-[28rem] text-sm leading-6 text-stone-300 md:mt-5 md:leading-7">
+            {release.signalPhrase ?? release.mood}
+          </p>
         </div>
 
         <div>
@@ -122,7 +124,7 @@ export function ChamberCard({ release }: ChamberCardProps) {
               rel="noreferrer"
             >
               <Headphones size={15} aria-hidden="true" />
-              Listen
+              Open on Apple Music
               <ArrowUpRight size={14} aria-hidden="true" />
             </a>
           </div>

@@ -1,5 +1,6 @@
 import { MotionConfig } from "framer-motion";
 import { useEffect, useMemo, useState } from "react";
+import { NowPlayingBar } from "./components/audio/NowPlayingBar";
 import { AmbientParticles } from "./components/AmbientParticles";
 import { ArchiveNav } from "./components/ArchiveNav";
 import { ChamberWorldPage } from "./components/ChamberWorldPage";
@@ -15,6 +16,7 @@ import { SignalReturn } from "./components/SignalReturn";
 import { SignalThreshold } from "./components/SignalThreshold";
 import { TransmissionMarquee } from "./components/TransmissionMarquee";
 import { Vessel } from "./components/Vessel";
+import { AudioPlayerProvider } from "./context/AudioPlayerContext";
 import { getChamberWorld } from "./data/chamberWorlds";
 
 function getCurrentPath() {
@@ -23,9 +25,9 @@ function getCurrentPath() {
 
 function HomeArchive() {
   useEffect(() => {
-    const title = "Cosmicsuprhero | Sacred Observatory Archive";
+    const title = "Cosmicsuprhero | Sacred Sonic Observatory";
     const description =
-      "Cosmicsuprhero's Sacred Observatory Archive: seven sonic chambers for memory, spirit, shadow, and transmission.";
+      "Cosmicsuprhero is an atmospheric instrumental music artist building a sacred sonic observatory from South African memory, beat-work, ambient soul, and cosmic reflection.";
 
     document.title = title;
     document.querySelector('meta[name="description"]')?.setAttribute("content", description);
@@ -149,24 +151,27 @@ export default function App() {
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="min-h-screen overflow-hidden bg-archive-void text-stone-100">
-        {isHomePage ? <SignalLoader /> : null}
-        {isHomePage ? <ScrollChoreography /> : null}
-        <a className="skip-link" href={isHomePage ? "#observatory" : "#chamber-world-heading"}>
-          {isHomePage ? "Skip to observatory" : "Skip to chamber"}
-        </a>
-        <ArchiveNav currentSlug={chamberRoute?.release.slug} />
-        <AmbientParticles />
-        {chamberRoute ? (
-          <ChamberWorldPage release={chamberRoute.release} world={chamberRoute.world} />
-        ) : isChamberPath ? (
-          <ChamberNotFound />
-        ) : (
-          <HomeArchive />
-        )}
-        <SignalReturn />
-        <GrainOverlay />
-      </div>
+      <AudioPlayerProvider>
+        <div className="min-h-screen overflow-hidden bg-archive-void text-stone-100">
+          {isHomePage ? <SignalLoader /> : null}
+          {isHomePage ? <ScrollChoreography /> : null}
+          <a className="skip-link" href={isHomePage ? "#observatory" : "#chamber-world-heading"}>
+            {isHomePage ? "Skip to observatory" : "Skip to chamber"}
+          </a>
+          <ArchiveNav currentSlug={chamberRoute?.release.slug} />
+          <AmbientParticles />
+          {chamberRoute ? (
+            <ChamberWorldPage release={chamberRoute.release} world={chamberRoute.world} />
+          ) : isChamberPath ? (
+            <ChamberNotFound />
+          ) : (
+            <HomeArchive />
+          )}
+          <SignalReturn />
+          <NowPlayingBar />
+          <GrainOverlay />
+        </div>
+      </AudioPlayerProvider>
     </MotionConfig>
   );
 }

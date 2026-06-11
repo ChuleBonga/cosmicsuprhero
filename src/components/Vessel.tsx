@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { MapPin, Sparkles, Waves } from "lucide-react";
+import { ArrowUpRight, Briefcase, MapPin, Sparkles, Waves } from "lucide-react";
+import { artistIdentity, professionalActions } from "../data/contact";
 
 const facts = [
   {
@@ -21,21 +22,27 @@ export function Vessel() {
     <section id="the-vessel" className="section-shell py-16 md:py-24" aria-labelledby="vessel-heading">
       <div className="grid gap-9 md:gap-12 lg:grid-cols-[0.88fr_1.12fr]">
         <motion.div
-          className="vessel-portrait"
+          className="vessel-portrait-grid"
           initial={{ opacity: 0, y: 34 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.85 }}
           viewport={{ once: true, amount: 0.15 }}
         >
-          <img
-            src="/assets/observatory/signal-listener-portrait.webp"
-            alt="Generated cinematic signal-listener portrait of Cosmicsuprhero inside a vintage observatory study"
-            loading="lazy"
-            decoding="async"
-          />
-          <div className="vessel-portrait__plate" aria-hidden="true">
-            <span>Vessel portrait</span>
-            <span>Memory / signal / archive</span>
+          <div className="vessel-portrait">
+            <img
+              src="/assets/observatory/signal-listener-portrait.webp"
+              alt="Generated cinematic signal-listener portrait of Cosmicsuprhero inside a vintage observatory study"
+              loading="lazy"
+              decoding="async"
+            />
+            <div className="vessel-portrait__plate" aria-hidden="true">
+              <span>Cinematic identity</span>
+              <span>Memory / signal / archive</span>
+            </div>
+          </div>
+          <div className="vessel-real-photo-slot">
+            <p>Approved real-photo slot prepared</p>
+            <span>Future path: /assets/artist/cosmicsuprhero-real-photo.webp</span>
           </div>
         </motion.div>
 
@@ -49,10 +56,13 @@ export function Vessel() {
           <h2 id="vessel-heading" className="section-title">
             Narrator of the Signal
           </h2>
+          <p className="vessel-origin-line">{artistIdentity.originLine}</p>
           <p className="mt-5 max-w-3xl text-lg leading-8 text-stone-300 md:mt-8 md:text-xl md:leading-10">
-            Cosmicsuprhero is a transmitted identity, a vessel for memory, spirit, contradiction, and cinematic sound.
-            The work moves between earth and cosmos, between South African memory and inner mythology, between shadow
-            and awakening.
+            Cosmicsuprhero is an artist, producer, storyteller, and sound alchemist building atmospheric instrumental
+            music from South African memory, beat-work, ambient soul, and spiritual reflection.
+          </p>
+          <p className="vessel-identity-note">
+            The real photo anchors the person. The cinematic portrait carries the transmitted identity. Both are needed.
           </p>
           <motion.ul
             className="vessel-list mt-8 md:mt-10"
@@ -71,6 +81,22 @@ export function Vessel() {
               );
             })}
           </motion.ul>
+
+          <div className="vessel-professional-path" aria-label="Professional contact paths">
+            <div>
+              <Briefcase size={20} aria-hidden="true" />
+              <p>{artistIdentity.professionalLine}</p>
+            </div>
+            <nav>
+              {professionalActions.map((action) => (
+                <a key={action.label} href={action.href} target="_blank" rel="noreferrer">
+                  {action.label}
+                  {action.status === "hub" ? <small>Via Linktree</small> : null}
+                  <ArrowUpRight size={14} aria-hidden="true" />
+                </a>
+              ))}
+            </nav>
+          </div>
         </motion.div>
       </div>
     </section>

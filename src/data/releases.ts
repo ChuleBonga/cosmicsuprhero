@@ -1,5 +1,37 @@
 export type ReleaseStatus = "Main Chamber" | "Featured Chamber" | "Latest Transmission";
 
+export type ReleaseTrack = {
+  id: string;
+  trackNumber: number;
+  title: string;
+  duration?: string;
+  audioSrc?: string;
+  youtubeUrl?: string;
+  spotifyUrl?: string;
+  appleMusicUrl?: string;
+  isPreviewOnly?: boolean;
+  notes?: string;
+  atmosphereCue?: string;
+  visualCue?: string;
+};
+
+export type ReleaseAmbience = {
+  src?: string;
+  label?: string;
+  description?: string;
+  volume?: number;
+};
+
+export type ReleaseUISoundProfile = {
+  hover?: string;
+  select?: string;
+  enter?: string;
+  return?: string;
+  fieldNoteOpen?: string;
+  playbackStart?: string;
+  playbackPause?: string;
+};
+
 export type ReleaseVisualAssets = {
   heroImage?: string;
   secondaryImage?: string;
@@ -28,7 +60,14 @@ export type Release = {
   visualLanguage?: string;
   motionLanguage?: string;
   frequencyTags?: string[];
+  signalPhrase?: string;
+  shortVisualDescription?: string;
+  longArchiveNote?: string;
+  ambience?: ReleaseAmbience;
+  uiSoundProfile?: ReleaseUISoundProfile;
   description?: string;
+  tracklist?: string[];
+  tracks?: ReleaseTrack[];
   chamber: string;
   mood: string;
   visual: string;
@@ -39,10 +78,14 @@ export type Release = {
     appleMusic?: string;
     spotify?: string;
   };
+  iframeEmbeds?: {
+    appleMusic?: string;
+  };
   embedUrl?: string;
   visualAssets?: ReleaseVisualAssets;
   visualPrompt?: string;
   videoPrompt?: string;
+  generationNote?: string;
   assetCredit?: {
     credit?: string;
     license?: string;
@@ -50,6 +93,44 @@ export type Release = {
   };
   status: ReleaseStatus;
 };
+
+export const trackJourney = [
+  "Intro",
+  "I Am an African",
+  "Midday",
+  "Offering At the River",
+  "Taxi Ride Home",
+  "Pedestrian",
+  "Rising",
+  "Prayers Heard",
+  "Eternity",
+  "Soil and Sun",
+  "Soil and Sun (Melo Mix)",
+  "Outro",
+];
+
+function slugifyTrack(title: string) {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+function createPendingTracks(releaseSlug: string, titles: string[], atmosphereCue: string): ReleaseTrack[] {
+  return titles.map((title, index) => ({
+    id: `${releaseSlug}-${slugifyTrack(title)}`,
+    trackNumber: index + 1,
+    title,
+    audioSrc: "",
+    youtubeUrl: "",
+    spotifyUrl: "",
+    appleMusicUrl: "",
+    isPreviewOnly: false,
+    notes: "Artist-owned audio file pending for native archive playback.",
+    atmosphereCue,
+    visualCue: atmosphereCue,
+  }));
+}
 
 export const releases: Release[] = [
   {
@@ -66,6 +147,19 @@ export const releases: Release[] = [
     visualLanguage: "antique star maps, telescope glass, deep space, floating archive cards, monolithic memory structures",
     motionLanguage: "orbit, drift, archive fragments moving like old transmissions",
     frequencyTags: ["Multiverse", "Archive Scale", "Inherited Memory", "Signal Interruption"],
+    signalPhrase: "Memory expands until the archive becomes a sky.",
+    shortVisualDescription: "Antique star maps, telescope glass, and inherited archive scale.",
+    longArchiveNote:
+      "Celestial Multiverse is the first room where the archive becomes larger than the body. It should feel warm at cosmic scale, like inherited memory refusing to stay local.",
+    ambience: {
+      label: "Archive orbit pending",
+      description: "A future low room tone of glass hum, distant dust, and soft coordinate drift.",
+    },
+    uiSoundProfile: {
+      hover: "soft-orbit",
+      enter: "archive-open",
+      playbackStart: "signal-rise",
+    },
     description: "A large-scale expansion room where inherited memory and cosmic archive fragments begin to orbit the same signal.",
     appleUrl: "https://music.apple.com/za/album/celestial-multiverse/1634384249",
     spotifyUrl: "",
@@ -115,6 +209,19 @@ export const releases: Release[] = [
     visualLanguage: "quiet blue-black sky, distant lights, soft constellations, restrained cosmic warmth",
     motionLanguage: "slow drift and suspended stillness",
     frequencyTags: ["Stargazing", "Suspension", "Observation", "Quiet Field"],
+    signalPhrase: "The sky gets close when the room gets quiet.",
+    shortVisualDescription: "Blue-black suspension, distant lights, and quiet observational space.",
+    longArchiveNote:
+      "Stargazing, Vol. 3 should not compete with the larger cosmic chambers. Its power is distance made intimate: sparse points, held breath, and a night field that listens back.",
+    ambience: {
+      label: "Quiet star field pending",
+      description: "A future restrained air bed with distant night texture and sparse signal points.",
+    },
+    uiSoundProfile: {
+      hover: "distant-point",
+      enter: "quiet-threshold",
+      playbackStart: "low-star",
+    },
     description: "A quiet observational room where distance, loneliness, and soft starlight become intimate rather than enormous.",
     appleUrl: "https://music.apple.com/za/album/stargazing-vol-3/1650779094",
     spotifyUrl: "",
@@ -162,6 +269,19 @@ export const releases: Release[] = [
     visualLanguage: "blank dark material, single object, quiet signal lines, tactile texture, narrow light",
     motionLanguage: "almost still, tiny pulses, waveform residue",
     frequencyTags: ["Sound Object", "Minimal", "Residue", "Restraint"],
+    signalPhrase: "Leave only the sound, then listen to what remains.",
+    shortVisualDescription: "A sparse object room with one beam, waveform residue, and dark material.",
+    longArchiveNote:
+      "Just Sounds Really is the discipline chamber. It should resist spectacle. The room is nearly empty because the sound itself is the object.",
+    ambience: {
+      label: "Minimal residue pending",
+      description: "A future almost-silent room tone with tiny waveform ticks and air around one object.",
+    },
+    uiSoundProfile: {
+      hover: "micro-pulse",
+      enter: "dry-click",
+      playbackStart: "single-line",
+    },
     description: "A stripped room where sound is treated as an object before mythology arrives.",
     appleUrl: "https://music.apple.com/za/album/just-sounds-really/1658052127",
     spotifyUrl: "",
@@ -210,6 +330,19 @@ export const releases: Release[] = [
     visualLanguage: "impossible concrete stairways, violet-blue pressure, electric gold, brutalist threshold weather",
     motionLanguage: "gravity shift, portal-like lift, slow ascent",
     frequencyTags: ["Threshold", "Aquarius", "Ascension", "Spiritual Weather"],
+    signalPhrase: "The pressure changes before the crossing appears.",
+    shortVisualDescription: "Violet-blue concrete, gold weather, and slow gravity shift.",
+    longArchiveNote:
+      "Enter Aquarius is the crossing room. It should feel like concrete discovering weather: spiritual pressure, violet lift, and the moment before an old self loses gravity.",
+    ambience: {
+      label: "Threshold weather pending",
+      description: "A future faint storm bed with violet pressure, gold shimmer, and slow lift.",
+    },
+    uiSoundProfile: {
+      hover: "threshold-glint",
+      enter: "gravity-shift",
+      playbackStart: "pressure-rise",
+    },
     description: "A threshold room where concrete, weather, and frequency shift the body toward another state.",
     appleUrl: "https://music.apple.com/za/album/enter-aquarius/1682262161",
     spotifyUrl: "",
@@ -258,6 +391,20 @@ export const releases: Release[] = [
     visualLanguage: "amber sunlight, dust, concrete, South African transit memory, river edges, old photo warmth",
     motionLanguage: "slow, grounded, human, heat and dust moving gently",
     frequencyTags: ["Soil", "Sun", "Prayer", "Transit", "Ancestry"],
+    signalPhrase: "The body remembers the road before the mind explains it.",
+    shortVisualDescription: "Amber dust, road heat, transit memory, and ordinary sunlight made sacred.",
+    longArchiveNote:
+      "Soil and Sun is the human gravity center of the archive. It should stay outside, grounded, and warm: walking, taxis, dust, prayer, sunlight, and body memory without decorative cliche.",
+    ambience: {
+      label: "Earth room tone pending",
+      description: "A future low bed of road air, soft dust, distant transit, and warm outdoor room tone.",
+    },
+    uiSoundProfile: {
+      hover: "dust-rise",
+      enter: "sun-warmth",
+      fieldNoteOpen: "paper-soft",
+      playbackStart: "road-breath",
+    },
     description: "A warm archive of movement, prayer, soil, sunlight, and the sound of becoming human.",
     appleUrl: "https://music.apple.com/za/album/soil-and-sun/1714215266",
     spotifyUrl: "",
@@ -265,6 +412,11 @@ export const releases: Release[] = [
       appleMusic: "https://music.apple.com/za/album/soil-and-sun/1714215266",
     },
     embedUrl: "https://embed.music.apple.com/za/album/soil-and-sun/1714215266",
+    iframeEmbeds: {
+      appleMusic: "https://embed.music.apple.com/za/album/soil-and-sun/1714215266",
+    },
+    tracklist: trackJourney,
+    tracks: createPendingTracks("soil-and-sun", trackJourney, "warm-dust"),
     visualAssets: {
       heroImage: "/assets/chambers/soil-and-sun/soil-and-sun-hero.webp",
       secondaryImage: "/assets/chambers/soil-and-sun/soil-and-sun-walk.webp",
@@ -283,6 +435,8 @@ export const releases: Release[] = [
       "Warm earth-memory chamber with amber sunlight, dust, concrete, South African transit textures, river-edge prayer, old photo grain, walking routes, taxi-window haze, and ancestral softness.",
     videoPrompt:
       "Slow dust movement, amber sunlight breathing across concrete, road heat shimmer, taxi-window glow, and river-prayer softness.",
+    generationNote:
+      "Final Soil and Sun character-led hero image is still pending. Current imagery is candidate/fallback atmosphere until a clean outdoor walking photograph preserves likeness.",
     assetCredit: {
       credit: "Soil and Sun chamber visuals generated for Cosmicsuprhero",
       license: "Owned/generated project asset",
@@ -304,6 +458,19 @@ export const releases: Release[] = [
     visualLanguage: "blue-black room, laptop glow, airport glass, cassette archive, city lights through window",
     motionLanguage: "floating, slow, dreamlike, window reflections breathing",
     frequencyTags: ["Night", "Migration", "Insomnia", "Private Thought"],
+    signalPhrase: "The private self becomes audible after midnight.",
+    shortVisualDescription: "Blue-black room, window glass, laptop glow, and migration thought.",
+    longArchiveNote:
+      "Songs I Made At Night is the room behind the glass. It should feel private, not performative: desk light, city distance, insomnia, migration, and the self speaking quietly.",
+    ambience: {
+      label: "Nocturnal room tone pending",
+      description: "A future dark air bed with laptop hum, distant city tone, and soft window reflection.",
+    },
+    uiSoundProfile: {
+      hover: "window-glow",
+      enter: "night-door",
+      playbackStart: "private-hum",
+    },
     description: "A nocturnal room of private thoughts, migration memory, and late-night sound fragments.",
     appleUrl: "https://music.apple.com/za/album/songs-i-made-at-night/1769362916",
     spotifyUrl: "",
@@ -352,6 +519,20 @@ export const releases: Release[] = [
     visualLanguage: "red-black wet concrete, cracked glass, rain particles, dim ember, damaged archive pressure",
     motionLanguage: "heavier, distorted, pressured, damaged-transmission movement",
     frequencyTags: ["Shadow", "Consequence", "Mask", "Survival", "Transformation"],
+    signalPhrase: "Consequence is delayed truth arriving in the room.",
+    shortVisualDescription: "Red-black pressure, wet concrete, cracked glass, and ember under shadow.",
+    longArchiveNote:
+      "Bad Guys Finish Last is the chamber of pressure and consequence. It should feel damaged but not theatrical horror: rain, masks, contradiction, grief, and warmth surviving underneath.",
+    ambience: {
+      label: "Shadow pressure pending",
+      description: "A future low damaged-transmission bed with rain pressure, red ember, and corridor air.",
+    },
+    uiSoundProfile: {
+      hover: "cracked-glass",
+      enter: "red-pressure",
+      fieldNoteOpen: "damaged-paper",
+      playbackStart: "ember-hit",
+    },
     description: "A damaged transmission about ego, betrayal, divine timing, masks, contradiction, and transformation.",
     appleUrl: "https://music.apple.com/za/album/bad-guys-finish-last/1818998518",
     spotifyUrl: "",
@@ -359,6 +540,9 @@ export const releases: Release[] = [
       appleMusic: "https://music.apple.com/za/album/bad-guys-finish-last/1818998518",
     },
     embedUrl: "https://embed.music.apple.com/za/album/bad-guys-finish-last/1818998518",
+    iframeEmbeds: {
+      appleMusic: "https://embed.music.apple.com/za/album/bad-guys-finish-last/1818998518",
+    },
     visualAssets: {
       heroImage: "/assets/chambers/bad-guys-finish-last/bad-guys-finish-last-hero.webp",
       secondaryImage: "/assets/chambers/bad-guys-finish-last/bad-guys-finish-last-portrait.webp",
@@ -376,6 +560,8 @@ export const releases: Release[] = [
       "Shadow chamber with dim ember, wet pavement, cracked glass, rain streaks, red-black darkness, antihero reflection, ego collapse, betrayal, masks, and spiritual consequence.",
     videoPrompt:
       "Rain drifting across red-black wet concrete, cracked glass light shifting, ember pulse under shadow, and slow damaged-transmission pressure.",
+    generationNote:
+      "Final chamber hero should be regenerated as a single standalone shadow portrait/world plate with no contact-sheet residue and no fake album-cover look.",
     assetCredit: {
       credit: "Bad Guys Finish Last chamber visuals generated for Cosmicsuprhero",
       license: "Owned/generated project asset",
@@ -383,21 +569,6 @@ export const releases: Release[] = [
     },
     status: "Latest Transmission",
   },
-];
-
-export const trackJourney = [
-  "Intro",
-  "I Am an African",
-  "Midday",
-  "Offering At the River",
-  "Taxi Ride Home",
-  "Pedestrian",
-  "Rising",
-  "Prayers Heard",
-  "Eternity",
-  "Soil and Sun",
-  "Soil and Sun (Melo Mix)",
-  "Outro",
 ];
 
 export const platformLinks = {

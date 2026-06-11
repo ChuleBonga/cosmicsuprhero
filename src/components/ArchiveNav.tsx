@@ -9,7 +9,9 @@ const waypoints = [
   { label: "Entry", href: "/#entry-signal" },
   { label: "Observatory", href: "/#observatory" },
   { label: "Chambers", href: "/#frequency-chambers" },
-  { label: "Return", href: "#signal-return" },
+  { label: "Music", href: "/#featured-chamber" },
+  { label: "Vessel", href: "/#the-vessel" },
+  { label: "Contact", href: "/#signal-return" },
 ];
 
 export function ArchiveNav({ currentSlug }: ArchiveNavProps) {
@@ -22,7 +24,7 @@ export function ArchiveNav({ currentSlug }: ArchiveNavProps) {
 
       <div className="archive-nav__waypoints" aria-label="Archive waypoints">
         {waypoints.map((item) => (
-          <a key={item.label} href={item.href}>
+          <a key={item.label} href={item.href} aria-label={`${item.label} section`}>
             {item.label}
           </a>
         ))}

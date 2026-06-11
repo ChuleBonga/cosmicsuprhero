@@ -1,12 +1,12 @@
-import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Disc3, Headphones, Home, Radio } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Disc3, Headphones } from "lucide-react";
 import { useEffect } from "react";
+import { AmbienceLayer } from "./audio/AmbienceLayer";
+import { TransmissionPlayer as NativeTransmissionPlayer } from "./audio/TransmissionPlayer";
+import { ChamberStage } from "./chambers/ChamberStage";
 import { getAdjacentChambers, type ChamberWorld } from "../data/chamberWorlds";
 import type { Release } from "../data/releases";
 import { releases } from "../data/releases";
 import { AssetCreditNote } from "./AssetCreditNote";
-import { ChamberVisualLayer } from "./ChamberVisualLayer";
-import { TransmissionPlayer } from "./TransmissionPlayer";
 
 type ChamberWorldPageProps = {
   release: Release;
@@ -21,82 +21,27 @@ export function ChamberWorldPage({ release, world }: ChamberWorldPageProps) {
   const { previous, next } = getAdjacentChambers(release);
   const pageTitle = `${release.title} | Cosmicsuprhero Chamber`;
   const pageDescription = `${world.subtitle}: ${world.invocation}`;
+  const pageImage = release.visualAssets?.heroImage ?? release.visualAssets?.posterImage ?? "/assets/og/cosmicsuprhero-og.webp";
 
   useEffect(() => {
+    const absoluteUrl = `${window.location.origin}${window.location.pathname}`;
+    const absoluteImage = pageImage.startsWith("http") ? pageImage : `${window.location.origin}${pageImage}`;
+
     document.title = pageTitle;
     document.querySelector('meta[name="description"]')?.setAttribute("content", pageDescription);
     document.querySelector('meta[property="og:title"]')?.setAttribute("content", pageTitle);
     document.querySelector('meta[property="og:description"]')?.setAttribute("content", pageDescription);
+    document.querySelector('meta[property="og:url"]')?.setAttribute("content", absoluteUrl);
+    document.querySelector('meta[property="og:image"]')?.setAttribute("content", absoluteImage);
+    document.querySelector('meta[property="og:image:secure_url"]')?.setAttribute("content", absoluteImage);
     document.querySelector('meta[name="twitter:title"]')?.setAttribute("content", pageTitle);
     document.querySelector('meta[name="twitter:description"]')?.setAttribute("content", pageDescription);
-  }, [pageDescription, pageTitle]);
+    document.querySelector('meta[name="twitter:image"]')?.setAttribute("content", absoluteImage);
+  }, [pageDescription, pageImage, pageTitle]);
 
   return (
     <main className={`chamber-world chamber-world--${world.variant}`} aria-labelledby="chamber-world-heading">
-      <ChamberVisualLayer visualAssets={release.visualAssets} variant={world.variant} />
-
-      <section className="chamber-world__hero section-shell">
-        <motion.div
-          className="chamber-world__intro"
-          initial={{ opacity: 0, y: 28 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.9, ease: "easeOut" }}
-        >
-          <nav className="chamber-world__crumbs" aria-label="Chamber navigation">
-            <a href="/">
-              <Home size={15} aria-hidden="true" />
-              Observatory
-            </a>
-            <span aria-hidden="true">/</span>
-            <span>{release.chamber}</span>
-          </nav>
-
-          <p className="section-kicker">{world.subtitle}</p>
-          <h1 id="chamber-world-heading" className="chamber-world__title">
-            {world.worldTitle}
-          </h1>
-          <p className="chamber-world__invocation">{world.invocation}</p>
-
-          <div className="chamber-world__actions">
-            <a className="button-primary" href="#chamber-transmission">
-              <Radio size={18} aria-hidden="true" />
-              Begin Chamber Transmission
-            </a>
-            <a className="button-secondary" href="/#frequency-chambers">
-              <ArrowLeft size={18} aria-hidden="true" />
-              Return to Index
-            </a>
-          </div>
-        </motion.div>
-
-        <motion.aside
-          className="chamber-world__artifact"
-          initial={{ opacity: 0, rotate: -1.25, y: 24 }}
-          animate={{ opacity: 1, rotate: -0.35, y: 0 }}
-          transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
-          aria-label={`${release.title} artifact metadata`}
-        >
-          <p>Recovered Chamber</p>
-          <dl>
-            <div>
-              <dt>Year</dt>
-              <dd>{release.year}</dd>
-            </div>
-            <div>
-              <dt>Type</dt>
-              <dd>{release.type}</dd>
-            </div>
-            <div>
-              <dt>Frequency</dt>
-              <dd>{release.chamber}</dd>
-            </div>
-            <div>
-              <dt>Motion</dt>
-              <dd>{release.motion}</dd>
-            </div>
-          </dl>
-        </motion.aside>
-      </section>
+      <ChamberStage release={release} world={world} />
 
       <nav className="chamber-world__index section-shell" aria-label="Seven chamber signal index">
         {releases.map((item, index) => (
@@ -111,31 +56,6 @@ export function ChamberWorldPage({ release, world }: ChamberWorldPageProps) {
         ))}
       </nav>
 
-      <section className="chamber-world__body section-shell" aria-label={`${release.title} chamber world`}>
-        <div className="chamber-world__spatial">
-          <p className="section-kicker">{world.thresholdLabel}</p>
-          <h2>Emotional Physics</h2>
-          <p>{world.spatialPremise}</p>
-          <ul>
-            {world.emotionalPhysics.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </div>
-
-        <div className="chamber-world__notes">
-          <p className="section-kicker">Field Notes</p>
-          <div>
-            {world.fieldNotes.map((note, index) => (
-              <article key={note}>
-                <span>{String(index + 1).padStart(2, "0")}</span>
-                <p>{note}</p>
-              </article>
-            ))}
-          </div>
-        </div>
-      </section>
-
       <section id="chamber-transmission" className="chamber-world__transmission section-shell">
         <div className="chamber-world__object-list">
           <p className="section-kicker">Room Objects</p>
@@ -148,15 +68,8 @@ export function ChamberWorldPage({ release, world }: ChamberWorldPageProps) {
         </div>
 
         <div className="chamber-world__player">
-          <TransmissionPlayer
-            title={release.title}
-            year={release.year}
-            frequency={release.chamber}
-            condition={release.status}
-            appleUrl={release.appleUrl}
-            embedUrl={release.embedUrl}
-            variant={world.variant === "shadow" ? "shadow" : world.variant === "earth" ? "earth" : "cosmic"}
-          />
+          <AmbienceLayer ambience={release.ambience} />
+          <NativeTransmissionPlayer release={release} />
           <AssetCreditNote
             credit={release.visualAssets?.credit}
             license={release.visualAssets?.license}
@@ -168,6 +81,61 @@ export function ChamberWorldPage({ release, world }: ChamberWorldPageProps) {
             <ArrowUpRight size={14} aria-hidden="true" />
           </a>
         </div>
+      </section>
+
+      {release.tracklist?.length ? (
+        <section className="chamber-world__tracklist section-shell" aria-labelledby="chamber-tracklist-heading">
+          <div>
+            <p className="section-kicker">Track Journey</p>
+            <h2 id="chamber-tracklist-heading">Sequence of the Room</h2>
+            <p>
+              Tap a title when artist-owned audio files are added. For now, the sequence acts as the room map.
+            </p>
+          </div>
+          <ol>
+            {release.tracklist.map((track, index) => (
+              <li key={`${track}-${index}`}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <p>
+                  {track}
+                  {release.tracks?.[index]?.visualCue ? <small>{release.tracks[index].visualCue}</small> : null}
+                </p>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ) : null}
+
+      <section className="chamber-world__archive section-shell" aria-label={`${release.title} recovered archive`}>
+        <details className="chamber-world__archive-note">
+          <summary>
+            <span>Recovered Room Logic</span>
+            <strong>{world.thresholdLabel}</strong>
+          </summary>
+          <div>
+            <p>{release.longArchiveNote ?? world.spatialPremise}</p>
+            <ul>
+              {world.emotionalPhysics.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </div>
+        </details>
+
+        <details className="chamber-world__archive-note">
+          <summary>
+            <span>Hidden Field Notes</span>
+            <strong>{release.title}</strong>
+          </summary>
+          <div className="chamber-world__field-notes">
+            {world.fieldNotes.map((note, index) => (
+              <article key={note}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <p>{note}</p>
+              </article>
+            ))}
+          </div>
+        </details>
       </section>
 
       <section className="chamber-world__footer section-shell" aria-label="Adjacent chambers">
