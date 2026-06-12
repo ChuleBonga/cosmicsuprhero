@@ -15,6 +15,9 @@ export function ChamberStage({ release, world }: ChamberStageProps) {
   const { activeTrack, playbackState } = useAudioPlayer();
   const isActive = activeTrack?.chamberSlug === release.slug && playbackState === "playing";
   const signalPhrase = release.signalPhrase ?? world.invocation;
+  const visualReadiness = release.visualAssets?.readiness ?? "candidate";
+  const visualReadinessLabel =
+    visualReadiness === "production" ? "Visual locked" : visualReadiness === "temporary" ? "Temporary visual" : "Candidate visual";
 
   return (
     <section className="chamber-stage section-shell" aria-labelledby="chamber-world-heading">
@@ -82,6 +85,15 @@ export function ChamberStage({ release, world }: ChamberStageProps) {
           <div>
             <dt>Motion</dt>
             <dd>{release.motionLanguage ?? release.motion}</dd>
+          </div>
+          <div>
+            <dt>Visual Lock</dt>
+            <dd>
+              <span className={`chamber-stage__readiness chamber-stage__readiness--${visualReadiness}`}>
+                {visualReadinessLabel}
+              </span>
+              {release.visualAssets?.replacementNote ? <small>{release.visualAssets.replacementNote}</small> : null}
+            </dd>
           </div>
         </dl>
       </motion.aside>

@@ -13,7 +13,6 @@ Candidate stills:
 - `observatory-entry-worldplate.webp` is the v0.2 approved temporary Entry Signal / Observatory world plate.
 - `signal-listener-portrait.webp` is the v0.2 approved likeness test for The Vessel / narrator / Observatory portrait.
 - `signal-listener-wide-01.webp` and `signal-listener-wide-02.webp` are temporary Observatory-only context images.
-- `signal-listener-portrait.png` is an observatory / signal-listener identity candidate. It was rejected for Soil and Sun because it remains indoors and observatory-coded. Do not use it as a Soil and Sun chamber asset.
 
 For local crop/motion testing only, place watermarked files in:
 
