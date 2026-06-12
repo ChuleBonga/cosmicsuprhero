@@ -1,6 +1,7 @@
-import { ExternalLink, Radio } from "lucide-react";
-import { platformLinks, type Release } from "../../data/releases";
+import { Radio } from "lucide-react";
+import type { Release } from "../../data/releases";
 import { useAudioPlayer } from "../../hooks/useAudioPlayer";
+import { PlatformExits } from "./PlatformExits";
 import { PlayerControls } from "./PlayerControls";
 import { TrackList } from "./TrackList";
 import { WaveformSignal } from "./WaveformSignal";
@@ -29,7 +30,7 @@ export function TransmissionPlayer({ release }: NativeTransmissionPlayerProps) {
       <div className="native-transmission-player__header">
         <div>
           <p className="section-kicker">Listen in the Archive</p>
-          <h2 id="native-transmission-heading">Native Transmission Player</h2>
+          <h2 id="native-transmission-heading">Transmission Console</h2>
           <span>{release.chamber}</span>
         </div>
         <div className="native-transmission-player__lamp" aria-hidden="true">
@@ -39,15 +40,23 @@ export function TransmissionPlayer({ release }: NativeTransmissionPlayerProps) {
 
       <div className="native-transmission-player__surface">
         <div className="native-transmission-player__status" role="status" aria-live="polite">
-          <span>{playbackState === "pending" || pending ? "Audio file pending" : playbackState}</span>
+          <span>{playbackState === "pending" || pending ? "Archive audio pending" : playbackState}</span>
           <strong>{activeTitle}</strong>
         </div>
+        <p className="native-transmission-player__note">
+          Artist-owned audio will unlock native playback here. Until then, the console preserves the track sequence and
+          keeps platform exits available without pretending an external embed is the archive.
+        </p>
         <WaveformSignal />
         <PlayerControls />
-        {!isUnlocked ? (
+        {!pending && !isUnlocked ? (
           <button type="button" className="native-transmission-player__unlock" onClick={unlockAudio}>
             Enable the Signal
           </button>
+        ) : pending ? (
+          <p className="native-transmission-player__pending-note">
+            Audio unlock will activate when artist-owned files are installed for this chamber.
+          </p>
         ) : null}
         {errorMessage ? (
           <div className="native-transmission-player__error" role="alert">
@@ -61,27 +70,7 @@ export function TransmissionPlayer({ release }: NativeTransmissionPlayerProps) {
 
       <TrackList tracks={queue} />
 
-      <div className="native-transmission-player__exits" aria-label="External platform exits">
-        <a href={release.appleUrl} target="_blank" rel="noreferrer">
-          Open on Apple Music <ExternalLink size={14} aria-hidden="true" />
-        </a>
-        {release.spotifyUrl ? (
-          <a href={release.spotifyUrl} target="_blank" rel="noreferrer">
-            Open on Spotify <ExternalLink size={14} aria-hidden="true" />
-          </a>
-        ) : null}
-        {release.externalLinks?.spotify ? (
-          <a href={release.externalLinks.spotify} target="_blank" rel="noreferrer">
-            Open on Spotify <ExternalLink size={14} aria-hidden="true" />
-          </a>
-        ) : null}
-        <a href={platformLinks.youtubeHandle} target="_blank" rel="noreferrer">
-          Open on YouTube <ExternalLink size={14} aria-hidden="true" />
-        </a>
-        <a href={platformLinks.linktree} target="_blank" rel="noreferrer">
-          Platform Hub <ExternalLink size={14} aria-hidden="true" />
-        </a>
-      </div>
+      <PlatformExits release={release} />
     </section>
   );
 }

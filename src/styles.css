@@ -426,6 +426,18 @@ a {
   color: var(--cream);
 }
 
+.route-suspense {
+  display: grid;
+  min-height: 70svh;
+  place-items: center;
+  color: rgba(240, 191, 114, 0.72);
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}
+
 .hero-title {
   font-family: "Cormorant Garamond", "Times New Roman", serif;
   font-size: 1.78rem;
@@ -2589,6 +2601,7 @@ a {
   font-weight: 700;
   letter-spacing: 0.22em;
   text-transform: uppercase;
+  display: none;
 }
 
 .artifact-frame--embed > * {
@@ -2614,6 +2627,72 @@ a {
   border: 0;
   background: #050507;
   color-scheme: light dark;
+}
+
+.artifact-embed-gate {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 1.25rem;
+  border: 1px solid rgba(240, 191, 114, 0.16);
+  background:
+    repeating-linear-gradient(90deg, transparent 0 14px, rgba(240, 191, 114, 0.035) 15px 16px),
+    rgba(4, 4, 5, 0.72);
+  padding: clamp(0.85rem, 2vw, 1rem);
+}
+
+.artifact-embed-gate p,
+.artifact-embed-gate span {
+  margin: 0;
+}
+
+.artifact-embed-gate p {
+  color: rgba(240, 191, 114, 0.82);
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.artifact-embed-gate span {
+  display: block;
+  max-width: 38rem;
+  margin-top: 0.35rem;
+  color: rgba(244, 234, 217, 0.66);
+  font-size: 0.88rem;
+  line-height: 1.6;
+}
+
+.artifact-embed-gate button,
+.artifact-embed-gate a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  border: 1px solid rgba(240, 191, 114, 0.28);
+  border-radius: 999px;
+  background: rgba(5, 5, 7, 0.72);
+  padding: 0.7rem 1rem;
+  color: rgba(240, 191, 114, 0.92);
+  font-family: var(--font-body);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: border-color 180ms ease, background 180ms ease, color 180ms ease;
+}
+
+.artifact-embed-gate button:hover,
+.artifact-embed-gate button:focus-visible,
+.artifact-embed-gate a:hover,
+.artifact-embed-gate a:focus-visible {
+  border-color: rgba(240, 191, 114, 0.62);
+  background: rgba(240, 191, 114, 0.1);
+  color: #f4ead9;
+  outline: none;
 }
 
 .artifact-frame--earth {
@@ -3503,6 +3582,25 @@ a {
     min-height: 4rem;
   }
 
+  .artifact-embed-gate {
+    grid-template-columns: 1fr;
+  }
+
+  .artifact-embed-gate button,
+  .artifact-embed-gate a {
+    width: 100%;
+  }
+
+  .native-transmission-player__exits {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .native-transmission-player__exits a {
+    width: 100%;
+    justify-content: space-between;
+  }
+
   .signal-threshold {
     padding-block: 2.4rem;
   }
@@ -3691,6 +3789,14 @@ a {
   color: rgba(244, 234, 217, 0.92);
 }
 
+.native-transmission-player__note {
+  max-width: 42rem;
+  margin: 0;
+  color: rgba(244, 234, 217, 0.68);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
 .waveform-signal {
   height: 5.25rem;
   overflow: hidden;
@@ -3808,6 +3914,19 @@ a {
   text-transform: uppercase;
 }
 
+.native-transmission-player__pending-note {
+  margin: 0;
+  border-left: 1px solid rgba(240, 191, 114, 0.24);
+  padding-left: 0.8rem;
+  color: rgba(240, 191, 114, 0.68);
+  font-family: var(--font-body);
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  line-height: 1.6;
+  text-transform: uppercase;
+}
+
 .native-transmission-player__error {
   display: flex;
   align-items: center;
@@ -3905,6 +4024,18 @@ a {
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: rgba(240, 191, 114, 0.82);
+}
+
+.native-transmission-player__exits a span,
+.native-transmission-player__exits a small {
+  display: inline-flex;
+  align-items: center;
+}
+
+.native-transmission-player__exits a small {
+  color: rgba(244, 234, 217, 0.46);
+  font-size: 0.56rem;
+  letter-spacing: 0.12em;
 }
 
 .now-playing-bar {

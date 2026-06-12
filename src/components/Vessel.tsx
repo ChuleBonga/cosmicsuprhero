@@ -30,7 +30,14 @@ export function Vessel() {
         >
           {artistIdentity.realPhotoSrc ? (
             <div className="vessel-real-photo">
-              <img src={artistIdentity.realPhotoSrc} alt={artistIdentity.realPhotoAlt} loading="lazy" decoding="async" />
+              <img
+                src={artistIdentity.realPhotoSrc}
+                alt={artistIdentity.realPhotoAlt}
+                width={900}
+                height={1125}
+                loading="lazy"
+                decoding="async"
+              />
               <span>Artist portrait</span>
             </div>
           ) : null}
@@ -38,6 +45,8 @@ export function Vessel() {
             <img
               src="/assets/observatory/signal-listener-portrait.webp"
               alt="Generated cinematic signal-listener portrait of Cosmicsuprhero inside a vintage observatory study"
+              width={1024}
+              height={1365}
               loading="lazy"
               decoding="async"
             />

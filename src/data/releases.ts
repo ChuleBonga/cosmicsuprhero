@@ -10,7 +10,9 @@ export type ReleaseTrack = {
   spotifyUrl?: string;
   appleMusicUrl?: string;
   isPreviewOnly?: boolean;
+  isAudioPending?: boolean;
   notes?: string;
+  fieldNote?: string;
   atmosphereCue?: string;
   visualCue?: string;
 };
@@ -61,6 +63,8 @@ export type Release = {
   motionLanguage?: string;
   frequencyTags?: string[];
   signalPhrase?: string;
+  sonicIdentity?: string;
+  shortDescription?: string;
   shortVisualDescription?: string;
   longArchiveNote?: string;
   ambience?: ReleaseAmbience;
@@ -77,6 +81,14 @@ export type Release = {
   externalLinks?: {
     appleMusic?: string;
     spotify?: string;
+    youtube?: string;
+    platformHub?: string;
+  };
+  platformLinks?: {
+    appleMusic?: string;
+    spotify?: string;
+    youtube?: string;
+    platformHub?: string;
   };
   iframeEmbeds?: {
     appleMusic?: string;
@@ -126,7 +138,9 @@ function createPendingTracks(releaseSlug: string, titles: string[], atmosphereCu
     spotifyUrl: "",
     appleMusicUrl: "",
     isPreviewOnly: false,
+    isAudioPending: true,
     notes: "Artist-owned audio file pending for native archive playback.",
+    fieldNote: "Artist-owned archive audio pending.",
     atmosphereCue,
     visualCue: atmosphereCue,
   }));

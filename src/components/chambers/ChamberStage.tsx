@@ -18,7 +18,7 @@ export function ChamberStage({ release, world }: ChamberStageProps) {
 
   return (
     <section className="chamber-stage section-shell" aria-labelledby="chamber-world-heading">
-      <ChamberVisualLayer visualAssets={release.visualAssets} variant={world.variant} />
+      <ChamberVisualLayer visualAssets={release.visualAssets} variant={world.variant} priority />
       <ChamberAtmosphere variant={world.variant} active={isActive} />
 
       <motion.div

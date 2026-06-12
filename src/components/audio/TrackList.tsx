@@ -13,7 +13,7 @@ export function TrackList({ tracks }: TrackListProps) {
     return (
       <div className="native-tracklist native-tracklist--empty">
         <Radio size={20} aria-hidden="true" />
-        <p>Native audio files are pending for this chamber. Platform exits remain open below.</p>
+        <p>Artist-owned archive audio is pending for this chamber. Platform exits remain open below.</p>
       </div>
     );
   }
@@ -28,7 +28,7 @@ export function TrackList({ tracks }: TrackListProps) {
             <button type="button" onClick={() => void playTrack(track, tracks)} aria-label={`Select ${track.title}`}>
               <span>{String(track.trackNumber).padStart(2, "0")}</span>
               <strong>{track.title}</strong>
-              <small>{track.duration || (track.audioSrc ? "Duration pending" : "Audio file pending")}</small>
+              <small>{track.duration || (track.audioSrc ? "Duration pending" : "Archive audio pending")}</small>
               <Play size={15} aria-hidden="true" />
             </button>
             {isActive && track.notes ? <p>{isPlaying ? "Transmission active" : track.notes}</p> : null}

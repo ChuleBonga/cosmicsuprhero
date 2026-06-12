@@ -7,9 +7,10 @@ export type ChamberVisualVariant = "cosmic" | "earth" | "shadow" | "night" | "aq
 type ChamberVisualLayerProps = {
   visualAssets?: ReleaseVisualAssets;
   variant?: ChamberVisualVariant;
+  priority?: boolean;
 };
 
-export function ChamberVisualLayer({ visualAssets, variant = "cosmic" }: ChamberVisualLayerProps) {
+export function ChamberVisualLayer({ visualAssets, variant = "cosmic", priority = false }: ChamberVisualLayerProps) {
   const prefersReducedMotion = usePrefersReducedMotion();
   const hasVideo = Boolean(visualAssets?.backgroundVideoWebm || visualAssets?.backgroundVideoMp4);
   const primaryImage = visualAssets?.heroImage ?? visualAssets?.posterImage;
@@ -45,7 +46,9 @@ export function ChamberVisualLayer({ visualAssets, variant = "cosmic" }: Chamber
           className={`chamber-visual-layer__poster${shouldRenderVideo ? " chamber-visual-layer__poster--reduced" : ""}`}
           src={primaryImage}
           alt=""
-          loading="lazy"
+          width={1600}
+          height={1000}
+          loading={priority ? "eager" : "lazy"}
           decoding="async"
         />
       ) : null}
@@ -55,6 +58,8 @@ export function ChamberVisualLayer({ visualAssets, variant = "cosmic" }: Chamber
           className="chamber-visual-layer__texture"
           src={visualAssets?.textureImage}
           alt=""
+          width={1600}
+          height={1000}
           loading="lazy"
           decoding="async"
         />

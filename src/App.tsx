@@ -1,9 +1,8 @@
 import { MotionConfig } from "framer-motion";
-import { useEffect, useMemo, useState } from "react";
+import { Suspense, lazy, useEffect, useMemo, useState } from "react";
 import { NowPlayingBar } from "./components/audio/NowPlayingBar";
 import { AmbientParticles } from "./components/AmbientParticles";
 import { ArchiveNav } from "./components/ArchiveNav";
-import { ChamberWorldPage } from "./components/ChamberWorldPage";
 import { EntrySignal } from "./components/EntrySignal";
 import { FeaturedSoilAndSun } from "./components/FeaturedSoilAndSun";
 import { FrequencyChambers } from "./components/FrequencyChambers";
@@ -18,6 +17,10 @@ import { TransmissionMarquee } from "./components/TransmissionMarquee";
 import { Vessel } from "./components/Vessel";
 import { AudioPlayerProvider } from "./context/AudioPlayerContext";
 import { getChamberWorld } from "./data/chamberWorlds";
+
+const ChamberWorldPage = lazy(() =>
+  import("./components/ChamberWorldPage").then((module) => ({ default: module.ChamberWorldPage })),
+);
 
 function getCurrentPath() {
   return window.location.pathname;
@@ -161,7 +164,15 @@ export default function App() {
           <ArchiveNav currentSlug={chamberRoute?.release.slug} />
           <AmbientParticles />
           {chamberRoute ? (
-            <ChamberWorldPage release={chamberRoute.release} world={chamberRoute.world} />
+            <Suspense
+              fallback={
+                <main className="route-suspense section-shell" role="status" aria-live="polite">
+                  Opening chamber...
+                </main>
+              }
+            >
+              <ChamberWorldPage release={chamberRoute.release} world={chamberRoute.world} />
+            </Suspense>
           ) : isChamberPath ? (
             <ChamberNotFound />
           ) : (

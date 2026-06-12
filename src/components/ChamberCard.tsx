@@ -72,6 +72,8 @@ export function ChamberCard({ release }: ChamberCardProps) {
           className="chamber-card__image pointer-events-none absolute inset-0 z-0 h-full w-full object-cover opacity-[0.14] mix-blend-screen brightness-[0.46] contrast-125 saturate-[0.72] transition-opacity duration-500 group-hover:opacity-[0.2]"
           src={cardImage}
           alt=""
+          width={900}
+          height={760}
           aria-hidden="true"
           loading="lazy"
           decoding="async"
@@ -82,6 +84,8 @@ export function ChamberCard({ release }: ChamberCardProps) {
           className="pointer-events-none absolute inset-0 z-[1] h-full w-full object-cover opacity-[0.08] mix-blend-overlay contrast-125 grayscale"
           src={visualAssets.textureImage}
           alt=""
+          width={900}
+          height={760}
           aria-hidden="true"
           loading="lazy"
           decoding="async"
