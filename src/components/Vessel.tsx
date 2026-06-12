@@ -28,6 +28,12 @@ export function Vessel() {
           transition={{ duration: 0.85 }}
           viewport={{ once: true, amount: 0.15 }}
         >
+          {artistIdentity.realPhotoSrc ? (
+            <div className="vessel-real-photo">
+              <img src={artistIdentity.realPhotoSrc} alt={artistIdentity.realPhotoAlt} loading="lazy" decoding="async" />
+              <span>Artist portrait</span>
+            </div>
+          ) : null}
           <div className="vessel-portrait">
             <img
               src="/assets/observatory/signal-listener-portrait.webp"
@@ -39,10 +45,6 @@ export function Vessel() {
               <span>Cinematic identity</span>
               <span>Memory / signal / archive</span>
             </div>
-          </div>
-          <div className="vessel-real-photo-slot">
-            <p>Approved real-photo slot prepared</p>
-            <span>Future path: /assets/artist/cosmicsuprhero-real-photo.webp</span>
           </div>
         </motion.div>
 
@@ -62,7 +64,8 @@ export function Vessel() {
             music from South African memory, beat-work, ambient soul, and spiritual reflection.
           </p>
           <p className="vessel-identity-note">
-            The real photo anchors the person. The cinematic portrait carries the transmitted identity. Both are needed.
+            The cinematic portrait carries the transmitted identity. An approved real press portrait can be added when
+            ready.
           </p>
           <motion.ul
             className="vessel-list mt-8 md:mt-10"

@@ -64,17 +64,25 @@ export function SignalReturn() {
 
         <nav aria-label="Cosmicsuprhero platform links" className="signal-links">
           {professionalActions.map((link) => (
-            <a href={link.href} target="_blank" rel="noreferrer" key={link.label}>
+            <a
+              href={link.href}
+              target="_blank"
+              rel="noreferrer"
+              key={link.label}
+              aria-label={`${link.label} opens an external platform hub`}
+            >
               <Briefcase size={20} aria-hidden="true" />
               <span>{link.label}</span>
+              <small>{link.status === "hub" ? "External / Linktree" : "External"}</small>
             </a>
           ))}
           {signalLinks.map((link) => {
             const Icon = link.icon;
             return (
-              <a href={link.href} target="_blank" rel="noreferrer" key={link.label}>
+              <a href={link.href} target="_blank" rel="noreferrer" key={link.label} aria-label={`${link.label} opens an external site`}>
                 <Icon size={20} aria-hidden="true" />
                 <span>{link.label}</span>
+                <small>External</small>
               </a>
             );
           })}

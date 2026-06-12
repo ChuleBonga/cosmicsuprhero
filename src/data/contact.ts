@@ -5,6 +5,9 @@ export const artistIdentity = {
     "Atmospheric instrumental music where South African memory, beat-work, ambient soul, and cosmic reflection meet.",
   originLine: "Port Elizabeth to Illinois",
   roles: ["Artist", "Producer", "Storyteller", "Sound alchemist"],
+  realPhotoSrc: "",
+  realPhotoAlt: "Cosmicsuprhero press portrait",
+  realPhotoFuturePath: "/assets/artist/cosmicsuprhero-real-photo.webp",
   professionalLine: "For press, booking, sync, collaboration, and platform contact, use the active hub until a direct email is confirmed.",
 };
 
