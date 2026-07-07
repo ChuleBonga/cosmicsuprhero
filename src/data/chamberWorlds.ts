@@ -1,3 +1,26 @@
+  {
+    slug: "game-dev-chamber",
+    variant: "sound",
+    route: "/chambers/game-dev-chamber",
+    worldTitle: "Game Dev Chamber",
+    subtitle: "Interactive Creation",
+    invocation: "Change the rules and see what plays back.",
+    spatialPremise:
+      "The chamber appears as a workshop where code floats in the air like physical objects, parameters exist as tangible sliders and dials, and the rules of the space are visible and editable. You can reach out and adjust gravity, change collision shapes, or rewrite behavior functions and see the world respond immediately.",
+    emotionalPhysics: [
+      "Creation feels immediate when you can see and touch the code.",
+      "Rules become tangible when you can adjust them with your hands.",
+      "Play emerges naturally from systems you can understand and modify.",
+    ],
+    fieldNotes: [
+      "The best game mechanics often emerge from playful experimentation.",
+      "When you can see the code, you start thinking in systems.",
+      "Immediate feedback turns abstract concepts into intuitive understanding.",
+    ],
+    artifactNotes: ["Floating code blocks", "Interactive sliders", "Visible collision shapes", "Parameter dials"],
+    thresholdLabel: "Enter the development cycle",
+    returnSignal: "Return from iteration",
+  }
 import type { ChamberVisualVariant } from "../components/ChamberVisualLayer";
 import type { Release } from "./releases";
 import { releases } from "./releases";
@@ -15,6 +38,29 @@ export type ChamberWorld = {
   artifactNotes: string[];
   thresholdLabel: string;
   returnSignal: string;
+  {
+    slug: "game-dev-chamber",
+    variant: "aquarius",
+    route: "/chambers/game-dev-chamber",
+    worldTitle: "Game Dev Chamber",
+    subtitle: "Interactive Creation Chamber",
+    invocation: "A chamber where code becomes play and rules become playthings.",
+    spatialPremise:
+      "The chamber resembles a game development studio crossed with a playground: floating code blocks, interactive rule sliders, collision geometry made visible, and physics parameters you can touch and reshape.",
+    emotionalPhysics: [
+      "Creation is iteration played at full speed.",
+      "Rules are most visible when you break them.",
+      "Play emerges from constraint, not freedom."
+    ],
+    fieldNotes: [
+      "Every game is a universe with its own laws of physics.",
+      "The best mechanics feel discovered, not designed.",
+      "Debugging is just talking to your creation until it makes sense."
+    ],
+    artifactNotes: ["Collision wireframes", "Variable watchers", "Frame rate dials", "Input visualization"],
+    thresholdLabel: "Enter the play space",
+    returnSignal: "Return from play mode"
+  }
 };
 
 export const chamberWorlds: ChamberWorld[] = [
@@ -202,3 +248,49 @@ export function getAdjacentChambers(currentRelease: Release) {
 
   return { previous, next };
 }
+  {
+    slug: "game-dev-chamber",
+    variant: "aquarius",
+    route: "/chambers/game-dev-chamber",
+    worldTitle: "Game Dev Chamber",
+    subtitle: "Interactive Creation Chamber",
+    invocation: "A chamber where code becomes play and rules become playthings.",
+    spatialPremise:
+      "The chamber resembles a game development studio crossed with a playground: floating code blocks, interactive rule sliders, collision geometry made visible, and physics parameters you can touch and reshape.",
+    emotionalPhysics: [
+      "Creation is iteration played at full speed.",
+      "Rules are most visible when you break them.",
+      "Play emerges from constraint, not freedom."
+    ],
+    fieldNotes: [
+      "Every game is a universe with its own laws of physics.",
+      "The best mechanics feel discovered, not designed.",
+      "Debugging is just talking to your creation until it makes sense."
+    ],
+    artifactNotes: ["Collision wireframes", "Variable watchers", "Frame rate dials", "Input visualization"],
+    thresholdLabel: "Enter the play space",
+  {
+    slug: "game-dev-chamber",
+    variant: "aquarius",
+    route: "/chambers/game-dev-chamber",
+    worldTitle: "Game Dev Chamber",
+    subtitle: "Interactive Creation Chamber",
+    invocation: "A chamber where code becomes play and rules become playthings.",
+    spatialPremise:
+      "The chamber resembles a game development studio crossed with a playground: floating code blocks, interactive rule sliders, collision geometry made visible, and physics parameters you can touch and reshape.",
+    emotionalPhysics: [
+      "Creation is iteration played at full speed.",
+      "Rules are most visible when you break them.",
+      "Play emerges from constraint, not freedom."
+    ],
+    fieldNotes: [
+      "Every game is a universe with its own laws of physics.",
+      "The best mechanics feel discovered, not designed.",
+      "Debugging is just talking to your creation until it makes sense."
+    ],
+    artifactNotes: ["Collision wireframes", "Variable watchers", "Frame rate dials", "Input visualization"],
+    thresholdLabel: "Enter the play space",
+    returnSignal: "Return from play mode"
+  },
+    returnSignal: "Return from play mode"
+  },

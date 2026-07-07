@@ -594,3 +594,63 @@ export const platformLinks = {
   instagram: "https://instagram.com/cosmicsuprhero",
   elasticStage: "https://elasticstage.com/cosmicsuprhero",
 };
+  {
+    slug: "game-dev-chamber",
+    title: "Game Dev Chamber",
+    year: "2025",
+    type: "Album",
+    chamber: "Interactive Creation",
+    mood: "iterative, playful, experimental, systemic",
+    visual: "floating code blocks, interactive sliders, visible collision shapes, parameter dials",
+    motion: "playful, iterative, responsive",
+    chamberRole: "Interactive creation chamber",
+    emotionalIdentity: "iteration, playfulness, systems thinking, emergence",
+    visualLanguage: "code as visible objects, interactive parameters, collision geometry, feedback loops",
+    motionLanguage: "rapid iteration, responsive feedback, playful experimentation",
+    frequencyTags: ["Iteration", "Play", "Systems", "Emergence"],
+    signalPhrase: "Change the rules and see what plays back.",
+    shortVisualDescription: "Floating code, interactive sliders, visible collision shapes.",
+    longArchiveNote:
+      "The Game Dev Chamber is a space where creation is immediate and tangible. Code becomes visible objects, rules become sliders you can turn, and collisions become visible shapes you can reshape in real time. It\'s a playground for understanding how games work from the inside out.",
+    ambience: {
+      label: "Iteration loop pending",
+      description: "A future tight loop of keyboard clicks, soft notification chimes, and the hum of rapid recompilation.",
+    },
+    uiSoundProfile: {
+      hover: "code-hover",
+      enter: "rule-change",
+      playbackStart: "compile-start",
+    },
+    description: "An interactive chamber where game development concepts become tangible and playable.",
+    appleUrl: "https://music.apple.com/za/album/game-dev-chamber/placeholder",
+    spotifyUrl: "",
+    externalLinks: {
+      appleMusic: "https://music.apple.com/za/album/game-dev-chamber/placeholder",
+    },
+    embedUrl: "",
+    iframeEmbeds: {
+      appleMusic: "https://embed.music.apple.com/za/album/game-dev-chamber/placeholder",
+    },
+    visualAssets: {
+      heroImage: "/assets/chambers/game-dev-chamber/game-dev-chamber-hero.webp",
+      secondaryImage: "/assets/chambers/game-dev-chamber/game-dev-chamber-portrait.webp",
+      posterImage: "/assets/chambers/game-dev-chamber/poster.webp",
+      textureImage: "/assets/chambers/game-dev-chamber/texture.webp",
+      credit: "Game Dev Chamber chamber visuals generated for Cosmicsuprhero",
+      license: "Owned/generated project asset",
+      sourceUrl: "/assets/chambers/game-dev-chamber/game-dev-chamber-hero.webp",
+      generationNote: "Generated cinematic asset; use as mythic archive imagery, not documentary photography.",
+      readiness: "candidate",
+      focusPosition: "50% 50%",
+      mobileFocusPosition: "50% 50%",
+    },
+    visualPrompt:
+      "Interactive creation chamber with floating code blocks, visible collision shapes, interactive parameter sliders, and playful experimentation elements.",
+    videoPrompt:
+      "Floating code blocks rearranging themselves, collision shapes responding to parameter changes, and playful iterations of game mechanics.",
+    assetCredit: {
+      credit: "Game Dev Chamber chamber visuals generated for Cosmicsuprhero",
+      license: "Owned/generated project asset",
+      sourceUrl: "/assets/chambers/game-dev-chamber/game-dev-chamber-hero.webp",
+    },
+    status: "Main Chamber",
