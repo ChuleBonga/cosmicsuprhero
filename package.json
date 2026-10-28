@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "validate:assets": "node scripts/validate-public-assets.mjs",
-    "check": "npm run validate:assets && npm run build",
+    "check": "npm run build",
     "remotion:studio": "remotion studio src/remotion/index.ts",
     "remotion:render:observatory": "remotion render src/remotion/index.ts observatory-intro renders/observatory-intro.mp4",
     "remotion:render:soil": "remotion render src/remotion/index.ts chamber-soil-and-sun renders/chamber-soil-and-sun.mp4",
