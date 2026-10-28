@@ -41,11 +41,11 @@ a{color:inherit;text-decoration:none}
 .chapter-steps span.done{background:#d5c0a2;color:var(--wine);border-color:#d5c0a2}
 .play-hint{font-size:11px;letter-spacing:.005em;color:#806a73;text-align:right;line-height:1.5}
 .art-area{min-width:0;min-height:680px;position:relative;display:flex;align-items:center;justify-content:center;padding:50px clamp(24px,4vw,70px) 32px}
-.gold-band{position:absolute;top:47%;left:-15%;right:-12%;height:20%;background:#ccaf72;opacity:.78;z-index:-1}
+.gold-band{position:absolute;top:47%;left:-15%;right:-12%;height:20%;background:#d3b97d;opacity:.93;z-index:-1}
 .world-wrapper{width:min(100%,620px)}
-.painting{position:relative;width:100%;aspect-ratio:1/1;overflow:hidden;isolation:isolate;box-shadow:0 12px 50px #32152a20;background:var(--blue);touch-action:manipulation}
-.painting-image{width:100%;height:100%;display:block;object-fit:cover;transition:transform .95s cubic-bezier(.18,.6,.1,1),filter .95s;user-select:none;-webkit-user-drag:none}
-.painting[data-chapter="2"] .painting-image{transform:scale(1.065);filter:contrast(1.03) saturate(.96)}
+.painting{position:relative;width:min(100%,510px);margin-inline:auto;aspect-ratio:0.6713;overflow:hidden;isolation:isolate;box-shadow:0 12px 50px #32152a20;background:var(--blue);touch-action:manipulation}
+.painting-image{position:absolute;left:-88.8%;top:-33.55%;width:277.8%;height:auto;display:block;max-width:none;transition:transform .95s cubic-bezier(.18,.6,.1,1),filter .95s;user-select:none;-webkit-user-drag:none}
+.painting[data-chapter="2"] .painting-image{transform:scale(1.035);filter:contrast(1.03) saturate(.96)}
 .painting[data-chapter="3"] .painting-image{transform:scale(1.012);filter:saturate(1.1)}
 .painting-wash{position:absolute;inset:0;pointer-events:none;background:#203a8c0c;mix-blend-mode:multiply}
 .painting-horizon{position:absolute;inset:0;pointer-events:none;background:linear-gradient(transparent 76%,#190d2d77);opacity:.7}
@@ -126,7 +126,7 @@ footer{background:var(--wine);color:#f9eddf;padding:45px clamp(20px,6vw,100px) 2
 .art-area{order:3;min-height:0;padding:21px 18px 0;display:block}
 .world-wrapper{width:min(100%,480px);margin:0 auto}
 .gold-band{top:32%;left:0;right:0;height:24%}
-.painting{aspect-ratio:1/1}
+.painting{aspect-ratio:0.6713}
 .painting-feedback{font-size:24px;bottom:4%}
 .stage-subtitle{margin-top:8px;font-size:8px}
 .painting-chapter{font-size:8px;top:11px;left:11px;padding:6px 8px}
@@ -150,4 +150,5 @@ footer{background:var(--wine);color:#f9eddf;padding:45px clamp(20px,6vw,100px) 2
 .album-tracks li{font-size:26px}
 }
 @media(max-width:400px){.play-intro h1{font-size:clamp(54px,11.8vw,66px)}.artist-byline{margin-top:11px}.art-area{padding-top:18px}.mobile-story{padding-top:15px;min-height:98px}.edition{padding-top:17px}}
+.painting--image-error{background:#223d8b}.painting--image-error .painting-image{display:none}.painting--image-error::before{content:'Artwork temporarily unavailable';position:absolute;inset:20% 0 auto;color:#fff;font-family:var(--serif);font-size:30px;text-align:center;z-index:1}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
