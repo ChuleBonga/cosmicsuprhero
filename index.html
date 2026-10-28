@@ -65,36 +65,90 @@
   </div>
 </section>
 
-<section class="experience" id="experience" aria-labelledby="experience-title">
+<section class="experience immersive-work" id="experience" aria-labelledby="experience-title">
   <div class="exp-heading">
-    <div class="section-index">01 / Play a little</div>
-    <div><h2 id="experience-title">THE LISTENING WINDOW</h2><p>Some things become clearer when we make room for them. Slide the two leaves apart. Look through. Nothing to win, nothing to get wrong.</p></div>
+    <div class="section-index">01 / An invitation</div>
+    <div><h2 id="experience-title">A PLACE TO LISTEN.</h2><p>Three small encounters with light, memory, and the ground beneath us. Move at your own pace. Nothing is timed.</p></div>
   </div>
-  <div class="exp-frame" id="exp-frame" aria-label="Interactive listening window">
-    <div class="exp-world" aria-hidden="true"></div><div class="exp-shade" id="exp-shade" aria-hidden="true"></div>
-    <div class="exp-end" id="exp-end" aria-hidden="true"><span>The outside comes closer</span><strong>YOU ARE STILL HERE.</strong></div>
-    <div class="gate left" id="gate-left" aria-hidden="true"></div><div class="gate right" id="gate-right" aria-hidden="true"></div>
-    <div class="exp-grain" aria-hidden="true"></div><div class="exp-crosshair" aria-hidden="true"></div>
-    <span class="exp-label">An open window / Study 01</span>
+  <nav class="journey-nav" aria-label="Listening experience chapters">
+    <button class="journey-nav__step is-current" type="button" data-go-scene="1" aria-current="step"><span>01</span> Light</button>
+    <button class="journey-nav__step" type="button" data-go-scene="2"><span>02</span> Memory</button>
+    <button class="journey-nav__step" type="button" data-go-scene="3"><span>03</span> Earth</button>
+    <a class="journey-nav__album" href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" target="_blank" rel="noopener noreferrer">Listen to the album ↗</a>
+  </nav>
+
+  <div class="journey-scene" data-scene="1">
+    <div class="journey-scene__note"><span>01 — The opening</span><strong>THE DISTANCE</strong><p>There is a view beyond this room. Move the two leaves and decide how much to let in.</p></div>
+    <div class="exp-frame" id="exp-frame" aria-label="Moveable architectural shutters; drag sideways or use the slider below" tabindex="0">
+      <div class="exp-world" aria-hidden="true"></div><div class="exp-shade" id="exp-shade" aria-hidden="true"></div>
+      <div class="exp-end" id="exp-end" aria-hidden="true"><span>A view of the earth</span><strong>THE WORLD IS STILL HERE.</strong></div>
+      <div class="gate left" id="gate-left" aria-hidden="true"></div><div class="gate right" id="gate-right" aria-hidden="true"></div>
+      <div class="exp-grain" aria-hidden="true"></div><div class="exp-crosshair" aria-hidden="true"></div>
+      <span class="exp-label">Drag horizontally to open</span>
+    </div>
+    <div class="exp-controls">
+      <div class="control-status"><span class="micro">The aperture</span><strong id="state-label" aria-live="polite">Withheld</strong><small><output id="percentage" for="aperture">00</output> / 100</small></div>
+      <div class="control-range">
+        <label for="aperture"><span>Close</span><span>Move the light</span><span>Open</span></label>
+        <input type="range" id="aperture" min="0" max="100" step="1" value="0" aria-describedby="control-hint"/>
+        <div id="control-hint" class="control-hint">Slide, swipe across the room, or use the buttons.</div>
+      </div>
+      <div class="control-buttons">
+        <button id="close-step" type="button" aria-label="Close the window by ten percent">−</button><button id="open-step" type="button" aria-label="Open the window by ten percent">+</button><button id="reset-window" class="quiet-toggle" type="button">Reset</button>
+      </div>
+    </div>
+    <div class="journey-next"><span>When you're ready</span><button data-next-scene="2" type="button">Enter the memory room <span aria-hidden="true">↗</span></button></div>
   </div>
-  <div class="exp-controls">
-    <div class="control-status">
-      <span class="micro">The aperture</span>
-      <strong id="state-label" aria-live="polite">Withheld</strong>
-      <small><output id="percentage" for="aperture">00</output> / 100</small>
+
+  <div class="journey-scene" data-scene="2" hidden>
+    <div class="journey-scene__note"><span>02 — What we carry</span><strong>THE HUMAN WEIGHT</strong><p>Cosmic distance meets human history. Turn one of the three pages. Each holds a part of the album's story.</p></div>
+    <div class="memory-room">
+      <div class="memory-room__image" id="memory-image" role="img" aria-label="Atmospheric archive artwork showing night and distance"></div>
+      <div class="memory-room__paper">
+        <span class="micro memory-room__index">An archive of questions / 2026</span>
+        <div class="memory-room__tabs" role="group" aria-label="Choose a memory">
+          <button data-memory="distance" type="button" aria-pressed="true">Distance</button>
+          <button data-memory="inheritance" type="button" aria-pressed="false">Inheritance</button>
+          <button data-memory="belief" type="button" aria-pressed="false">Belief</button>
+        </div>
+        <div class="memory-room__body" aria-live="polite">
+          <span id="memory-number">I / III</span>
+          <h3 id="memory-title">Between two places</h3>
+          <p id="memory-copy">From Port Elizabeth to a life far away, there are distances that no map can describe. The music doesn't resolve them. It lets them be heard.</p>
+        </div>
+        <div class="memory-room__foot">These are album themes, not a test. There is no right answer.</div>
+      </div>
     </div>
-    <div class="control-range">
-      <label for="aperture"><span>Close</span><span>Move the light</span><span>Open</span></label>
-      <input type="range" id="aperture" min="0" max="100" step="1" value="0" aria-describedby="control-hint"/>
-      <div id="control-hint" class="control-hint">Move the slider, or use the buttons. The room opens as you move.</div>
+    <div class="journey-next"><span>You can revisit any page</span><button data-next-scene="3" type="button">Go outside <span aria-hidden="true">↗</span></button></div>
+  </div>
+
+  <div class="journey-scene" data-scene="3" hidden>
+    <div class="journey-scene__note"><span>03 — The return</span><strong>THE GROUND</strong><p>There is nowhere else you need to arrive. Bring the light forward, or simply spend a moment here.</p></div>
+    <div class="return-field" id="return-field" style="--daylight:.16">
+      <div class="return-field__background" aria-hidden="true"></div>
+      <div class="return-field__veil" aria-hidden="true"></div>
+      <div class="return-field__foreground">
+        <span class="micro">Port Elizabeth / Earth / Here</span>
+        <p id="return-line" aria-live="polite">A place, just before morning.</p>
+      </div>
     </div>
-    <div class="control-buttons">
-      <button id="close-step" type="button" aria-label="Close the window by ten percent">−</button>
-      <button id="open-step" type="button" aria-label="Open the window by ten percent">+</button>
-      <button id="reset-window" class="quiet-toggle" type="button">Reset</button>
+    <div class="return-controls">
+      <div>
+        <label for="daylight">Bring daylight into the room <output id="daylight-value" for="daylight">16%</output></label>
+        <input id="daylight" type="range" min="0" max="100" value="16" step="1"/>
+      </div>
+      <button id="bring-daylight" type="button">Let the morning in <span aria-hidden="true">↗</span></button>
+    </div>
+    <div class="journey-finale">
+      <div class="journey-finale__line">THE AWAKENING IS NOT AN EXIT.</div>
+      <div><h3>IT IS A RETURN.</h3><p>The music continues beyond this room.</p></div>
+      <div class="journey-finale__actions">
+        <a class="action primary" href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" target="_blank" rel="noopener noreferrer">Hear Arcturian Awakening <span class="arrow" aria-hidden="true">↗</span></a>
+        <button id="restart-journey" type="button">Begin again</button>
+      </div>
     </div>
   </div>
-  <div class="control-endnote"><p>This is a visual listening exercise. To hear the actual record, use the album link. No simulated music is presented as part of the release.</p><a href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" target="_blank" rel="noopener noreferrer">Open Arcturian Awakening ↗</a></div>
+  <div class="control-endnote"><p>Made for quiet attention. No countdown, scoring, or compulsory audio. The album itself plays through your preferred music service.</p><a href="#album">About the record ↓</a></div>
 </section>
 
 <section class="movements" id="story" aria-labelledby="story-title">
