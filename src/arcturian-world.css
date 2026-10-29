@@ -51,11 +51,11 @@ a{color:inherit;text-decoration:none}
 .painting-horizon{position:absolute;inset:0;pointer-events:none;background:linear-gradient(transparent 76%,#190d2d77);opacity:.7}
 .stage-target,.echo,.waypoint{z-index:3;position:absolute;touch-action:manipulation;display:grid;place-items:center;background:none;border:0;color:white}
 .sun-target{left:54%;top:17%;width:17%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%}
-.sun-target-ring{border:1px solid #fff9d9;width:100%;height:100%;border-radius:50%;display:block;box-shadow:0 0 0 7px #ffffff12;animation:sun-wake 2.7s ease-in-out infinite}
-.sun-target:focus-visible .sun-target-ring,.sun-target:hover .sun-target-ring{border-width:3px}
-.sun-target-label{position:absolute;top:calc(100% + 15px);font-size:10px;letter-spacing:.18em;white-space:nowrap;background:#171b49a8;padding:5px 8px;font-weight:700}
+.sun-target-ring{border:1px solid transparent;width:100%;height:100%;border-radius:50%;display:block;transition:border-color .2s,box-shadow .2s}
+.sun-target:focus-visible .sun-target-ring,.sun-target:hover .sun-target-ring{border-color:#fff4dc;box-shadow:0 0 0 4px #fff3d633}
+.sun-target-label{display:none}
 @keyframes sun-wake{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.09);opacity:1}}
-.painting-chapter{position:absolute;z-index:4;top:17px;left:17px;color:#fff4dc;background:#1c225a96;padding:8px 10px;font-weight:700;font-size:10px;letter-spacing:.17em;pointer-events:none}
+.painting-chapter{display:none;position:absolute;z-index:4;top:17px;left:17px;color:#fff4dc;background:#1c225a96;padding:8px 10px;font-weight:700;font-size:10px;letter-spacing:.17em;pointer-events:none}
 .painting-feedback{position:absolute;z-index:4;left:4%;right:4%;bottom:4%;color:#fff4df;font-family:var(--serif);font-size:clamp(21px,2.5vw,36px);text-align:center;line-height:1.1;text-shadow:0 2px 12px #0c164bb8;pointer-events:none;min-height:1em}
 .artwork-full-link{display:inline-flex;margin:0 18px 10px 0;font:600 12px/1.5 var(--sans);text-decoration:underline;text-underline-offset:5px;padding:10px 0}
 .stage-subtitle{display:flex;justify-content:space-between;gap:12px;color:#83596c;font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-top:13px}
