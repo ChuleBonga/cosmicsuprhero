@@ -1,36 +1,15 @@
 {
-  "name": "cosmicsuprhero-observatory",
-  "private": true,
+  "name": "arcturian-awakening-game-preview",
   "version": "0.1.0",
+  "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "validate:assets": "node scripts/validate-public-assets.mjs",
-    "check": "npm run build",
-    "remotion:studio": "remotion studio src/remotion/index.ts",
-    "remotion:render:observatory": "remotion render src/remotion/index.ts observatory-intro renders/observatory-intro.mp4",
-    "remotion:render:soil": "remotion render src/remotion/index.ts chamber-soil-and-sun renders/chamber-soil-and-sun.mp4",
-    "remotion:render:all": "node scripts/render-remotion-compositions.mjs"
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc --project tsconfig.game.json && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "check:budget": "node scripts/check-budget.mjs",
+    "check": "npm run build && npm run check:budget"
   },
-  "dependencies": {
-    "framer-motion": "^12.23.24",
-    "gsap": "^3.15.0",
-    "lucide-react": "^0.468.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
-  },
-  "devDependencies": {
-    "@remotion/cli": "^4.0.475",
-    "@types/react": "^18.3.24",
-    "@types/react-dom": "^18.3.7",
-    "@vitejs/plugin-react": "^5.0.4",
-    "autoprefixer": "^10.4.21",
-    "postcss": "^8.5.6",
-    "remotion": "^4.0.475",
-    "tailwindcss": "^3.4.18",
-    "typescript": "^5.9.3",
-    "vite": "^5.4.21"
-  }
+  "dependencies": {"phaser":"3.90.0"},
+  "devDependencies": {"typescript":"5.9.3","vite":"5.4.21"}
 }
