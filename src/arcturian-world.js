@@ -3,6 +3,110 @@
 const $=(q,root=document)=>root.querySelector(q);
 const $$=(q,root=document)=>Array.from(root.querySelectorAll(q));
 const state={chapter:1,echoes:new Set(),waypoint:0,completed:false};
+// The only public music asset is the explicitly approved 45-second excerpt.
+const music=$("#awaken-audio");
+const musicButton=$("#music-toggle");
+const musicAction=$("#music-action");
+const musicIcon=$("#music-icon");
+const musicStatus=$("#music-status");
+const musicTime=$("#music-time");
+const musicScrub=$("#music-scrub");
+let soundDeclined=false;
+let musicFrame=0;
+let lastMoment="";
+const excerptLength=45;
+function fmtClock(t){
+  const n=Math.max(0,Math.floor(Number.isFinite(t)?t:0));
+  return Math.floor(n/60)+":"+String(n%60).padStart(2,"0");
+}
+function updateMusicButton(){
+  const active=!music.paused&&!music.ended;
+  musicButton.setAttribute("aria-pressed",String(active));
+  musicAction.textContent=active?"Pause":(music.ended?"Replay":music.currentTime>0?"Resume":"Listen");
+  musicIcon.textContent=active?"Ⅱ":"▶";
+  musicButton.setAttribute("aria-label",active?"Pause Awaken Now excerpt":(music.ended?"Replay Awaken Now excerpt":"Play Awaken Now excerpt"));
+}
+function visualMoment(time){
+  if(time>=40.5)return "reveal";
+  if(time>=28.3)return "home";
+  if(time>=12.3)return "crossing";
+  return "arrival";
+}
+function syncMusic(){
+  let t=Math.min(excerptLength,Math.max(0,music.currentTime||0));
+  if(!document.activeElement?.isSameNode(musicScrub)){musicScrub.value=String(t);}
+  musicTime.textContent=fmtClock(t);
+  musicScrub.style.setProperty("--scrub-progress",(t/excerptLength*100)+"%");
+  const moment=visualMoment(t);
+  if(moment!==lastMoment){
+    lastMoment=moment;
+    painting.dataset.audioMoment=moment;
+  }
+  const light=music.paused?.08:Math.min(.52,.12+t/45*.34);
+  const intensity=music.paused?0:(.3+.16*Math.sin(t*.9)**2);
+  painting.style.setProperty("--music-ray",String(light));
+  painting.style.setProperty("--music-energy",String(intensity));
+}
+function liveMusicTick(){
+  syncMusic();
+  if(!music.paused&&!music.ended){musicFrame=requestAnimationFrame(liveMusicTick);}
+}
+async function startMusic(){
+  soundDeclined=false;
+  try{
+    if(music.ended||music.currentTime>=excerptLength-.25)music.currentTime=0;
+    const pending=music.play();
+    if(pending&&typeof pending.then==="function")await pending;
+    musicStatus.textContent="Playing a 45-second excerpt of Awaken Now.";
+    updateMusicButton();
+  }catch(_){
+    musicStatus.textContent="Preview audio unavailable here. You can continue the journey without sound.";
+    updateMusicButton();
+  }
+}
+function pauseMusic(){
+  soundDeclined=true;
+  music.pause();
+  musicStatus.textContent="Paused. Resume whenever you choose.";
+  updateMusicButton();
+}
+musicButton.addEventListener("click",()=>{
+  if(music.paused||music.ended){void startMusic();}
+  else{pauseMusic();}
+});
+musicScrub.addEventListener("input",()=>{
+  if(music.readyState===0){music.load();}
+  try{if(music.seekable.length||music.readyState>0)music.currentTime=Number(musicScrub.value);}catch(_){}
+  syncMusic();
+});
+music.addEventListener("play",()=>{
+  painting.classList.add("audio-playing");
+  cancelAnimationFrame(musicFrame);
+  musicFrame=requestAnimationFrame(liveMusicTick);
+  updateMusicButton();
+});
+music.addEventListener("pause",()=>{
+  painting.classList.remove("audio-playing");
+  cancelAnimationFrame(musicFrame);
+  syncMusic();
+  updateMusicButton();
+});
+music.addEventListener("timeupdate",syncMusic);
+music.addEventListener("loadedmetadata",syncMusic);
+music.addEventListener("waiting",()=>{if(!music.paused)musicStatus.textContent="Loading the music preview…";});
+music.addEventListener("playing",()=>{musicStatus.textContent="Playing a 45-second excerpt of Awaken Now.";});
+music.addEventListener("ended",()=>{
+  painting.classList.remove("audio-playing");
+  cancelAnimationFrame(musicFrame);
+  musicStatus.textContent="The excerpt has ended. Replay it or continue to pre-save.";
+  updateMusicButton();
+});
+music.addEventListener("error",()=>{
+  painting.classList.remove("audio-playing");
+  cancelAnimationFrame(musicFrame);
+  musicStatus.textContent="The music is temporarily unavailable. The journey and pre-save still work.";
+  updateMusicButton();
+});
 const painting=$("#painting");
 const count=$("#echo-count");
 const feedback=$("#painting-feedback");
@@ -41,6 +145,7 @@ function setChapter(chapter){
 }
 function startEncounter(){
   if(state.chapter!==1)return;
+  if(!soundDeclined&&music.paused&&!music.ended){void startMusic();}
   cue("First Contact");
   setChapter(2);
 }
@@ -109,6 +214,11 @@ function completeJourney(){
 }
 function resetJourney(){
   state.chapter=1;state.echoes.clear();state.waypoint=0;state.completed=false;
+  music.pause();
+  try{music.currentTime=0;}catch(_){}
+  soundDeclined=false;
+  syncMusic();
+  musicStatus.textContent="Tap Listen, or touch the sun to begin with music.";
   line.setAttribute("points","54,17");
   count.textContent="00 / 03";
   entries.replaceChildren();
