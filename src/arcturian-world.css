@@ -153,3 +153,43 @@ footer{background:var(--wine);color:#f9eddf;padding:45px clamp(20px,6vw,100px) 2
 @media(max-width:400px){.play-intro h1{font-size:clamp(54px,11.8vw,66px)}.artist-byline{margin-top:11px}.art-area{padding-top:18px}.mobile-story{padding-top:15px;min-height:98px}.edition{padding-top:17px}}
 .painting--image-error{background:#223d8b}.painting--image-error .painting-image{display:none}.painting--image-error::before{content:'Artwork temporarily unavailable';position:absolute;inset:20% 0 auto;color:#fff;font-family:var(--serif);font-size:30px;text-align:center;z-index:1}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+
+
+/* Awaken Now: the music is the interface's clock, not a generic page soundtrack. */
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}
+.music-strip{margin:clamp(24px,4.5vh,58px) 0 0;max-width:470px;border-top:1px solid #bfa9ae;border-bottom:1px solid #bfa9ae;padding:16px 0 13px;color:var(--wine);position:relative}
+.music-strip__heading{display:flex;justify-content:space-between;align-items:baseline;gap:15px;margin-bottom:13px}
+.music-strip__eyebrow{font:600 9px/1.4 var(--sans);text-transform:uppercase;letter-spacing:.085em;color:#81616d}
+.music-strip__heading strong{font:italic 400 clamp(19px,2vw,27px)/1 var(--serif);white-space:nowrap}
+.music-strip__transport{display:flex;align-items:center;gap:15px}
+.music-toggle{min-width:100px;min-height:46px;display:inline-flex;align-items:center;justify-content:center;gap:9px;border:1px solid var(--wine);background:var(--wine);color:#fff7ea;font:700 11px var(--sans);letter-spacing:.02em;padding:11px 13px;transition:background .15s}
+.music-toggle:hover{background:#743252}
+.music-toggle:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+#music-icon{font-size:12px}
+.music-strip__timeline{flex:1;min-width:0}
+#music-scrub{width:100%;height:27px;margin:0;cursor:pointer;accent-color:#6a294e}
+.music-strip__time{display:flex;align-items:center;justify-content:space-between;gap:15px;font:600 10px/1.2 var(--sans);color:#7b5c68;letter-spacing:.02em}
+.music-status{min-height:1.7em;margin-top:8px;font:400 10px/1.6 var(--sans);color:#7a626a}
+.painting{--music-energy:0;--music-ray:.06;--music-rise:0px}
+.painting::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;opacity:var(--music-ray);background:linear-gradient(145deg,#fdab523b 0%,#ffa23f12 36%,transparent 72%);mix-blend-mode:screen;transition:opacity .6s ease}
+.painting[data-audio-moment="crossing"]::after{background:linear-gradient(160deg,#ffb34e42 0%,#bb82a128 55%,transparent 80%)}
+.painting[data-audio-moment="home"]::after{background:linear-gradient(170deg,#ffcf7f53,transparent 60%)}
+.painting[data-audio-moment="reveal"]::after{background:linear-gradient(155deg,#ffe0a368,transparent 67%)}
+.painting[data-audio-moment="reveal"] .painting-image{filter:saturate(1.05) brightness(1.08)}
+.painting.audio-playing .painting-wash{opacity:calc(.96 - var(--music-energy)*.18)}
+.gold-band{transition:filter 1.2s}
+.play:has(.painting.audio-playing) .gold-band{filter:brightness(calc(1 + var(--music-energy)*.15))}
+@media(max-width:760px){
+  .music-strip{order:3;margin:19px 20px 0;padding:11px 0 9px;max-width:none}
+  .music-strip__eyebrow{font-size:9px}
+  .music-strip__heading strong{font-size:23px}
+  .music-strip__heading{margin-bottom:8px}
+  .music-toggle{min-height:44px;min-width:94px}
+  .music-strip__time{font-size:9px}
+  .music-status{font-size:10px;margin-top:5px}
+  .mobile-story{order:4;min-height:74px;padding:13px 22px 9px}
+  .art-area{order:5;padding-top:13px}
+}
+@media(prefers-reduced-motion:reduce){
+  .painting::after,.music-toggle,.gold-band{transition:none!important}
+}
