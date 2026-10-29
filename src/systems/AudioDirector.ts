@@ -39,7 +39,7 @@ export class AudioDirector {
     }catch{this.setStatus('unavailable')}
   }
   async startFromGesture(){this.permission=true;this.setup();if(this.userMuted)return;
-    try{await this.ctx?.resume(); await this.bed.play();this.setStatus('playing');this.setAwakening(this.open);}catch{this.setStatus('unavailable');}
+    try{const resume=this.ctx?.resume();const playing=this.bed.play();await Promise.all([resume,playing]);this.setStatus('playing');this.setAwakening(this.open);}catch{this.setStatus('unavailable');}
   }
   setAwakening(amount:number){this.open=Math.min(1,Math.max(0,amount));if(!this.ctx)return;
     const now=this.ctx.currentTime;
