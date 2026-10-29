@@ -1,0 +1,4 @@
+import fs from 'node:fs';import path from 'node:path';import zlib from 'node:zlib';
+const root='dist';function walk(p){return fs.readdirSync(p,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(path.join(p,e.name)):[path.join(p,e.name)]);}const files=walk(root);const gz=p=>zlib.gzipSync(fs.readFileSync(p)).length;
+// Initial interactive is the HTML+shell JS/CSS. Phaser is a deferred chunk loaded by a user action. Audio is fetched only after that gesture.
+const initial=files.filter(f=>/\.(html|js|css)$/.test(f)&&!f.includes('phaser-engine'));const initialBytes=initial.reduce((n,p)=>n+gz(p),0);const report={initialCompressedBytes:initialBytes,limitBytes:3000000,passes:initialBytes<3000000,assets:files.filter(f=>/\.(html|js|css)$/.test(f)).map(p=>({path:p,raw:fs.statSync(p).size,gzip:gz(p)}))};fs.writeFileSync(path.join(root,'budget-report.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));if(!report.passes)process.exitCode=1;

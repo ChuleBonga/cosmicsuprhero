@@ -1,75 +1,56 @@
-# Cosmicsuprhero Sonic Observatory
+# Arcturian Awakening — playable audio game scaffold
 
-Official first-version website for Cosmicsuprhero: a chamber-based music archive where each release is treated as an emotional room, not a conventional discography card.
+**This branch is a private Vercel preview and is NOT the public website.** Do not merge into `main` until the physical-phone vertical slice passes the section 18 gates and the artist approves it.
 
-Live site: https://cosmicsuprhero.vercel.app/
+## Approved track-to-encounter mapping
 
-## Current Foundation
+- Score throughout: **Awaken Now** (45-second, 3-second equal-power loop overlap, pending DAW seam approval)
+- Prologue pickup: **First Contact** (25 seconds)
+- Encounter I — The Name: **Xaba** (25 seconds)
+- Encounter II — The Voice: **Mama Calls Me Chule** (25 seconds)
+- Encounter III — The Faith: **Songs Sent to God** (25 seconds)
+- Credo's Words is not included; clearance is pending.
 
-- React + Vite
-- Tailwind CSS
-- Framer Motion
-- iframe-based listening embeds
-- local chamber visual assets
-- no backend, runtime AI, 3D dependency, or paid external service
+The supplied `public/media/manifest.json` preserves the artist's source offsets, loudness, and fade decisions. Only the ten supplied OGG/M4A **excerpts** are allowed in `public/media/`. Never upload full masters. The official pre-save URL remains https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening .
 
-## Chamber System
+## Scope of this deliverable (guide §25, steps 1–2)
 
-- Soil and Sun: earth, memory, warmth
-- Bad Guys Finish Last: shadow, fracture, consequence
-- Songs I Made At Night: night, migration, private thought
-- Enter Aquarius: threshold, ascension, celestial weather
-- Celestial Multiverse: cosmological expansion, archive scale
-- Stargazing, Vol. 3: intimate star field, suspension, observation
-- Just Sounds Really: sparse sound object, residue, restraint
+An actual Phaser 3.90 + TypeScript + Vite project with lazy engine loading, Boot/Title and registered future scenes, an AudioDirector, ProgressManager, and a preview Title scene. **The Prologue and encounters are not yet implemented gameplay.** The audio controls in Scaffold diagnostics are an engineering-only integration test.
 
-## Local Development
+## AudioDirector
 
-On Windows PowerShell, use `npm.cmd` if script execution blocks `npm`.
+- Starts only after a deliberate pointer/click action.
+- Decodes from the matching Safari-compatible M4A or OGG fallback, on demand.
+- Schedules score sources on the Web Audio clock with three seconds of equal-power overlap.
+- Opens from low-pass/near-mono to full range/stereo via genuine four-gain mid-side matrix.
+- Pickup fades from silence, ducks score to about -14 dB, returns smoothly after 25 seconds.
+- Has mute, pause, resume, disposal, and audio-unavailable silent fallbacks.
+- **Audio note:** the source manifest describes a crossfade seam but the final loop point needs a musical listening test. Do not claim seamless looping until approved.
+
+## ProgressManager
+
+Versioned local save, scene/checkpoint, awakened score state, pickup-unlock collection, guarded localStorage access, and event subscriptions. Uses in-memory state if storage is blocked. No accounts or tracking.
+
+## Run
 
 ```bash
 npm install
-npm.cmd run dev
-npm.cmd run build
-npm.cmd run check
+npm run verify:media
+npm run dev
+npm run build
 ```
 
-`npm.cmd run check` validates referenced public assets and then runs the production build.
+## Gate budgets (design guide §18)
 
-Remotion is available for offline cinematic renders:
+- Under **3,000,000 transferred bytes to first interaction**, not just under 3 MB source JS.
+- Under **3 seconds on representative mid-range 4G** in a reproducible browser/network profile.
+- **60 fps on physical iPhone 12-class and mid-range Android**, instrumented during real movement.
+- **30 fps degrade gracefully** with particle/reduced-motion fallback for constrained devices.
+- Under **15 MB total progressively loaded media**; sound is only requested after start.
+- No full-master assets, no automatic downloads of every pickup and no autoplay.
 
-```bash
-npm.cmd run remotion:studio
-npm.cmd run remotion:render:observatory
-npm.cmd run remotion:render:all
-```
+`scripts/check-budget.mjs` measures compressed shell bundles as an early CI guard, **not** a substitute for real network total, mobile device telemetry, or source auditing. The 60 fps gate cannot be certified by desktop emulation.
 
-Renders go to `renders/`, which is ignored by Git. Use them for review first; only move approved videos into `public/assets/...`.
+## Next (guide §25, step 3)
 
-## Asset Notes
-
-Chamber assets live in `public/assets/chambers/`. Every visual asset used by the site should be tracked in `src/data/assetCredits.ts` before it is referenced in `src/data/releases.ts`.
-
-Accepted asset sources:
-
-- owned Cosmicsuprhero assets
-- generated project assets owned by the artist/project
-- public domain assets
-- Creative Commons assets with accurate credit and license notes
-
-The current generated cinematic pack is integrated for crop, atmosphere, and layout QA. Treat these images as generated project assets, not documentary photography. Some are temporary integration plates and are intentionally documented for later replacement with cleaner standalone character/world images.
-
-Chamber crop and readiness controls live in `src/data/releases.ts`. Use `focusPosition`, `mobileFocusPosition`, `readiness`, and `replacementNote` before editing components for asset swaps.
-
-## Production Planning
-
-- Final product roadmap: `docs/FINAL_PRODUCT_ROADMAP.md`
-- v2 final asset queue: `docs/V2_FINAL_ASSET_QUEUE.md`
-- Offline asset pipeline: `docs/ASSET_PIPELINE.md`
-- Remotion render pipeline: `docs/REMOTION_PIPELINE.md`
-- v0.2 asset handoff manifest: `docs/asset-manifest-v0.2.json`
-- v0.2 character identity lock: `docs/character-identity-lock.md`
-- Chamber shot list: `prompts/chamber-shot-list.md`
-- Image prompts: `prompts/image-prompts.md`
-- Video prompts: `prompts/video-prompts.md`
-- Observatory intro prep helper: `scripts/prepare-observatory-intro.ps1`
+Build and playtest only Prologue + Encounter I with layered final art and sprite-sheet character. The Title placeholder is not a shipping experience. Add audio-device handoff tests on iOS Safari, Instagram and Android. Keep pre-save site and `main` unchanged until user signoff.
