@@ -290,3 +290,16 @@ footer{background:var(--wine);color:#f9eddf;padding:45px clamp(20px,6vw,100px) 2
   .art-area{padding-top:5px}
 }
 @media(prefers-reduced-motion:reduce){.echo:not(:disabled){animation:none}}
+
+
+/* Finish pass: the interactive artwork, including entry action, must fit in the first desktop viewport. */
+@media(min-width:761px){
+  .painting{width:min(100%,450px)}
+  .music-strip__heading>div{flex-direction:column;align-items:flex-start;gap:2px}
+  .music-strip__heading{align-items:end}
+  .music-strip__heading strong{font-size:30px}
+}
+@media(max-width:760px){
+  .music-strip__heading>div{align-items:center;gap:10px}
+}
+.inline-north-east{width:13px;height:13px;display:inline-block;vertical-align:-2px;flex:none;margin-left:5px}
