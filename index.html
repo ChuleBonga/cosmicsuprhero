@@ -43,23 +43,30 @@
     <h1><span>Arcturian</span><span>Awakening</span></h1>
     <div class="artist-byline">Cosmicsuprhero</div>
     <div class="music-strip" id="music-strip" aria-label="Awaken Now music preview">
-      <div class="music-strip__heading"><span class="music-strip__eyebrow">From the album · 45-second excerpt</span><strong>Awaken Now</strong></div>
-      <div class="music-strip__transport">
-        <button type="button" id="music-toggle" class="music-toggle" aria-label="Play Awaken Now preview" aria-pressed="false"><span id="music-icon" aria-hidden="true">▶</span><span id="music-action">Listen</span></button>
+      <button type="button" id="music-toggle" class="music-toggle" aria-label="Play Awaken Now preview" aria-pressed="false">
+        <svg id="music-icon" class="music-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+          <circle cx="24" cy="24" r="22.5" stroke="currentColor" stroke-width="1"/>
+          <path class="music-icon__play" d="M20.5 16.5L32 24L20.5 31.5V16.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+          <path class="music-icon__pause" d="M20 17V31M28 17V31" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
+        </svg>
+        <span class="sr-only" id="music-action">Listen</span>
+      </button>
+      <div class="music-strip__body">
+        <div class="music-strip__heading"><div><span class="music-strip__eyebrow">A 45-second listening excerpt</span><strong>Awaken Now</strong></div><span class="music-strip__edition">COSMICSUPRHERO / 2026</span></div>
         <div class="music-strip__timeline">
           <label for="music-scrub" class="sr-only">Seek within the 45-second audio excerpt</label>
           <input id="music-scrub" type="range" min="0" max="45" step="0.1" value="0" aria-label="Seek within Awaken Now excerpt">
           <div class="music-strip__time"><output id="music-time" for="music-scrub">0:00</output><span>0:45</span></div>
         </div>
       </div>
-      <div class="music-status" id="music-status" role="status" aria-live="polite">Tap Listen, or touch the sun to begin with music.</div>
+      <p class="music-status" id="music-status" role="status" aria-live="polite">Sound is optional</p>
     </div>
     <audio id="awaken-audio" preload="none" src="https://at.adobe.com/sy7io6UEBpLf6mPZ"></audio>
     <div class="intro-rule" aria-hidden="true"></div>
     <div class="chapter-details" id="chapter-details" aria-live="polite" aria-atomic="true">
       <span class="chapter-eyebrow" id="chapter-number">I. First Contact</span>
       <h2 id="chapter-title">It begins with a light.</h2>
-      <p id="chapter-instructions">Touch the sun to begin. Find what the landscape carries.</p>
+      <p id="chapter-instructions">Enter the painting. Follow the sun, then discover what the mountains hold.</p>
     </div>
     <div class="chapter-footer">
       <div class="chapter-steps" aria-label="Journey progress" id="progress">
@@ -78,15 +85,26 @@
         <div class="painting-horizon" aria-hidden="true"></div>
         <button class="sun-target stage-target" id="sun-target" type="button" aria-label="Touch the orange sun to begin the journey"><span class="sun-target-ring" aria-hidden="true"></span><span class="sun-target-label" aria-hidden="true">TOUCH TO BEGIN</span></button>
         <div class="echo-targets" id="echo-targets" hidden>
-          <button class="echo echo-a" type="button" data-echo="xaba" aria-label="Find the memory Xaba"><span class="echo-sigil" aria-hidden="true">✣</span><span class="echo-caption">01</span></button>
-          <button class="echo echo-b" type="button" data-echo="mama" aria-label="Find the memory Mama Calls Me Chule"><span class="echo-sigil" aria-hidden="true">✣</span><span class="echo-caption">02</span></button>
-          <button class="echo echo-c" type="button" data-echo="god" aria-label="Find the memory Songs Sent to God"><span class="echo-sigil" aria-hidden="true">✣</span><span class="echo-caption">03</span></button>
+          <button class="echo echo-a" type="button" data-echo="xaba" aria-label="Find the memory Xaba"><svg class="echo-sigil" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4L28 16L16 28L4 16L16 4Z" stroke="currentColor" stroke-width="1.1"/><path d="M16 10V22M10 16H22" stroke="currentColor" stroke-width="1"/></svg><span class="echo-caption">01</span></button>
+          <button class="echo echo-b" type="button" data-echo="mama" aria-label="Find the memory Mama Calls Me Chule"><svg class="echo-sigil" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4L28 16L16 28L4 16L16 4Z" stroke="currentColor" stroke-width="1.1"/><path d="M16 10V22M10 16H22" stroke="currentColor" stroke-width="1"/></svg><span class="echo-caption">02</span></button>
+          <button class="echo echo-c" type="button" data-echo="god" aria-label="Find the memory Songs Sent to God"><svg class="echo-sigil" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4L28 16L16 28L4 16L16 4Z" stroke="currentColor" stroke-width="1.1"/><path d="M16 10V22M10 16H22" stroke="currentColor" stroke-width="1"/></svg><span class="echo-caption">03</span></button>
         </div>
         <svg class="route-trace" id="route-trace" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline id="route-line" points="54,17" /></svg>
         <div class="waypoints" id="waypoints" hidden>
           <button class="waypoint waypoint-1" data-waypoint="0" type="button" aria-label="Follow the ridge, first marker"><span>01</span></button>
           <button class="waypoint waypoint-2" data-waypoint="1" type="button" aria-label="Follow the ridge, second marker"><span>02</span></button>
           <button class="waypoint waypoint-3" data-waypoint="2" type="button" aria-label="Return to the human figure, final marker"><span>03</span></button>
+        </div>
+        <div class="game-entry" id="game-entry">
+          <span class="game-entry__index">01 / THE ENCOUNTER</span>
+          <button type="button" id="begin-journey" aria-label="Begin the playable Arcturian Awakening journey">
+            <span>Enter the painting</span>
+            <svg viewBox="0 0 24 24" width="21" height="21" fill="none" aria-hidden="true"><path d="M4 12H20M13 5L20 12L13 19" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <span class="game-entry__instruction">Or touch the sun above</span>
+        </div>
+        <div class="game-objective" id="game-objective" hidden aria-live="polite">
+          <span id="objective-label">FIND THE THREE MEMORIES</span><strong id="objective-progress">00 / 03</strong>
         </div>
         <div class="painting-chapter" id="painting-chapter">I / THE ENCOUNTER</div>
         <div class="painting-feedback" id="painting-feedback" aria-live="polite"></div>
@@ -97,7 +115,7 @@
 
   <div class="mobile-story" aria-live="polite">
     <span id="mobile-chapter-number">I. First Contact</span>
-    <p id="mobile-chapter-text">Touch the sun to begin.</p>
+    <p id="mobile-chapter-text">Enter the painting. Follow the sun.</p>
   </div>
 </section>
 
@@ -113,7 +131,7 @@
     <p>You went toward the light. You found what was human. The music is waiting.</p>
     <div class="finale-actions">
       <a class="finale-presave" href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" target="_blank" rel="noopener noreferrer">Pre-save Arcturian Awakening <span aria-hidden="true">↗</span></a>
-      <button id="play-again" type="button">Walk it again ↺</button>
+      <button id="play-again" type="button">Begin again</button>
     </div>
     <p class="finale-note">Choose Spotify or Apple Music on the next page. No account is required to play this experience.</p>
   </div>
@@ -132,7 +150,7 @@
 </div>
 
 <dialog id="tracklist-dialog" class="tracklist-dialog" aria-labelledby="tracklist-title">
-  <div class="tracklist-top"><span>COSMICSUPRHERO · THE ALBUM</span><button class="dialog-close" id="close-tracklist" type="button" aria-label="Close tracklist">Close ×</button></div>
+  <div class="tracklist-top"><span>COSMICSUPRHERO · THE ALBUM</span><button class="dialog-close" id="close-tracklist" type="button" aria-label="Close tracklist">Close</button></div>
   <h2 id="tracklist-title">Arcturian<br><em>Awakening.</em></h2>
   <ol class="album-tracks">
     <li>Meditate</li><li>First Contact</li><li>Precipice</li><li>Credo’s Words</li><li>Dawning</li><li>Rustic Fire</li><li>Xaba</li><li>Mama Calls Me Chule</li><li>Chords for Pondering</li><li>Peace for the Soul</li><li>Songs Sent to God</li><li>Emancipated</li><li>The World Is Ours</li><li>Awaken Now</li><li>Gloriously</li><li>Finale</li>
