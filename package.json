@@ -4,11 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "tsc --noEmit && vite build && node scripts/check-budget.mjs",
+    "dev": "node scripts/materialize-media.mjs && vite --host 0.0.0.0",
+    "build": "node scripts/materialize-media.mjs && tsc --noEmit && vite build && node scripts/check-budget.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "check": "npm run build",
-    "verify:media": "node scripts/verify-audio.mjs"
+    "verify:media": "node scripts/materialize-media.mjs && node scripts/verify-audio.mjs"
   },
   "dependencies": {
     "phaser": "3.90.0"
