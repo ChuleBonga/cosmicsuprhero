@@ -23,7 +23,7 @@ function updateMusicButton(){
   const active=!music.paused&&!music.ended;
   musicButton.setAttribute("aria-pressed",String(active));
   musicAction.textContent=active?"Pause":(music.ended?"Replay":music.currentTime>0?"Resume":"Listen");
-  musicIcon.textContent=active?"Ⅱ":"▶";
+  musicButton.classList.toggle("is-playing",active);
   musicButton.setAttribute("aria-label",active?"Pause Awaken Now excerpt":(music.ended?"Replay Awaken Now excerpt":"Play Awaken Now excerpt"));
 }
 function visualMoment(time){
@@ -113,7 +113,7 @@ const feedback=$("#painting-feedback");
 const number=$("#chapter-number"),title=$("#chapter-title"),instructions=$("#chapter-instructions");
 const mobileNumber=$("#mobile-chapter-number"),mobileText=$("#mobile-chapter-text");
 const guide={
-  1:{number:"I. First Contact",title:"It begins with a light.",text:"Touch the sun to begin. Find what the landscape carries.",mobile:"Touch the sun to begin.",paint:"I / THE ENCOUNTER"},
+  1:{number:"I. First Contact",title:"It begins with a light.",text:"Enter the painting and follow the sun.",mobile:"Touch the sun or enter the painting.",paint:"I / THE ENCOUNTER"},
   2:{number:"II. What we carry",title:"Listen to the land.",text:"Find three memories among the mountains. Each has a name and a place in the album.",mobile:"Find the three marks hidden in the mountains.",paint:"II / THREE MEMORIES"},
   3:{number:"III. The return",title:"The way back is human.",text:"Follow the three marks along the ridge. The final mark is beside the human figure.",mobile:"Follow the ridge, one mark at a time.",paint:"III / THE RETURN"}
 };
@@ -137,6 +137,11 @@ function setChapter(chapter){
     dot.classList.toggle("done",i+1<chapter);
   });
   $("#sun-target").hidden=chapter!==1;
+  $("#game-entry").hidden=chapter!==1;
+  const objective=$("#game-objective");
+  objective.hidden=chapter===1;
+  if(chapter===2){$("#objective-label").textContent="THREE FRAGMENTS IN THE MOUNTAINS";$("#objective-progress").textContent=String(state.echoes.size).padStart(2,"0")+" / 03";}
+  if(chapter===3){$("#objective-label").textContent="TRACE YOUR WAY HOME";$("#objective-progress").textContent=String(state.waypoint).padStart(2,"0")+" / 03";}
   $("#echo-targets").hidden=chapter!==2;
   $("#waypoints").hidden=chapter!==3;
   $("#route-trace").hidden=chapter!==3;
@@ -150,6 +155,7 @@ function startEncounter(){
   setChapter(2);
 }
 $("#sun-target").addEventListener("click",startEncounter);
+$("#begin-journey").addEventListener("click",startEncounter);
 const memoryData={
   xaba:{title:"Xaba",fragment:"A name that lives beyond the body."},
   mama:{title:"Mama Calls Me Chule",fragment:"To be known by the people who knew us first."},
@@ -170,6 +176,8 @@ $$("[data-echo]").forEach(btn=>{
     span.title=item.fragment;
     entries.append(span);
     count.textContent=String(state.echoes.size).padStart(2,"0")+" / 03";
+    $("#objective-progress").textContent=String(state.echoes.size).padStart(2,"0")+" / 03";
+    painting.dataset.memoryFound=String(state.echoes.size);
     number.textContent="II. What we carry · "+state.echoes.size+"/3";
     mobileNumber.textContent=state.echoes.size+" of 3 memories found";
     mobileText.textContent=item.fragment;
@@ -199,6 +207,8 @@ $$("[data-waypoint]").forEach(btn=>btn.addEventListener("click",()=>{
   const pathPoints=[[54,17],...positions.slice(0,index+1)];
   line.setAttribute("points",pathPoints.map(p=>p.join(",")).join(" "));
   state.waypoint++;
+  $("#objective-progress").textContent=String(state.waypoint).padStart(2,"0")+" / 03";
+  painting.dataset.routeProgress=String(state.waypoint);
   cue(["Across the first ridge.","The land begins to soften.","Back to the human."][index]);
   mobileText.textContent=state.waypoint===3?"You made it back.":"Follow mark "+(state.waypoint+1)+".";
   if(state.waypoint===3){completeJourney();}
@@ -214,11 +224,12 @@ function completeJourney(){
 }
 function resetJourney(){
   state.chapter=1;state.echoes.clear();state.waypoint=0;state.completed=false;
+  painting.dataset.routeProgress="0";painting.dataset.memoryFound="0";
   music.pause();
   try{music.currentTime=0;}catch(_){}
   soundDeclined=false;
   syncMusic();
-  musicStatus.textContent="Tap Listen, or touch the sun to begin with music.";
+  musicStatus.textContent="Sound is optional";
   line.setAttribute("points","54,17");
   count.textContent="00 / 03";
   entries.replaceChildren();
