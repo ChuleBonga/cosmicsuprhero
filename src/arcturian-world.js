@@ -9,7 +9,7 @@ const feedback=$("#painting-feedback");
 const number=$("#chapter-number"),title=$("#chapter-title"),instructions=$("#chapter-instructions");
 const mobileNumber=$("#mobile-chapter-number"),mobileText=$("#mobile-chapter-text");
 const guide={
-  1:{number:"I. First Contact",title:"It begins with a light.",text:"Touch the orange sun to begin. The mountains are holding something.",mobile:"Touch the orange sun to begin.",paint:"I / THE ENCOUNTER"},
+  1:{number:"I. First Contact",title:"It begins with a light.",text:"Touch the sun to begin. Find what the landscape carries.",mobile:"Touch the sun to begin.",paint:"I / THE ENCOUNTER"},
   2:{number:"II. What we carry",title:"Listen to the land.",text:"Find three memories among the mountains. Each has a name and a place in the album.",mobile:"Find the three marks hidden in the mountains.",paint:"II / THREE MEMORIES"},
   3:{number:"III. The return",title:"The way back is human.",text:"Follow the three marks along the ridge. The final mark is beside the human figure.",mobile:"Follow the ridge, one mark at a time.",paint:"III / THE RETURN"}
 };
