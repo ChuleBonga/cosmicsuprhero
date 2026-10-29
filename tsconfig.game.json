@@ -1,7 +1,30 @@
 {
   "compilerOptions": {
-    "target":"ES2022", "lib":["ES2022","DOM","DOM.Iterable"], "module":"ESNext", "moduleResolution":"Bundler", "strict":true,
-    "noEmit":true,"esModuleInterop":true,"allowSyntheticDefaultImports":true,"skipLibCheck":true,"forceConsistentCasingInFileNames":true,"types":[],"allowImportingTsExtensions":true
+    "target": "ES2022",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "types": [],
+    "allowImportingTsExtensions": true
   },
-  "include":["src/**/*","vite.config.ts"]
+  "include": [
+    "src/main.ts",
+    "src/game.ts",
+    "vite.config.ts"
+  ],
+  "exclude": [
+    "src/data/**",
+    "src/components/**",
+    "src/remotion/**"
+  ]
 }
