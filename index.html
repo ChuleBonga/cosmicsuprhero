@@ -42,6 +42,19 @@
     <div class="edition"><span class="edition-line"></span> An album you can enter <span class="edition-number">01 / 03</span></div>
     <h1><span>Arcturian</span><span>Awakening</span></h1>
     <div class="artist-byline">Cosmicsuprhero</div>
+    <div class="music-strip" id="music-strip" aria-label="Awaken Now music preview">
+      <div class="music-strip__heading"><span class="music-strip__eyebrow">From the album · 45-second excerpt</span><strong>Awaken Now</strong></div>
+      <div class="music-strip__transport">
+        <button type="button" id="music-toggle" class="music-toggle" aria-label="Play Awaken Now preview" aria-pressed="false"><span id="music-icon" aria-hidden="true">▶</span><span id="music-action">Listen</span></button>
+        <div class="music-strip__timeline">
+          <label for="music-scrub" class="sr-only">Seek within the 45-second audio excerpt</label>
+          <input id="music-scrub" type="range" min="0" max="45" step="0.1" value="0" aria-label="Seek within Awaken Now excerpt">
+          <div class="music-strip__time"><output id="music-time" for="music-scrub">0:00</output><span>0:45</span></div>
+        </div>
+      </div>
+      <div class="music-status" id="music-status" role="status" aria-live="polite">Tap Listen, or touch the sun to begin with music.</div>
+    </div>
+    <audio id="awaken-audio" preload="none" src="https://at.adobe.com/sy7io6UEBpLf6mPZ"></audio>
     <div class="intro-rule" aria-hidden="true"></div>
     <div class="chapter-details" id="chapter-details" aria-live="polite" aria-atomic="true">
       <span class="chapter-eyebrow" id="chapter-number">I. First Contact</span>
