@@ -64,7 +64,7 @@ class WalkBase extends Phaser.Scene {
       this.guidance.setText('Hold to walk toward the light');
     } else {
       this.labels.setText('THE NAME / XABA');
-      for(const x of [1500,1760,2020]){
+      for(const x of [startX+310,startX+570,startX+830]){
         const mote=this.makePickup(x,this.groundY-75,'',true);
         this.motes.push(mote);
       }
