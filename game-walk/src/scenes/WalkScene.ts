@@ -103,7 +103,7 @@ class WalkBase extends Phaser.Scene {
     this.scene.pause();
   }
   update(time:number,deltaMs:number){
-    const dt=Math.min(deltaMs/1000,.034);
+    const dt=Math.min(deltaMs/1000,.12);
     this.elapsed+=dt;
     const k=this.keys;
     const kbL=Boolean(this.arrows?.left.isDown||k?.A?.isDown);
