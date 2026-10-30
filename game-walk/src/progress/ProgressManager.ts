@@ -1,15 +1,10 @@
-export type MemoryId='first_contact'|'xaba'|'mama_calls_me_chule'|'songs_sent_to_god';
-export interface SaveData{version:1;distance:number;discovered:MemoryId[];muted:boolean}
-const KEY='arcturian.walkeval.v1';
+export type WalkProgress={distance:number;firstContact:boolean;awakening:number};
 export class ProgressManager{
-  private state:SaveData={version:1,distance:0,discovered:[],muted:false};
-  constructor(){try{const raw=localStorage.getItem(KEY);if(raw){const d=JSON.parse(raw) as Partial<SaveData>;if(d.version===1){this.state={version:1,distance:Math.min(3000,Math.max(0,Number(d.distance)||0)),discovered:Array.isArray(d.discovered)?d.discovered.filter(x=>['first_contact','xaba','mama_calls_me_chule','songs_sent_to_god'].includes(x)):[],muted:d.muted===true}}}}catch{ /* Browsers may block storage. Session play still works. */ }}
-  get distance(){return this.state.distance}
-  get muted(){return this.state.muted}
-  has(id:MemoryId){return this.state.discovered.includes(id)}
-  setDistance(value:number){this.state.distance=Math.max(this.state.distance,Math.min(3000,Math.max(0,value)))}
-  discover(id:MemoryId){if(this.has(id))return false;this.state.discovered.push(id);this.save();return true}
-  setMuted(value:boolean){this.state.muted=value;this.save()}
-  reset(){this.state={version:1,distance:0,discovered:[],muted:false};this.save()}
-  save(){try{localStorage.setItem(KEY,JSON.stringify(this.state))}catch{ /* Keep in-memory state. */ }}
+ private state:WalkProgress={distance:0,firstContact:false,awakening:0};
+ constructor(){try{const raw=localStorage.getItem("arcturian-walk-v1");if(raw){const stored=JSON.parse(raw);if(typeof stored?.distance==="number"&&typeof stored?.firstContact==="boolean")this.state={distance:Math.max(0,Math.min(2400,stored.distance)),firstContact:stored.firstContact,awakening:Math.max(0,Math.min(1,Number(stored.awakening)||0))};}}catch{}}
+ get snapshot(){return {...this.state};}
+ setDistance(x:number){this.state.distance=Math.max(0,Math.min(2400,x));this.state.awakening=Math.max(this.state.awakening,this.state.distance/2400);this.persist();}
+ recoverFirstContact(){this.state.firstContact=true;this.persist();}
+ reset(){this.state={distance:0,firstContact:false,awakening:0};this.persist();}
+ private persist(){try{localStorage.setItem("arcturian-walk-v1",JSON.stringify(this.state));}catch{}}
 }
