@@ -19,7 +19,7 @@ class WalkBase extends Phaser.Scene {
   private arrows?:Phaser.Types.Input.Keyboard.CursorKeys;
   private keys?:Record<string,Phaser.Input.Keyboard.Key>;
   private travelled=0;
-  private lastSave=0;
+  private lastSave=0;private lastWall=0;
   private pickupDone=false;
   private motes:Phaser.GameObjects.Container[]=[];
   private motesFound=0;
@@ -103,7 +103,9 @@ class WalkBase extends Phaser.Scene {
     this.scene.pause();
   }
   update(time:number,deltaMs:number){
-    const dt=Math.min(deltaMs/1000,.12);
+    const wall=performance.now();
+    const dt=this.lastWall?Math.min((wall-this.lastWall)/1000,.30):Math.min(deltaMs/1000,.03);
+    this.lastWall=wall;
     this.elapsed+=dt;
     const k=this.keys;
     const kbL=Boolean(this.arrows?.left.isDown||k?.A?.isDown);
@@ -123,7 +125,7 @@ class WalkBase extends Phaser.Scene {
     this.world.update(this.cameras.main.scrollX);
     this.hud.setText('AWAKENING  '+Math.round(Math.min(100,this.app.progress.distance/1850*100))+'%');
     if(this.phase==='prologue'){
-      if(!this.pickupDone && Math.abs(this.player.x-this.pickup.x)<52){
+      if(!this.pickupDone && Math.min(previous,this.player.x)<=this.pickup.x+52 && Math.max(previous,this.player.x)>=this.pickup.x-52){
         this.pickupDone=true;this.pickup.setVisible(false);
         this.app.progress.discover('first_contact');
         this.guidance.setText('First Contact · listening');
@@ -139,7 +141,7 @@ class WalkBase extends Phaser.Scene {
       }
     }else{
       this.motes.forEach((mote,index)=>{
-        if(mote.visible && Math.abs(this.player.x-mote.x)<43){
+        if(mote.visible && Math.min(previous,this.player.x)<=mote.x+43 && Math.max(previous,this.player.x)>=mote.x-43){
           mote.setVisible(false);this.motesFound++;
           this.guidance.setText(this.motesFound<3?'Light '+this.motesFound+' / 3 recovered':'Xaba. The name is remembered.');
           if(this.motesFound===3){
