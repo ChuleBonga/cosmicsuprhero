@@ -15,6 +15,11 @@
     ]
   },
   "include": [
-    "src/**/*.ts"
+    "src/main.ts",
+    "src/audio/**/*.ts",
+    "src/progress/**/*.ts"
+  ],
+  "exclude": [
+    "src/scenes/**"
   ]
 }
