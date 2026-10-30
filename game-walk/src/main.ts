@@ -1,6 +1,6 @@
 import Phaser from "phaser";import {AudioDirector} from "./audio/AudioDirector";import {ProgressManager} from "./progress/ProgressManager";
 const WIDTH=960,HEIGHT=540,WORLD=3200;const AUDIO=new AudioDirector(),PROGRESS=new ProgressManager();
-const cover="https://cdn.amuse.io/cafc5a27-1bb5-4dd2-896f-9fde9e508317.jpg";
+const cover="https://cdn.amuse.io/cafc5a27-1bb5-4dd2-896f-9fde9e508317.800x800.jpg";
 class TitleScene extends Phaser.Scene{
  constructor(){super("Title");}
  preload(){this.load.image("cover",cover);}
@@ -30,6 +30,7 @@ class WalkScene extends Phaser.Scene{
   const ground=this.add.graphics();ground.fillStyle(0x3a365e).fillRect(0,489,WORLD,51);ground.setDepth(6);
   this.hero=this.add.container(this.position,448);this.hero.setDepth(9);
   const figure=this.add.graphics();figure.fillStyle(0x143c59).fillEllipse(0,-45,26,36);figure.fillStyle(0x4b285c).fillRoundedRect(-19,-29,38,61,10);figure.fillStyle(0x113047).fillRoundedRect(-14,24,11,35,2).fillRoundedRect(3,24,11,35,2);figure.lineStyle(2,0xd8ac6d).strokeRoundedRect(-19,-29,38,61,10);this.hero.add(figure);
+  document.getElementById("status")!.style.display="block";
   this.add.text(24,26,"GRAY-BOX: 5 LAYERS · HOLD TO WALK",{fontFamily:"Arial",fontSize:"12px",color:"#fff7e5",backgroundColor:"#19254899",padding:{x:10,y:7}}).setScrollFactor(0).setDepth(20);
   this.text=this.add.text(24,63,"AWAKENING 0%",{fontFamily:"Arial",fontSize:"13px",color:"#fff7e5"}).setScrollFactor(0).setDepth(20);
   this.pickup=this.add.container(1010,435).setDepth(10);
