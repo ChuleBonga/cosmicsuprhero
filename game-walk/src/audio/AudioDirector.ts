@@ -1,33 +1,93 @@
-/** Audio unlock is initiated only from a user gesture. No full master is shipped. */
+export type PickupId='first_contact'|'xaba';
 export class AudioDirector {
- private context:AudioContext|null=null; private source:MediaElementAudioSourceNode|null=null;
- private lowpass:BiquadFilterNode|null=null;private gain:GainNode|null=null;private stereo:StereoPannerNode|null=null;
- private audio=new Audio();private pickup=new Audio();private pickupGain:GainNode|null=null;private pickupSource:MediaElementAudioSourceNode|null=null;
- private muted=false;private progress=0;
- constructor(){this.audio.loop=true;this.audio.preload="none";this.audio.src="/media/score_awaken_now_loop.m4a";this.pickup.preload="none";this.pickup.src="/media/pickup_first_contact.m4a";}
- async start():Promise<void>{
-  if(!this.context){const C=window.AudioContext;this.context=new C();const ctx=this.context;this.lowpass=ctx.createBiquadFilter();this.lowpass.type="lowpass";this.lowpass.Q.value=.5;this.lowpass.frequency.value=360;
-  this.gain=ctx.createGain();this.gain.gain.value=.7;this.stereo=ctx.createStereoPanner();
-  this.source=ctx.createMediaElementSource(this.audio);this.source.connect(this.lowpass).connect(this.stereo).connect(this.gain).connect(ctx.destination);
-  this.pickupGain=ctx.createGain();this.pickupSource=ctx.createMediaElementSource(this.pickup);this.pickupSource.connect(this.pickupGain).connect(ctx.destination);
-  this.pickup.onended=()=>this.restoreScore();this.pickup.onerror=()=>this.restoreScore();}
-  await this.context.resume(); try{await this.audio.play();}catch(e){console.warn("Score unavailable; walk remains playable",e);}
-  this.update(this.progress);
- }
- update(distanceFraction:number):void{
-  this.progress=Math.max(0,Math.min(1,distanceFraction));if(!this.context||!this.lowpass||!this.gain||!this.stereo)return;
-  const t=this.context.currentTime;const freq=360*Math.pow(17000/360,this.progress);this.lowpass.frequency.setTargetAtTime(freq,t,.15);
-  this.stereo.pan.setTargetAtTime(Math.sin(this.progress*Math.PI*2)*.12,t,.3);
-  const target=this.muted?0:this.pickup.paused?.77:.15;this.gain.gain.setTargetAtTime(target,t,.18);
- }
- async playPickup():Promise<void>{
-  if(!this.context||!this.pickupGain||!this.gain)return;
-  const t=this.context.currentTime;this.gain.gain.setTargetAtTime(this.muted?0:.12,t,.16);
-  this.pickupGain.gain.setValueAtTime(this.muted?0:.0,t);this.pickupGain.gain.setTargetAtTime(this.muted?0:.98,t,.16);
-  this.pickup.currentTime=0;try{await this.pickup.play();}catch(e){this.restoreScore();console.warn("Pickup unavailable",e);}
- }
- private restoreScore(){if(!this.context||!this.gain||!this.pickupGain)return;const t=this.context.currentTime;
-  this.pickupGain.gain.setTargetAtTime(0,t,.2);this.gain.gain.setTargetAtTime(this.muted?0:.77,t,.45);}
- toggleMute():boolean{this.muted=!this.muted;if(this.context){const t=this.context.currentTime;this.gain?.gain.setTargetAtTime(this.muted?0:this.pickup.paused?.77:.12,t,.08);this.pickupGain?.gain.setTargetAtTime(this.muted?0:.98,t,.08);}return this.muted;}
- isMuted(){return this.muted;}dispose(){this.audio.pause();this.pickup.pause();void this.context?.close();}
+  private ctx:AudioContext|null=null;
+  private score:HTMLAudioElement|null=null;
+  private lowpass:BiquadFilterNode|null=null;
+  private sheen:BiquadFilterNode|null=null;
+  private musicGain:GainNode|null=null;
+  private pickupGain:GainNode|null=null;
+  private widthMatrix:GainNode[]=[];
+  private buffers=new Map<PickupId,Promise<AudioBuffer|null>>();
+  private started=false;
+  private muted=false;
+  private pickupActive=false;
+  private maxTravel=0;
+  private queuedPickup=0;
+  constructor(private readonly onStatus:(message:string)=>void){}
+  get isPlaying(){return Boolean(this.score&&!this.score.paused)}
+  get isMuted(){return this.muted}
+  start():void{
+    if(this.started){void this.ctx?.resume();return}
+    this.started=true;
+    try{
+      const ctx=new AudioContext({latencyHint:'interactive'});this.ctx=ctx;
+      const score=new Audio('/audio/score_awaken_now_loop.m4a');this.score=score;
+      score.loop=true;score.preload='none';score.crossOrigin='anonymous';
+      const source=ctx.createMediaElementSource(score);
+      const low=ctx.createBiquadFilter();this.lowpass=low;low.type='lowpass';low.frequency.value=420;low.Q.value=.65;
+      const high=ctx.createBiquadFilter();this.sheen=high;high.type='highshelf';high.frequency.value=2700;high.gain.value=-7;
+      const musicGain=ctx.createGain();this.musicGain=musicGain;musicGain.gain.value=.29;
+      const pickupGain=ctx.createGain();this.pickupGain=pickupGain;pickupGain.gain.value=.92;
+      const split=ctx.createChannelSplitter(2),merge=ctx.createChannelMerger(2);
+      const a=ctx.createGain(),b=ctx.createGain(),c=ctx.createGain(),d=ctx.createGain();
+      this.widthMatrix=[a,b,c,d];
+      source.connect(low).connect(high).connect(split);
+      split.connect(a,0);split.connect(b,1);split.connect(c,0);split.connect(d,1);
+      a.connect(merge,0,0);b.connect(merge,0,0);c.connect(merge,0,1);d.connect(merge,0,1);
+      merge.connect(musicGain).connect(ctx.destination);
+      pickupGain.connect(ctx.destination);
+      this.setTravel(0);this.setMuted(this.muted);
+      for(const key of ['first_contact','xaba'] as PickupId[]){
+        this.buffers.set(key,fetch('/audio/pickup_'+key+'.m4a')
+          .then(r=>{if(!r.ok)throw new Error('audio not found');return r.arrayBuffer()})
+          .then(data=>ctx.decodeAudioData(data)).catch(()=>null));
+      }
+      score.addEventListener('error',()=>this.onStatus('Score unavailable. You can continue silently.'));
+      void ctx.resume();
+      void score.play().then(()=>this.onStatus('Awaken Now — awakening')).catch(()=>this.onStatus('Tap again to enable audio. Walking remains available.'));
+    }catch{this.onStatus('Audio unavailable. Walking remains available.')}
+  }
+  setTravel(value:number):void{
+    this.maxTravel=Math.max(this.maxTravel,Math.min(1,Math.max(0,value)));
+    const ctx=this.ctx,low=this.lowpass,high=this.sheen,gain=this.musicGain;
+    if(!ctx||!low||!high||!gain)return;
+    const now=ctx.currentTime,p=this.maxTravel;
+    low.frequency.setTargetAtTime(420*Math.pow(13500/420,p),now,.18);
+    high.gain.setTargetAtTime(-7+7.5*p,now,.23);
+    const w=.12+.88*p,[a,b,c,d]=this.widthMatrix;
+    for(const [node,value] of [[a,(1+w)/2],[b,(1-w)/2],[c,(1-w)/2],[d,(1+w)/2]] as const)
+      node?.gain.setTargetAtTime(value,now,.16);
+    if(!this.pickupActive)gain.gain.setTargetAtTime(.28+.43*p,now,.22);
+  }
+  async playPickup(key:PickupId,onFinished:()=>void):Promise<void>{
+    if(!this.ctx||!this.musicGain||!this.pickupGain){this.onStatus('Memory recovered, but sound is unavailable.');onFinished();return}
+    const ctx=this.ctx,token=++this.queuedPickup;this.pickupActive=true;
+    const now=ctx.currentTime;
+    this.musicGain.gain.cancelScheduledValues(now);
+    this.musicGain.gain.setTargetAtTime(.075,now,.16);
+    const finish=()=>{
+      if(this.queuedPickup!==token)return;
+      this.pickupActive=false;
+      this.musicGain?.gain.setTargetAtTime(.28+.43*this.maxTravel,ctx.currentTime,.65);
+      onFinished();
+    };
+    const buffer=await this.buffers.get(key);
+    if(buffer){try{
+      void ctx.resume();const voice=ctx.createBufferSource();voice.buffer=buffer;
+      voice.connect(this.pickupGain);voice.addEventListener('ended',finish,{once:true});voice.start();
+      this.onStatus(key==='xaba'?'Xaba — memory playing':'First Contact — memory playing');return;
+    }catch{finish();return}}
+    try{
+      const el=new Audio('/audio/pickup_'+key+'.m4a');el.preload='none';el.crossOrigin='anonymous';
+      ctx.createMediaElementSource(el).connect(this.pickupGain);
+      el.addEventListener('ended',finish,{once:true});el.addEventListener('error',finish,{once:true});
+      void ctx.resume();await el.play();
+    }catch{this.onStatus('Memory audio unavailable.');finish()}
+  }
+  setMuted(value:boolean){this.muted=value;if(this.ctx){const target=value?0:1;this.ctx.destination.channelCount=2;/* output gating via mute below */void target}if(this.score)this.score.muted=value;
+    if(this.musicGain)this.musicGain.gain.setTargetAtTime(value?0:this.pickupActive?.075:.28+.43*this.maxTravel,this.ctx!.currentTime,.12);
+    if(this.pickupGain)this.pickupGain.gain.setTargetAtTime(value?0:.92,this.ctx!.currentTime,.12)}
+  pause(){this.score?.pause();void this.ctx?.suspend()}
+  resume(){void this.ctx?.resume();if(this.started)void this.score?.play().catch(()=>{})}
+  destroy(){++this.queuedPickup;this.score?.pause();void this.ctx?.close();this.ctx=null}
 }

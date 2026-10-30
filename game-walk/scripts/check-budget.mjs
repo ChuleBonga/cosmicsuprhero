@@ -1,4 +1,4 @@
 import {readdirSync,statSync} from 'node:fs';import {join} from 'node:path';import {gzipSync} from 'node:zlib';import {readFileSync} from 'node:fs';
 const root='dist';const walk=dir=>readdirSync(dir,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(join(dir,e.name)):[join(dir,e.name)]);
-const files=walk(root);const entry=files.filter(f=>/\.(js|css|html|webp)$/.test(f));const bytes=entry.reduce((sum,p)=>sum+(p.endsWith('.webp')?statSync(p).size:gzipSync(readFileSync(p)).length),0);const limit=3_000_000;
-console.log(JSON.stringify({initialAssetEstimateBytes:bytes,thresholdBytes:limit,mediaDeferred:true,files:entry.map(p=>({path:p,bytes:statSync(p).size}))},null,2));if(bytes>=limit){console.error('Initial build over budget');process.exit(1)}
+const files=walk(root);const entry=files.filter(f=>/\.(js|css|html|webp)$/.test(f));const bytes=entry.reduce((sum,p)=>sum+(p.endsWith('.webp')?statSync(p).size:gzipSync(readFileSync(p)).length),0);const reservedWalkAtlasBytes=180_000;const limit=3_000_000;
+console.log(JSON.stringify({initialAssetEstimateBytes:bytes,plannedWalkAtlasReserveBytes:reservedWalkAtlasBytes,projectedInitialBytes:bytes+reservedWalkAtlasBytes,thresholdBytes:limit,mediaDeferred:true,files:entry.map(p=>({path:p,bytes:statSync(p).size}))},null,2));if(bytes+reservedWalkAtlasBytes>=limit){console.error('Initial build over budget');process.exit(1)}
