@@ -1,31 +1,60 @@
 import Phaser from 'phaser';
 import type {GameContext} from '../main';
 interface PauseData{returnScene:string}
-export class PauseUIScene extends Phaser.Scene{
+const PRESAVE='https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening';
+const link=(source:'pause'|'preview')=>PRESAVE+'?utm_source=game&utm_medium='+source+'&utm_campaign=arcturian-awakening';
+export class PauseUIScene extends Phaser.Scene {
   private parentScene='Prologue';
+  private app!:GameContext;
+  private W=0;
+  private H=0;
+  private body!:Phaser.GameObjects.Text;
   constructor(){super('PauseUI')}
   create(data:PauseData){
     this.parentScene=data.returnScene||'Prologue';
-    const W=this.scale.width,H=this.scale.height;
-    const app=this.registry.get('app') as GameContext;
-    this.add.rectangle(W/2,H/2,W,H,0x101833,.89).setDepth(1);
-    this.add.text(W/2,H*.32,'PAUSED',{fontFamily:'Georgia,serif',fontSize:Math.min(54,W*.12)+'px',color:'#f7e6ce'}).setOrigin(.5).setDepth(2);
-    const resume=this.add.text(W/2,H*.49,'RESUME',{fontFamily:'Arial,sans-serif',fontSize:'19px',color:'#fff7e6',backgroundColor:'#583249',padding:{x:28,y:17}}).setOrigin(.5).setDepth(2).setInteractive({useHandCursor:true});
-    const mute=this.add.text(W/2,H*.61,app.progress.muted?'ENABLE SOUND':'MUTE SOUND',{fontFamily:'Arial,sans-serif',fontSize:'15px',color:'#ead8c6',padding:{x:20,y:12}}).setOrigin(.5).setDepth(2).setInteractive({useHandCursor:true});
-    this.add.text(W/2,H*.77,'AWAKEN NOW / COSMICSUPRHERO',{fontFamily:'Arial,sans-serif',fontSize:'10px',color:'#baadbd',letterSpacing:2}).setOrigin(.5).setDepth(2);
-    resume.on('pointerdown',()=>this.unpause());
-    mute.on('pointerdown',()=>{
-      app.progress.setMuted(!app.progress.muted);
-      app.audio.setMuted(app.progress.muted);
-      mute.setText(app.progress.muted?'ENABLE SOUND':'MUTE SOUND');
+    this.app=this.registry.get('app') as GameContext;
+    this.W=this.scale.width;this.H=this.scale.height;
+    this.cameras.main.setBackgroundColor('#eee5d6');
+    this.add.rectangle(this.W/2,this.H/2,this.W,this.H,0xf1eadb);
+    const portrait=this.H>this.W;
+    this.add.text(this.W/2,portrait?43:26,'THE ARCHIVE',{fontFamily:'Georgia,serif',fontStyle:'italic',fontSize:portrait?'29px':'29px',color:'#582744'}).setOrigin(.5);
+    this.add.text(this.W/2,portrait?73:51,'ARCTURIAN AWAKENING',{fontFamily:'monospace',fontSize:'10px',color:'#715363'}).setOrigin(.5);
+    const start=portrait?117:78,gap=portrait?55:35;
+    const button=(label:string,index:number,callback:()=>void)=>{
+      const y=start+index*gap;
+      const rect=this.add.rectangle(this.W/2,y,this.W-36,portrait?40:29,0x582744).setInteractive({useHandCursor:true});
+      const txt=this.add.text(this.W/2,y,label,{fontFamily:'Arial,sans-serif',fontSize:portrait?'14px':'12px',color:'#f9edda'}).setOrigin(.5);
+      rect.on('pointerdown',callback);txt.setInteractive({useHandCursor:true}).on('pointerdown',callback);
+    };
+    button('RESUME',0,()=>this.unpause());
+    button(this.app.progress.muted?'ENABLE SOUND':'MUTE SOUND',1,()=>{
+      this.app.progress.setMuted(!this.app.progress.muted);
+      this.app.audio.setMuted(this.app.progress.muted);
+      this.scene.restart({returnScene:this.parentScene});
     });
+    button('DISCOVERED MUSIC',2,()=>this.showJukebox());
+    button('ACCESSIBILITY',3,()=>this.showAccessibility());
+    button('PRE-SAVE ALBUM',4,()=>{
+      this.app.progress.save();
+      window.open(link('pause'),'_blank','noopener,noreferrer');
+    });
+    this.body=this.add.text(this.W/2,portrait?407:247,'',{
+      fontFamily:'Arial,sans-serif',fontSize:portrait?'11px':'9px',color:'#582744',align:'center',wordWrap:{width:this.W-32}
+    }).setOrigin(.5);
     this.input.keyboard?.once('keydown-ESC',()=>this.unpause());
     this.input.keyboard?.once('keydown-P',()=>this.unpause());
   }
+  private showJukebox(){
+    const first=this.app.progress.has('first_contact');
+    const xaba=this.app.progress.has('xaba');
+    this.body.setText('RECOVERED:\n'+(first?'First Contact':'First Contact — not found')+'\n'+(xaba?'Xaba':'Xaba — not found')+'\nMore music arrives in later chapters.');
+  }
+  private showAccessibility(){
+    this.body.setText('Hold either side to walk. Tap while near the lights to call.\nKeyboard: A / D or arrows; Space interacts.\nMotion follows your system preference. All encounters are retryable.');
+  }
   private unpause(){
-    const app=this.registry.get('app') as GameContext;
     this.scene.resume(this.parentScene);
-    app.audio.resume();
+    this.app.audio.resume();
     this.scene.stop();
   }
 }
