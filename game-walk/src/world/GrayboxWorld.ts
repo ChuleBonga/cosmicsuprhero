@@ -26,7 +26,7 @@ export function buildWorld(scene: Phaser.Scene): WorldPreview {
           if(i%17===0){g.fillRect(x-2,y,5,1);g.fillRect(x,y-2,1,5);}
         }
       } else {
-        const base=groundY-(5-layer)*Math.max(8,Math.floor(H*.07));
+        const base=groundY-(4-layer)*Math.max(8,Math.floor(H*.07));
         g.fillStyle(colors[layer]);
         g.beginPath();g.moveTo(0,H);
         for(let x=0;x<=TILE_WIDTH;x+=2){
@@ -37,7 +37,7 @@ export function buildWorld(scene: Phaser.Scene): WorldPreview {
         }
         g.lineTo(TILE_WIDTH,H);g.closePath();g.fillPath();
         const dot=layer===4?0xc39254:0x6c6386;
-        g.fillStyle(dot,layer===4?.42:.15);
+        g.fillStyle(dot,(layer===4 ? .42 : .15));
         for(let x=0;x<TILE_WIDTH;x+=8)for(let y=Math.floor(base+22);y<H;y+=8) {
           if(((x/8)*3+(y/8)*7)%5===0)g.fillRect(x,y,2,2);
         }
