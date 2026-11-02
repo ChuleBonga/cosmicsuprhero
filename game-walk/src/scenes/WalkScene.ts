@@ -14,7 +14,6 @@ class WalkBase extends Phaser.Scene {
   private figure!: Phaser.GameObjects.Graphics;
   private pause!: Phaser.GameObjects.Text;
   private hint!: Phaser.GameObjects.Text;
-  private label!: Phaser.GameObjects.Text;
   private pickup!: Phaser.GameObjects.Container;
   private motes: Phaser.GameObjects.Container[] = [];
   private keeper?: Phaser.GameObjects.Container;
@@ -79,7 +78,7 @@ class WalkBase extends Phaser.Scene {
     this.input.keyboard?.on('keydown-SPACE',(event:KeyboardEvent)=>{event.preventDefault();this.act();});
     this.input.keyboard?.on('keydown-ESC',()=>this.openPause());
     this.input.keyboard?.on('keydown-P',()=>this.openPause());
-    this.label=this.add.text(Math.floor(W/2),portrait?33:17,this.phase==='name'?'I  /  THE NAME':'PROLOGUE  /  FIRST CONTACT',{
+    this.add.text(Math.floor(W/2),portrait?33:17,this.phase==='name'?'I  /  THE NAME':'PROLOGUE  /  FIRST CONTACT',{
       fontFamily:'monospace',fontSize:portrait?'10px':'10px',fontStyle:'bold',color:'#f4d49b',stroke:'#10172c',strokeThickness:2
     }).setOrigin(.5).setScrollFactor(0).setDepth(40);
     this.pause=this.add.text(W-13,13,'II',{
