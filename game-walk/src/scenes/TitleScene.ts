@@ -33,7 +33,8 @@ export class TitleScene extends Phaser.Scene {
     text('CHAPTER I',bandY-21,portrait?12:14,'#f8c46a');
     text('ARCTURIAN',bandY+bandH*.35,portrait?20:27,'#ffe07e');
     text('AWAKENING',bandY+bandH*.69,portrait?19:26,'#ffe07e');
-    text('TOUCH THE SUN TO BEGIN',Math.min(H-30,bandY+bandH+32),portrait?10:12,'#fff0d5');
+    const touch=matchMedia('(pointer: coarse)').matches;
+    text(touch?'TOUCH THE SUN TO BEGIN':'PRESS ANY KEY',Math.min(H-30,bandY+bandH+32),portrait?10:12,'#fff0d5');
     if(!portrait)this.add.text(W/2,H-14,'A / D TO WALK  ·  SPACE TO INTERACT',{fontFamily:'monospace',fontSize:'8px',color:'#d9c6b0'}).setOrigin(.5);
     const zone=this.add.zone(sunX,sunY,Math.max(70,r*2),Math.max(70,r*2))
       .setInteractive({useHandCursor:true});
