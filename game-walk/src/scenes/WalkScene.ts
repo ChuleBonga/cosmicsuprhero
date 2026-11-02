@@ -19,8 +19,8 @@ class WalkBase extends Phaser.Scene {
   private motes: Phaser.GameObjects.Container[] = [];
   private keeper?: Phaser.GameObjects.Container;
   private fire?: Phaser.GameObjects.Container;
-  private pulseRing?: Phaser.GameObjects.Arc;
   private vx = 0;
+  private preciseX = 0;
   private vy = 0;
   private airborne = 0;
   private onGround = true;
@@ -30,12 +30,10 @@ class WalkBase extends Phaser.Scene {
   private pointerId: number | null = null;
   private pressTime = 0;
   private pressX = 0;
-  private lastPosition = 0;
   private elapsed = 0;
   private lastSave = 0;
   private keyLeft?: Phaser.Input.Keyboard.Key;
   private keyRight?: Phaser.Input.Keyboard.Key;
-  private keyAction?: Phaser.Input.Keyboard.Key;
   private arrows?: Phaser.Types.Input.Keyboard.CursorKeys;
   private pickupDone = false;
   private waitingForMusic = false;
@@ -54,16 +52,15 @@ class WalkBase extends Phaser.Scene {
     const ground = this.world.groundY;
     const x = this.phase==='prologue' ? 90 : 450;
     this.player=this.add.container(x,ground).setDepth(20);
+    this.preciseX=x;
     this.figure=this.add.graphics().setDepth(0);
     this.player.add(this.figure);
-    this.lastPosition=x;
     this.renderFigure(0);
     this.cameras.main.setBounds(0,0,WORLD_WIDTH,H);
     this.cameras.main.startFollow(this.player,true,.085,.10,-Math.floor(W*.20),-Math.floor(H*.05));
     this.arrows=this.input.keyboard?.createCursorKeys();
     this.keyLeft=this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.keyRight=this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-    this.keyAction=this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
     this.input.on('pointerdown',(p:Phaser.Input.Pointer)=>{
       if(p.y<Math.min(H*.14,52))return;
       this.pointerId=p.id;this.held=p.x<W/2?-1:1;this.pressTime=performance.now();this.pressX=p.x;
@@ -230,7 +227,8 @@ class WalkBase extends Phaser.Scene {
     const target=axis*max,deltaV=target-this.vx;
     this.vx+=Math.sign(deltaV)*Math.min(Math.abs(deltaV),(axis?accel:decel)*dt);
     const before=this.player.x;
-    this.player.x=Phaser.Math.Clamp(Math.round(before+this.vx*dt),25,WORLD_WIDTH-25);
+    this.preciseX=Phaser.Math.Clamp(this.preciseX+this.vx*dt,25,WORLD_WIDTH-25);
+    this.player.x=Math.round(this.preciseX);
     // Avoid losing sub-pixel movement at low deltas: integrate fractional remainder separately.
     const distance=Math.abs(this.player.x-before);
     this.app.progress.setDistance(this.app.progress.distance+distance);
