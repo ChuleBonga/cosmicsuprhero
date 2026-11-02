@@ -127,9 +127,8 @@ class WalkBase extends Phaser.Scene {
     g.fillStyle(0xf2ce8c).fillRect(-3,-36,5,2);
     g.fillStyle(0x4a9f9a).fillRect(-14,-18,10,5);
     g.fillRect(4,-13,9,5);
-    const c=this.add.container(x,ground,[g]).setDepth(10);
-    this.add.text(x,ground-49,name,{fontFamily:'monospace',fontSize:'9px',color:'#fff0bc',stroke:'#15203f',strokeThickness:3}).setOrigin(.5).setDepth(11);
-    return c;
+    const label=this.add.text(0,-49,name,{fontFamily:'monospace',fontSize:'9px',color:'#fff0bc',stroke:'#15203f',strokeThickness:3}).setOrigin(.5);
+    return this.add.container(x,ground,[g,label]).setDepth(10);
   }
   private makeKeeper(x:number,ground:number){
     // PLACEHOLDER peaceful keeper silhouette; actual pixel sprite pending.
