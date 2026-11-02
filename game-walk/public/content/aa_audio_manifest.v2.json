@@ -1,0 +1,67 @@
+{
+  "version": 2,
+  "build": "Build 1 preview",
+  "note": "PREVIEW assets on branch predate v3 package. Artist approval for public use is pending; never publish masters.",
+  "tracks": [
+    {
+      "trackId": "awaken_now",
+      "title": "Awaken Now",
+      "src": "/audio/score_awaken_now_loop.m4a",
+      "fallbackSrc": null,
+      "durationSec": null,
+      "loopStartSec": null,
+      "loopEndSec": null,
+      "artistApprovedForWeb": false,
+      "credits": "Cosmicsuprhero",
+      "captionsSrc": null
+    },
+    {
+      "trackId": "first_contact",
+      "title": "First Contact",
+      "src": "/audio/pickup_first_contact.m4a",
+      "fallbackSrc": null,
+      "durationSec": null,
+      "loopStartSec": null,
+      "loopEndSec": null,
+      "artistApprovedForWeb": false,
+      "credits": "Cosmicsuprhero",
+      "captionsSrc": null
+    },
+    {
+      "trackId": "xaba",
+      "title": "Xaba",
+      "src": "/audio/pickup_xaba.m4a",
+      "fallbackSrc": null,
+      "durationSec": null,
+      "loopStartSec": null,
+      "loopEndSec": null,
+      "artistApprovedForWeb": false,
+      "credits": "Cosmicsuprhero",
+      "captionsSrc": null
+    },
+    {
+      "trackId": "mama_calls_me_chule",
+      "title": "Mama Calls Me Chule",
+      "src": null,
+      "fallbackSrc": null,
+      "durationSec": null,
+      "loopStartSec": null,
+      "loopEndSec": null,
+      "artistApprovedForWeb": false,
+      "credits": "Cosmicsuprhero",
+      "captionsSrc": null
+    },
+    {
+      "trackId": "songs_sent_to_god",
+      "title": "Songs Sent to God",
+      "src": null,
+      "fallbackSrc": null,
+      "durationSec": null,
+      "loopStartSec": null,
+      "loopEndSec": null,
+      "artistApprovedForWeb": false,
+      "credits": "Cosmicsuprhero",
+      "captionsSrc": null
+    }
+  ]
+}
