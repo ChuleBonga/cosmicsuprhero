@@ -45,9 +45,36 @@ export class PauseUIScene extends Phaser.Scene {
     this.input.keyboard?.once('keydown-P',()=>this.unpause());
   }
   private showJukebox(){
-    const first=this.app.progress.has('first_contact');
-    const xaba=this.app.progress.has('xaba');
-    this.body.setText('RECOVERED:\n'+(first?'First Contact':'First Contact — not found')+'\n'+(xaba?'Xaba':'Xaba — not found')+'\nMore music arrives in later chapters.');
+    const W=this.W,H=this.H,app=this.app,portrait=H>W;
+    const overlay=this.add.container(0,0).setDepth(100);
+    overlay.add(this.add.rectangle(W/2,H/2,W,H,0xf1eadb));
+    overlay.add(this.add.text(W/2,H*.17,'DISCOVERED MUSIC',{
+      fontFamily:'Georgia,serif',fontStyle:'italic',fontSize:portrait?'24px':'25px',color:'#582744'
+    }).setOrigin(.5));
+    const tracks=[
+      {id:'first_contact' as const,title:'FIRST CONTACT'},
+      {id:'xaba' as const,title:'XABA'}
+    ];
+    tracks.forEach((t,i)=>{
+      const y=H*(portrait?.33:.40)+i*(portrait?62:50);
+      const available=app.progress.has(t.id);
+      const item=this.add.text(W/2,y,available?t.title+'  /  PLAY':t.title+'  /  NOT FOUND',{
+        fontFamily:'monospace',fontSize:portrait?'11px':'12px',color:available?'#fff3e6':'#704f5b',
+        backgroundColor:available?'#582744':'#d4c8b6',padding:{x:12,y:13}
+      }).setOrigin(.5);
+      overlay.add(item);
+      if(available)item.setInteractive({useHandCursor:true}).on('pointerdown',()=>{
+        void app.audio.playPickup(t.id,()=>{});
+      });
+    });
+    overlay.add(this.add.text(W/2,H*.77,'Preview excerpts only.\nOther tracks arrive in later builds.',{
+      fontFamily:'Arial,sans-serif',fontSize:'11px',color:'#704f5b',align:'center'
+    }).setOrigin(.5));
+    const back=this.add.text(W/2,H*.89,'BACK TO PAUSE',{
+      fontFamily:'Arial,sans-serif',fontSize:'13px',color:'#fff7e7',backgroundColor:'#582744',padding:{x:20,y:12}
+    }).setOrigin(.5).setInteractive({useHandCursor:true});
+    overlay.add(back);
+    back.on('pointerdown',()=>overlay.destroy(true));
   }
   private showAccessibility(){
     this.body.setText('Hold either side to walk. Tap while near the lights to call.\nKeyboard: A / D or arrows; Space interacts.\nMotion follows your system preference. All encounters are retryable.');
