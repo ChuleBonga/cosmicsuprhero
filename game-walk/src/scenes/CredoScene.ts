@@ -28,7 +28,7 @@ export class CredoScene extends Phaser.Scene{
     const ground=world.groundY;
     const keeper=this.add.sprite(Math.round(W*.26),ground,'keeper',0).setOrigin(.5,1).setDepth(15);
     keeper.play('keeper-idle');
-    bitmapText(this,'CREDOS WORDS',W/2,Math.round(H*.18),portrait?1:2,0xffd58e).setDepth(31);
+    bitmapText(this,"CREDO'S WORDS",W/2,Math.round(H*.18),portrait?1:2,0xffd58e).setDepth(31);
     this.add.text(W/2,Math.round(H*.26),'Preview audio pending: recording clearance required',{
       fontFamily:'Arial,sans-serif',fontSize:portrait?'10px':'12px',color:'#f8e6c1',
       align:'center',wordWrap:{width:W-30}
