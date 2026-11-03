@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import { ALBUM_TRACKS } from '../src/story/AlbumJourney.ts';
+import { earnedPresaveAccess, INCOMPLETE_JOURNEY } from '../src/story/PresaveJourneyGate.ts';
+const ids=ALBUM_TRACKS.map(t=>t.id);
+assert.equal(earnedPresaveAccess(INCOMPLETE_JOURNEY),false);
+assert.equal(earnedPresaveAccess({finaleResolved:true,awakenedStars:16,experiencedTracks:['meditate']}),false);
+assert.equal(earnedPresaveAccess({finaleResolved:false,awakenedStars:16,experiencedTracks:ids}),false);
+assert.equal(earnedPresaveAccess({finaleResolved:true,awakenedStars:15,experiencedTracks:ids}),false);
+assert.equal(earnedPresaveAccess({finaleResolved:true,awakenedStars:16,experiencedTracks:[...ids].reverse()}),false);
+assert.equal(earnedPresaveAccess({finaleResolved:true,awakenedStars:16,experiencedTracks:ids}),true);
+console.log('Pre-save narrative entitlement checks passed (6 assertions).');
