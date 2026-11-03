@@ -10,8 +10,6 @@ export class PauseUIScene extends Phaser.Scene {
   private parentScene='Prologue';
   private app!:GameContext;
   private overlay:Phaser.GameObjects.Container|null=null;
-  private readonly W=480;
-  private readonly H=270;
   constructor(){super('PauseUI')}
   create(data:PauseData){
     this.parentScene=data.returnScene||'Prologue';
