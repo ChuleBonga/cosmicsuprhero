@@ -8,12 +8,14 @@ export class MeditateScene extends Phaser.Scene {
   private held=false;
   private charge=0;
   private completed=false;
+  private lastTick=0;
   private ring!:Phaser.GameObjects.Graphics;
   private pauseControl!:Phaser.GameObjects.Rectangle;
   private sunX=0;private sunY=0;
   constructor(){super('Meditate');}
   create(){
     this.app=this.registry.get('app') as GameContext;
+    this.lastTick=performance.now();
     const W=this.scale.width,H=this.scale.height,portrait=H>W;
     this.cameras.main.setBackgroundColor('#001334');
     buildWorld(this);
@@ -52,9 +54,11 @@ export class MeditateScene extends Phaser.Scene {
     this.scene.launch('PauseUI',{returnScene:'Meditate'});
     this.scene.pause();
   }
-  update(_time:number,delta:number){
+  update(_time:number,_delta:number){
     if(this.completed)return;
-    const dt=Math.min(.05,delta/1000);
+    const now=performance.now();
+    const dt=Math.min(.25,Math.max(0,(now-this.lastTick)/1000));
+    this.lastTick=now;
     if(this.held)this.charge=Math.min(1,this.charge+dt/1.75);
     else this.charge=Math.max(0,this.charge-dt*.19);
     const g=this.ring;g.clear();
