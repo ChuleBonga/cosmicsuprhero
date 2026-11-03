@@ -11,7 +11,7 @@ class WalkBase extends Phaser.Scene {
   private phase: Phase;
   private world!: WorldPreview;
   private player!: Phaser.GameObjects.Container;
-  private figure!: Phaser.GameObjects.Graphics;
+  private hero!: Phaser.GameObjects.Sprite;
   private pause!: Phaser.GameObjects.Text;
   private hint!: Phaser.GameObjects.Text;
   private pickup!: Phaser.GameObjects.Container;
@@ -52,9 +52,9 @@ class WalkBase extends Phaser.Scene {
     const x = this.phase==='prologue' ? 90 : 450;
     this.player=this.add.container(x,ground).setDepth(20);
     this.preciseX=x;
-    this.figure=this.add.graphics().setDepth(0);
-    this.player.add(this.figure);
-    this.renderFigure(0);
+    this.hero=this.add.sprite(0,0,'alien',0).setOrigin(.5,1).setDepth(0);
+    this.player.add(this.hero);
+    this.hero.play('alien-idle');
     this.cameras.main.setBounds(0,0,WORLD_WIDTH,H);
     this.cameras.main.startFollow(this.player,true,.085,.10,-Math.floor(W*.20),-Math.floor(H*.05));
     this.arrows=this.input.keyboard?.createCursorKeys();
@@ -131,16 +131,10 @@ class WalkBase extends Phaser.Scene {
     return this.add.container(x,ground,[g,label]).setDepth(10);
   }
   private makeKeeper(x:number,ground:number){
-    // PLACEHOLDER peaceful keeper silhouette; actual pixel sprite pending.
-    const g=this.add.graphics();
-    g.fillStyle(0x182441).fillRect(-13,-50,26,48);
-    g.fillStyle(0x286b73).fillRect(-11,-39,22,37);
-    g.fillStyle(0xd2b894).fillRect(-8,-51,16,12);
-    g.fillStyle(0x6b3b60).fillRect(-12,-42,24,8);
-    g.fillStyle(0xf1c06e).fillRect(16,-42,5,6);
-    g.fillStyle(0x7b573f).fillRect(17,-36,3,36);
-    g.fillStyle(0xbec0ad).fillRect(-5,-47,3,2);g.fillRect(3,-47,3,2);
-    return this.add.container(x,ground,[g]).setDepth(10);
+    // Final art candidate: cleaned artist-supplied peaceful Keeper atlas.
+    const figure=this.add.sprite(0,0,'keeper',0).setOrigin(.5,1);
+    figure.play('keeper-idle');
+    return this.add.container(x,ground,[figure]).setDepth(10);
   }
   private makeFire(x:number,ground:number){
     const g=this.add.graphics();
@@ -174,26 +168,9 @@ class WalkBase extends Phaser.Scene {
     this.scene.launch('PauseUI',{returnScene:this.scene.key});
     this.scene.pause();
   }
-  private renderFigure(walkFrame:number){
-    const g=this.figure;g.clear();
-    const f=walkFrame%8,swing=[0,2,3,2,0,-2,-3,-2][f];
-    const bob=Math.abs(swing)>2?1:0;
-    g.fillStyle(0x191a30).fillRect(-12,-4,24,3);
-    // Foot pivot never moves; only inner-leg highlights change.
-    g.fillStyle(0x1c2443).fillRect(-8+swing,-17,6,17);
-    g.fillRect(3-swing,-17,6,17);
-    g.fillStyle(0x4a2c50).fillRect(-14,-36+bob,23,28);
-    g.fillStyle(0x642f55).fillRect(-12,-35+bob,17,28);
-    g.fillStyle(0x273b65).fillRect(-7,-30+bob,15,18);
-    g.fillStyle(0xe5b65f).fillRect(-2,-15+bob,5,3);
-    g.fillStyle(0x36789e).fillRect(-13,-25+bob,5,13);
-    g.fillRect(9,-25+bob,5,13);
-    // Protagonist: PLACEHOLDER art, blue alien in maroon hooded cape.
-    g.fillStyle(0x1a2e55).fillRect(-10,-49+bob,20,18);
-    g.fillStyle(0x2d87b5).fillRect(-8,-47+bob,16,15);
-    g.fillStyle(0x5cc1d8).fillRect(-6,-45+bob,8,5);
-    g.fillStyle(0x081829).fillRect(-5,-40+bob,4,3);
-    g.fillRect(4,-40+bob,3,3);
+  private updateFigure(){
+    const key=Math.abs(this.vx)>9 && this.onGround?'alien-walk':'alien-idle';
+    if(this.hero.anims.currentAnim?.key!==key)this.hero.play(key);
   }
   private onFirstContact(){
     if(this.pickupDone)return;
@@ -242,7 +219,7 @@ class WalkBase extends Phaser.Scene {
       if(this.airborne>=0){this.airborne=0;this.vy=0;this.onGround=true;}
     }
     this.player.y=Math.round(this.world.groundY+this.airborne);
-    this.renderFigure(Math.floor(this.elapsed*12*Math.min(1,Math.abs(this.vx)/65))%8);
+    this.updateFigure();
     this.world.update(this.cameras.main.scrollX);
     if(!this.reduceMotion && this.onGround && Math.abs(this.vx)>35){
       this.dustClock+=dt;
