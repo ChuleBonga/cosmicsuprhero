@@ -6,7 +6,7 @@ This is a **build-time review workflow**, not a live voice-generation endpoint. 
 
 1. From `game-walk/`, run `npx -y @elevenlabs/cli@latest onboard init` on a machine with npm access. Follow the printed onboarding instructions. Alternatively, if you already have a restricted ElevenLabs API key, copy `.env.example` to `.env.local`, replace the placeholder and keep the file private.
 2. Use Node.js 22 or later. Check the local generator with `node scripts/elevenlabs-generate.mjs --help`.
-3. Start with a **dry run**, which consumes no ElevenLabs credits:
+3. Run the offline guard tests with `npm run test:audio`, then start with a **dry run**, which consumes no ElevenLabs credits:
 
    ```sh
    node --env-file=.env.local scripts/elevenlabs-generate.mjs --type sfx --id first-contact-chime --text "A delicate crystalline radio signal emerges from distant starlight, softly resonating, no vocals and no melody" --duration 3
