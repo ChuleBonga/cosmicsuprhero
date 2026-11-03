@@ -21,7 +21,7 @@ export class TitleScene extends Phaser.Scene{
     this.add.rectangle(Math.round(W/2),bandY,W,bandH,0xcdbd8f,.92).setDepth(12);
     const top=bitmapText(this,'CHAPTER I',W/2,bandY-bandH/2-19,portrait?2:2,0xffcc2e);
     top.setDepth(13);
-    const letterPixel=portrait?3:4;
+    const letterPixel=portrait?(W<190?2:3):(W>620?5:4);
     const first=bitmapText(this,'ARCTURIAN',W/2,bandY-17,letterPixel,0xffd459);
     const second=bitmapText(this,'AWAKENING',W/2,bandY+21,letterPixel,0xffd459);
     first.setDepth(13);second.setDepth(13);
