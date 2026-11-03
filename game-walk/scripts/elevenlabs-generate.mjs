@@ -1,4 +1,4 @@
-import { mkdir, writeFile } from 'node:fs/promises';
+import { access, mkdir, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 
 const USAGE = [
@@ -59,6 +59,13 @@ async function main() {
     console.log(JSON.stringify({ type, id, text: prompt, durationSec: duration ?? null, output: destination, requiresApproval: true }, null, 2));
     console.log('Repeat with --confirm to generate review audio.');
     return;
+  }
+  // Check for existing output BEFORE a billable API request.
+  try {
+    await access(destination);
+    throw new Error('Review file already exists: ' + destination + '. Choose a new --id before spending credits.');
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
   }
   const key = process.env.ELEVENLABS_API_KEY;
   if (!key) throw new Error('Missing ELEVENLABS_API_KEY. Copy .env.example to .env.local and load with node --env-file=.env.local. Never commit the key.');
