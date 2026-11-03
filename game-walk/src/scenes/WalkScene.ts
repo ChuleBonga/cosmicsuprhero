@@ -29,7 +29,7 @@ export class PrologueScene extends Phaser.Scene {
   private elapsed=0;private lastSave=0;private dustClock=0;
   private beat=0;private captionElapsed=0;
   private waitingForMusic=false;private pickupDone=false;private transitioned=false;
-  private reduceMotion=false;private dialogueLocked=false;
+  private reduceMotion=false;
 
   constructor(){super('Prologue')}
   create(){
