@@ -5,7 +5,7 @@ import {bitmapText} from '../art/BitmapType';
 
 export class CrossingScene extends Phaser.Scene{
   private app!:GameContext;
-  private elapsed=0;
+  private startedAt=0;
   private finished=false;
   private ring!:Phaser.GameObjects.Graphics;
   private reduce=false;
@@ -13,6 +13,7 @@ export class CrossingScene extends Phaser.Scene{
   constructor(){super('Crossing')}
   create(){
     this.app=this.registry.get('app') as GameContext;
+    this.startedAt=performance.now();
     const W=this.scale.width,H=this.scale.height;
     this.reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
     this.cameras.main.setBackgroundColor('#001334');
@@ -26,10 +27,10 @@ export class CrossingScene extends Phaser.Scene{
     this.input.keyboard?.once('keydown-SPACE',()=>this.finish());
     this.input.keyboard?.once('keydown-ENTER',()=>this.finish());
   }
-  update(_time:number,delta:number){
+  update(_time:number,_delta:number){
     if(this.finished)return;
-    this.elapsed+=Math.min(.05,delta/1000);
-    const duration=this.reduce?.65:2.65,p=Math.min(1,this.elapsed/duration);
+    const elapsed=(performance.now()-this.startedAt)/1000;
+    const duration=this.reduce?0.65:2.65,p=Math.min(1,elapsed/duration);
     this.ring.clear();
     for(let i=0;i<5;i++){
       const radius=Math.floor(22+(i*11)+p*p*70);
