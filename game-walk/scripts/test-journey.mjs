@@ -22,4 +22,4 @@ x=transition(x,'CONTINUE_FROM_CREDO');assert.equal(x.stage,'campfire');
 assert.equal(restoreJourney({...x,discovered:[],stage:'campfire'}).stage,'first_contact');
 assert.equal(restoreJourney({...x,distance:Infinity}).distance,0);
 assert.equal(transition(x,'RESET').stage,'meditate');
-console.log('Opening story checks passed (13 assertions).');
+console.log('Opening story checks passed (17 assertions).');
