@@ -24,7 +24,6 @@ export class MeditateScene extends Phaser.Scene {
     this.sunX=Math.round(W*.71);this.sunY=Math.round(H*(portrait?.26:.25));
     bitmapText(this,'MEDITATE',W/2,Math.round(H*.47),portrait?2:3,0xf5c774).setScrollFactor(0).setDepth(22);
     bitmapText(this,'HOLD THE SUN TO ENTER',W/2,Math.round(H*.78),1,0xece1c5).setScrollFactor(0).setDepth(22);
-    bitmapText(this,'AUDIO PREVIEW PENDING',W/2,Math.round(H*.85),1,0xc0b4a8).setScrollFactor(0).setDepth(22);
     this.ring=this.add.graphics().setScrollFactor(0).setDepth(24);
     this.pauseControl=this.add.rectangle(W-17,18,28,28,0x382b48,.91).setDepth(25).setInteractive({useHandCursor:true});
     this.add.text(W-17,18,'II',{fontFamily:'monospace',fontSize:'13px',color:'#f0d5a9'}).setOrigin(.5).setDepth(26);
