@@ -32,7 +32,8 @@ export class TitleScene extends Phaser.Scene {
     bitmapText(this,touch?'TOUCH THE SUN TO BEGIN':'PRESS ENTER OR TOUCH SUN',304,239,2,0xf8d69c,0x09152f).setDepth(25);
     this.add.zone(341,68,102,102).setInteractive({useHandCursor:true})
       .on('pointerdown',()=>this.begin(app));
-    this.input.keyboard?.once('keydown',()=>this.begin(app));
+    this.input.keyboard?.once('keydown-ENTER',()=>this.begin(app));
+    this.input.keyboard?.once('keydown-SPACE',()=>this.begin(app));
   }
   private begin(app:GameContext){
     if(this.started)return;
