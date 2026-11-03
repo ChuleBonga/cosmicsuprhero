@@ -31,6 +31,16 @@ class BootScene extends Phaser.Scene {
     this.load.image('far-tile','/play/art/far_tile.png');
     this.load.image('middle-tile','/play/art/middle_tile.png');
     this.load.image('near-tile','/play/art/near_tile.png');
+    // Rich painterly arrival assets. Authored layers are independent textures
+    // so camera movement produces actual depth, rather than a single JPEG pan.
+    const art='/play/art/arrival/';
+    this.load.image('arrival-sky',art+'sky.webp');
+    this.load.image('arrival-sun',art+'sun.webp');
+    this.load.image('arrival-far',art+'far.webp');
+    this.load.image('arrival-mid',art+'mid.webp');
+    this.load.image('arrival-near',art+'near.webp');
+    this.load.image('arrival-ground',art+'foreground.webp');
+    this.load.spritesheet('arrival-landmark',art+'landmarks.webp',{frameWidth:96,frameHeight:128});
   }
   create() {
     this.anims.create({key:'alien-idle',frames:this.anims.generateFrameNumbers('alien',{start:0,end:3}),frameRate:4,repeat:-1});
