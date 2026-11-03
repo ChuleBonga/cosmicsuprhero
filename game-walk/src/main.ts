@@ -14,9 +14,13 @@ const audio = new AudioDirector(message => {
   if (status) status.textContent = message;
 });
 const app: GameContext = { audio, progress };
-const portrait = innerHeight > innerWidth;
-const W = portrait ? 270 : 480;
-const H = portrait ? 480 : 270;
+const portrait=innerHeight>innerWidth;
+// Responsive logical camera with integer scaling: an iPhone viewport
+// becomes a native 195×422 scene at 2×, not a 270×480 island in empty space.
+// All sprites remain exactly one native art pixel per logical canvas pixel.
+const integerScale=portrait?2:Math.max(2,Math.round(innerWidth/480));
+const W=Math.max(160,Math.floor(innerWidth/integerScale));
+const H=Math.max(190,Math.floor(innerHeight/integerScale));
 
 class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
@@ -46,7 +50,7 @@ const game = new Phaser.Game({
 });
 // Whole-number CSS scaling: no fractional pixel scaling.
 function resize() {
-  const factor = Math.max(1, Math.floor(Math.min(innerWidth / W, innerHeight / H)));
+  const factor=integerScale;
   const canvas = document.querySelector('#game canvas') as HTMLCanvasElement | null;
   if (canvas) {
     canvas.style.width = String(W * factor) + 'px';
