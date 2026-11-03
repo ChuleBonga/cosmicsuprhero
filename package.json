@@ -5,14 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && npm install --prefix game-walk --no-audit --no-fund && npm run build --prefix game-walk && node scripts/embed-game.mjs",
     "preview": "vite preview",
     "validate:assets": "node scripts/validate-public-assets.mjs",
     "check": "npm run build",
     "remotion:studio": "remotion studio src/remotion/index.ts",
     "remotion:render:observatory": "remotion render src/remotion/index.ts observatory-intro renders/observatory-intro.mp4",
     "remotion:render:soil": "remotion render src/remotion/index.ts chamber-soil-and-sun renders/chamber-soil-and-sun.mp4",
-    "remotion:render:all": "node scripts/render-remotion-compositions.mjs"
+    "remotion:render:all": "node scripts/render-remotion-compositions.mjs",
+    "build:site": "vite build"
   },
   "dependencies": {
     "framer-motion": "^12.23.24",

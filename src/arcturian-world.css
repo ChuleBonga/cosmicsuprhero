@@ -303,3 +303,7 @@ footer{background:var(--wine);color:#f9eddf;padding:45px clamp(20px,6vw,100px) 2
   .music-strip__heading>div{align-items:center;gap:10px}
 }
 .inline-north-east{width:13px;height:13px;display:inline-block;vertical-align:-2px;flex:none;margin-left:5px}
+
+/* Additive entry to the separate playable Chapter I preview. */
+.game-entry .game-entry__external{pointer-events:auto;display:inline-flex;align-items:center;gap:12px;background:rgba(17,26,48,.86);border:1px solid rgba(247,231,195,.75);color:#fff4d9;padding:10px 13px;font:600 11px/1.4 var(--sans);text-decoration:none;max-width:100%;transition:background .15s}
+.game-entry .game-entry__external:hover,.game-entry .game-entry__external:focus-visible{background:rgba(55,39,72,.95)}

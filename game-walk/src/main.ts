@@ -28,11 +28,11 @@ const H=Math.max(190,Math.floor(innerHeight/integerScale));
 class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
   preload() {
-    this.load.spritesheet('alien','/art/protagonist_atlas.png',{frameWidth:32,frameHeight:52});
-    this.load.spritesheet('keeper','/art/keeper_atlas.png',{frameWidth:64,frameHeight:92});
-    this.load.image('far-tile','/art/far_tile.png');
-    this.load.image('middle-tile','/art/middle_tile.png');
-    this.load.image('near-tile','/art/near_tile.png');
+    this.load.spritesheet('alien','/play/art/protagonist_atlas.png',{frameWidth:32,frameHeight:52});
+    this.load.spritesheet('keeper','/play/art/keeper_atlas.png',{frameWidth:64,frameHeight:92});
+    this.load.image('far-tile','/play/art/far_tile.png');
+    this.load.image('middle-tile','/play/art/middle_tile.png');
+    this.load.image('near-tile','/play/art/near_tile.png');
   }
   create() {
     this.anims.create({key:'alien-idle',frames:this.anims.generateFrameNumbers('alien',{start:0,end:3}),frameRate:4,repeat:-1});

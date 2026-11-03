@@ -45,7 +45,7 @@ export class AudioDirector {
     const context=this.ctx;
     try{
       if(!this.cache) {
-        this.cache=fetch('/audio/pickup_first_contact.m4a')
+        this.cache=fetch('/play/audio/pickup_first_contact.m4a')
           .then(async r=>{
             if(!r.ok)throw new Error('Preview audio missing');
             return await context.decodeAudioData(await r.arrayBuffer());
