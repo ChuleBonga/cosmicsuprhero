@@ -63,7 +63,8 @@ export class AudioDirector {
       let done=false;
       const finish=()=>{
         if(done||token!==this.token)return;
-        done=true;this.playing=false;this.active=null;finished();
+        done=true;this.playing=false;this.active=null;
+        this.onStatus('First Contact preview finished');finished();
       };
       source.addEventListener('ended',finish,{once:true});
       source.start();
