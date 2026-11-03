@@ -12,15 +12,18 @@ const JSON_HEADERS={'Cache-Control':'no-store','Content-Type':'application/json;
 export default async function handler(req,res){
   Object.entries(JSON_HEADERS).forEach(([key,value])=>res.setHeader(key,value));
   res.setHeader('X-Content-Type-Options','nosniff');
+  const {MAILCHIMP_API_KEY:key,MAILCHIMP_LIST_ID:list,MAILCHIMP_SERVER_PREFIX:prefix}=process.env;
+  if(req.method==='GET')
+    return res.status(200).json({ready:Boolean(key&&list&&prefix),required:'secure_provider_connection'});
   if(req.method!=='POST'){
-    res.setHeader('Allow','POST');
+    res.setHeader('Allow','GET, POST');
     return res.status(405).json({error:'method_not_allowed'});
   }
   const origin=String(req.headers.origin||'');
   const host=String(req.headers['x-forwarded-host']||req.headers.host||'');
-  if(!origin || !host || new URL(origin).host!==host)
-    return res.status(403).json({error:'origin_invalid'});
-  const {MAILCHIMP_API_KEY:key,MAILCHIMP_LIST_ID:list,MAILCHIMP_SERVER_PREFIX:prefix}=process.env;
+  let validOrigin=false;
+  try{validOrigin=Boolean(origin&&host&&new URL(origin).host===host);}catch{}
+  if(!validOrigin)return res.status(403).json({error:'origin_invalid'});
   if(!key||!list||!prefix)
     return res.status(503).json({error:'gateway_not_configured',message:'Direct access is not yet accepting registrations.'});
   // A distributed rate limit + bot protection is a release prerequisite.

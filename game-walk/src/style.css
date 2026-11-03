@@ -33,3 +33,28 @@ a:focus-visible{outline:2px solid #e4bd7d;outline-offset:5px}
   .scene-top{font-size:10px}
   .scene-bottom{font-size:10px}
 }
+
+/* Direct-access archive terminal. DOM reserved for keyboard and screen-reader
+   forms; the game remains in the dedicated fixed-aspect canvas. */
+.scene-bottom__presave{font:inherit;background:none;border:0;cursor:pointer;letter-spacing:inherit}
+.access-dialog{width:min(440px,calc(100vw - 28px));max-height:min(680px,calc(100dvh - 24px));overflow-y:auto;border:1px solid #967e6a;padding:26px;background:#f2ecdf;color:#3d2940;box-shadow:0 12px 80px #050a14e6;position:fixed;inset:0;margin:auto}
+.access-dialog::backdrop{background:#020912db;backdrop-filter:blur(3px)}
+.access-dialog__heading{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.access-dialog__eyebrow{font:600 10px/1.5 Arial,sans-serif;letter-spacing:.13em;color:#8a6573}
+.access-dialog__close{border:0;background:none;color:#68364c;font-size:30px;cursor:pointer;line-height:1;width:36px;height:36px}
+.access-dialog h2{font:italic 35px/1.1 Georgia,serif;font-weight:normal;margin:16px 0;color:#542a45}
+.access-dialog__intro{font:14px/1.6 Georgia,serif;margin:0 0 12px;color:#5e4651}
+.access-dialog__note{font:12px/1.5 Arial,sans-serif;color:#765f64;margin:0 0 20px}
+#access-form{display:flex;flex-direction:column;gap:7px}
+#access-form>label:not(.access-dialog__optin){font:600 11px/1.2 Arial,sans-serif;text-transform:uppercase;letter-spacing:.09em;color:#583949;margin-top:10px}
+#access-form>input:not([type="checkbox"]){width:100%;min-height:46px;padding:12px;background:#fdf9f2;border:1px solid #b7a69c;color:#312c35;border-radius:0;font:16px Arial,sans-serif}
+#access-form>input:focus-visible{outline:2px solid #6b475d;outline-offset:2px}
+.access-dialog__optin{display:flex;align-items:flex-start;gap:10px;font:12px/1.45 Arial,sans-serif;color:#654b57;margin:11px 0 0}
+.access-dialog__optin input{width:18px;height:18px;flex:none;margin:0;accent-color:#67374f}
+.access-dialog__privacy{font:11px/1.55 Arial,sans-serif;color:#785c64;margin:7px 0 10px}
+.access-dialog__submit,#access-result{background:#552947;color:#fcf4e5;min-height:46px;border:0;font:600 13px/1.2 Arial,sans-serif;letter-spacing:.04em;padding:14px 18px;cursor:pointer;text-align:center;text-decoration:none}
+.access-dialog__submit:disabled{cursor:not-allowed;opacity:.52}
+#access-status{color:#785b62;font:12px/1.45 Arial,sans-serif;margin:6px 0}
+#access-result:not([hidden]){display:block}
+.access-dialog__honeypot{display:none!important}
+@media(max-height:560px){.access-dialog{padding:16px}.access-dialog h2{font-size:27px;margin:8px 0}.access-dialog__note{margin-bottom:8px}}

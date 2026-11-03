@@ -21,8 +21,32 @@
   </div>
   <footer class="scene-bottom">
     <span class="scene-bottom__note">Rotate your phone for a larger cinematic frame.</span>
-    <a class="scene-bottom__presave" href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening?utm_source=game&amp;utm_medium=preview&amp;utm_campaign=arcturian-awakening" target="_blank" rel="noopener noreferrer">Pre-save album ↗</a>
+    <button class="scene-bottom__presave" type="button" data-open-access>Direct album access <span aria-hidden="true">↗</span></button>
   </footer>
+  <dialog class="access-dialog" id="access-dialog" aria-labelledby="access-title">
+    <div class="access-dialog__heading">
+      <span class="access-dialog__eyebrow">ARCTURIAN AWAKENING / THE GATEWAY</span>
+      <button type="button" class="access-dialog__close" data-close-access aria-label="Close direct access dialog">×</button>
+    </div>
+    <h2 id="access-title">Two ways to the music.</h2>
+    <p class="access-dialog__intro">Complete the sixteen-chapter pilgrimage to reveal the pre-save naturally, or request direct access below.</p>
+    <p class="access-dialog__note">The full journey is still being built. Direct access opens when secure registration is connected.</p>
+    <form id="access-form" novalidate>
+      <label for="access-name">Name</label>
+      <input id="access-name" name="name" type="text" autocomplete="name" minlength="2" maxlength="80" placeholder="Your name" required>
+      <label for="access-email">Email address</label>
+      <input id="access-email" name="email" type="email" autocomplete="email" maxlength="254" placeholder="you@example.com" required>
+      <label class="access-dialog__optin" for="access-updates">
+        <input id="access-updates" type="checkbox" name="updates">
+        <span>Optional: email me release updates from Cosmicsuprhero. I can unsubscribe anytime.</span>
+      </label>
+      <input name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" class="access-dialog__honeypot">
+      <p class="access-dialog__privacy">Your name and email are used to process direct access. Marketing updates are optional, not a condition of access.</p>
+      <button class="access-dialog__submit" type="submit" disabled>Connect to album</button>
+      <p id="access-status" role="status" aria-live="polite">Checking availability…</p>
+      <a id="access-result" hidden target="_blank" rel="noopener noreferrer">Open album pre-save</a>
+    </form>
+  </dialog>
   <div id="dom-status" class="sr-only" role="status" aria-live="polite"></div>
 </main>
 <script type="module" src="/src/main.ts"></script>

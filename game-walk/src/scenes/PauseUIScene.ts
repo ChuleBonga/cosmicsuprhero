@@ -2,8 +2,6 @@ import Phaser from 'phaser';
 import type {GameContext} from '../main';
 
 interface PauseData {returnScene:string}
-const PRESAVE='https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening';
-const presaveLink=PRESAVE+'?utm_source=game&utm_medium=pause&utm_campaign=arcturian-awakening';
 
 /** Album-sleeve controls, composed on the fixed 480x270 cinematic grid. */
 export class PauseUIScene extends Phaser.Scene {
@@ -34,9 +32,9 @@ export class PauseUIScene extends Phaser.Scene {
     });
     this.action('DISCOVERED MUSIC',135,166,200,44,()=>this.showJukebox());
     this.action('ACCESSIBILITY',345,166,200,44,()=>this.showAccessibility());
-    this.action('PRE-SAVE THE ALBUM',240,223,410,42,()=>{
+    this.action('DIRECT ALBUM ACCESS',240,223,410,42,()=>{
       this.app.progress.save();
-      window.open(presaveLink,'_blank','noopener,noreferrer');
+      window.dispatchEvent(new Event('arcturian:open-access'));
     });
     this.input.keyboard?.once('keydown-ESC',()=>this.unpause());
     this.input.keyboard?.once('keydown-P',()=>this.unpause());

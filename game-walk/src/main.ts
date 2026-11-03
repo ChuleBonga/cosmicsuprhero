@@ -94,3 +94,67 @@ document.addEventListener('visibilitychange', () => {
   if (document.hidden) { progress.save(); audio.pause(); game.loop.sleep(); }
   else { game.loop.wake(); }
 });
+
+// The accessible direct-access form lives outside Phaser so it works with
+// keyboard, voice control, autofill, and native mobile email keyboards.
+const accessDialog=document.getElementById('access-dialog') as HTMLDialogElement|null;
+const accessForm=document.getElementById('access-form') as HTMLFormElement|null;
+const accessStatus=document.getElementById('access-status');
+const accessResult=document.getElementById('access-result') as HTMLAnchorElement|null;
+const submit=accessForm?.querySelector<HTMLButtonElement>('button[type=submit]');
+let ready=false;
+function showAccess():void {
+  if(!accessDialog)return;
+  if(!accessDialog.open)accessDialog.showModal();
+  void probeAccess();
+}
+async function probeAccess():Promise<void>{
+  try{
+    const response=await fetch('/api/presave-access',{cache:'no-store'});
+    const result=await response.json();
+    ready=response.ok && result.ready===true;
+    if(submit)submit.disabled=!ready;
+    if(accessStatus)accessStatus.textContent=ready?'Enter your details for direct access.':'Direct access is not yet accepting registrations. Your details have not been collected.';
+  }catch{
+    ready=false;
+    if(submit)submit.disabled=true;
+    if(accessStatus)accessStatus.textContent='The direct gateway is currently unavailable. No information has been sent.';
+  }
+}
+document.querySelectorAll('[data-open-access]').forEach(btn=>btn.addEventListener('click',showAccess));
+window.addEventListener('arcturian:open-access',showAccess);
+document.querySelectorAll('[data-close-access]').forEach(btn=>btn.addEventListener('click',()=>accessDialog?.close()));
+accessDialog?.addEventListener('click',event=>{
+  if(event.target===accessDialog)accessDialog.close();
+});
+accessForm?.addEventListener('submit',async event=>{
+  event.preventDefault();
+  if(!ready||!accessForm.reportValidity())return;
+  const data=new FormData(accessForm);
+  submit!.disabled=true;
+  if(accessStatus)accessStatus.textContent='Registering direct access…';
+  try{
+    const response=await fetch('/api/presave-access',{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        name:String(data.get('name')||'').trim(),
+        email:String(data.get('email')||'').trim(),
+        updates:data.get('updates')==='on',
+        company:String(data.get('company')||'')
+      })
+    });
+    const result=await response.json();
+    if(!response.ok || result.access!=='granted' ||
+       typeof result.destination!=='string' ||
+       !result.destination.startsWith('https://share.amuse.io/'))throw new Error('registration');
+    if(accessResult){accessResult.href=result.destination;accessResult.hidden=false;}
+    if(accessStatus)accessStatus.textContent='Gateway ready. Open the album pre-save below.';
+    accessForm.querySelectorAll<HTMLInputElement>('input').forEach(el=>el.disabled=true);
+  }catch{
+    if(accessStatus)accessStatus.textContent='We could not complete your request. Your details were not confirmed as saved.';
+    submit!.disabled=false;
+  }
+});
+if(new URLSearchParams(location.search).get('access')==='direct'){
+  requestAnimationFrame(showAccess);
+}

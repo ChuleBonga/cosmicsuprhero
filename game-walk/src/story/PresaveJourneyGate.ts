@@ -1,4 +1,4 @@
-import { ALBUM_TRACKS } from './AlbumJourney';
+import { ALBUM_TRACKS } from './AlbumJourney.ts';
 import type { TrackId } from './AlbumJourney';
 
 /** Completion of Chapter I is never completion of the full album pilgrimage. */
