@@ -20,7 +20,19 @@ const H = portrait ? 480 : 270;
 
 class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
-  create() { this.registry.set('app', app); this.scene.start('Title'); }
+  preload() {
+    this.load.spritesheet('alien','/art/protagonist_atlas.png',{frameWidth:32,frameHeight:52});
+    this.load.spritesheet('keeper','/art/keeper_atlas.png',{frameWidth:64,frameHeight:92});
+    this.load.image('far-tile','/art/far_tile.png');
+    this.load.image('middle-tile','/art/middle_tile.png');
+    this.load.image('near-tile','/art/near_tile.png');
+  }
+  create() {
+    this.anims.create({key:'alien-idle',frames:this.anims.generateFrameNumbers('alien',{start:0,end:3}),frameRate:4,repeat:-1});
+    this.anims.create({key:'alien-walk',frames:this.anims.generateFrameNumbers('alien',{start:4,end:11}),frameRate:12,repeat:-1});
+    this.anims.create({key:'keeper-idle',frames:this.anims.generateFrameNumbers('keeper',{start:0,end:1}),frameRate:1,repeat:-1});
+    this.registry.set('app',app);this.scene.start('Title');
+  }
 }
 
 const game = new Phaser.Game({
