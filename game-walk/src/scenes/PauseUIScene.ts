@@ -1,84 +1,99 @@
 import Phaser from 'phaser';
 import type {GameContext} from '../main';
-interface PauseData{returnScene:string}
+
+interface PauseData {returnScene:string}
 const PRESAVE='https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening';
-const link=(source:'pause'|'preview')=>PRESAVE+'?utm_source=game&utm_medium='+source+'&utm_campaign=arcturian-awakening';
+const presaveLink=PRESAVE+'?utm_source=game&utm_medium=pause&utm_campaign=arcturian-awakening';
+
+/** Album-sleeve controls, composed on the fixed 480x270 cinematic grid. */
 export class PauseUIScene extends Phaser.Scene {
   private parentScene='Prologue';
   private app!:GameContext;
-  private W=0;
-  private H=0;
-  private body!:Phaser.GameObjects.Text;
+  private overlay:Phaser.GameObjects.Container|null=null;
+  private readonly W=480;
+  private readonly H=270;
   constructor(){super('PauseUI')}
   create(data:PauseData){
     this.parentScene=data.returnScene||'Prologue';
     this.app=this.registry.get('app') as GameContext;
-    this.W=this.scale.width;this.H=this.scale.height;
-    this.cameras.main.setBackgroundColor('#eee5d6');
-    this.add.rectangle(this.W/2,this.H/2,this.W,this.H,0xf1eadb);
-    const portrait=this.H>this.W;
-    this.add.text(this.W/2,portrait?43:26,'THE ARCHIVE',{fontFamily:'Georgia,serif',fontStyle:'italic',fontSize:portrait?'29px':'29px',color:'#582744'}).setOrigin(.5);
-    this.add.text(this.W/2,portrait?73:51,'ARCTURIAN AWAKENING',{fontFamily:'monospace',fontSize:'10px',color:'#715363'}).setOrigin(.5);
-    const start=portrait?117:78,gap=portrait?55:35;
-    const button=(label:string,index:number,callback:()=>void)=>{
-      const y=start+index*gap;
-      const rect=this.add.rectangle(this.W/2,y,this.W-36,portrait?40:29,0x582744).setInteractive({useHandCursor:true});
-      const txt=this.add.text(this.W/2,y,label,{fontFamily:'Arial,sans-serif',fontSize:portrait?'14px':'12px',color:'#f9edda'}).setOrigin(.5);
-      rect.on('pointerdown',callback);txt.setInteractive({useHandCursor:true}).on('pointerdown',callback);
-    };
-    button('RESUME',0,()=>this.unpause());
-    button(this.app.progress.muted?'ENABLE SOUND':'MUTE SOUND',1,()=>{
+    this.cameras.main.setBackgroundColor('#f1eadb');
+    this.add.rectangle(240,135,480,270,0xf1eadb);
+    this.add.rectangle(240,13,428,1,0xc7b69c);
+    this.add.text(240,39,'THE ARCHIVE',{
+      fontFamily:'Georgia,serif',fontStyle:'italic',fontSize:'33px',color:'#582744'
+    }).setOrigin(.5);
+    this.add.text(240,67,'ARCTURIAN AWAKENING  /  CHAPTER I',{
+      fontFamily:'Arial,sans-serif',fontSize:'10px',color:'#806273',letterSpacing:1
+    }).setOrigin(.5);
+    this.add.rectangle(240,82,428,1,0xc7b69c);
+
+    // Two columns with larger targets, not five generic full-width bars.
+    this.action('RESUME',135,112,200,44,()=>this.unpause(),true);
+    this.action(this.app.progress.muted?'ENABLE SOUND':'MUTE SOUND',345,112,200,44,()=>{
       this.app.progress.setMuted(!this.app.progress.muted);
       this.app.audio.setMuted(this.app.progress.muted);
       this.scene.restart({returnScene:this.parentScene});
     });
-    button('DISCOVERED MUSIC',2,()=>this.showJukebox());
-    button('ACCESSIBILITY',3,()=>this.showAccessibility());
-    button('PRE-SAVE ALBUM',4,()=>{
+    this.action('DISCOVERED MUSIC',135,166,200,44,()=>this.showJukebox());
+    this.action('ACCESSIBILITY',345,166,200,44,()=>this.showAccessibility());
+    this.action('PRE-SAVE THE ALBUM',240,223,410,42,()=>{
       this.app.progress.save();
-      window.open(link('pause'),'_blank','noopener,noreferrer');
+      window.open(presaveLink,'_blank','noopener,noreferrer');
     });
-    this.body=this.add.text(this.W/2,portrait?407:247,'',{
-      fontFamily:'Arial,sans-serif',fontSize:portrait?'11px':'9px',color:'#582744',align:'center',wordWrap:{width:this.W-32}
-    }).setOrigin(.5);
     this.input.keyboard?.once('keydown-ESC',()=>this.unpause());
     this.input.keyboard?.once('keydown-P',()=>this.unpause());
   }
-  private showJukebox(){
-    const W=this.W,H=this.H,app=this.app,portrait=H>W;
-    const overlay=this.add.container(0,0).setDepth(100);
-    overlay.add(this.add.rectangle(W/2,H/2,W,H,0xf1eadb));
-    overlay.add(this.add.text(W/2,H*.17,'DISCOVERED MUSIC',{
-      fontFamily:'Georgia,serif',fontStyle:'italic',fontSize:portrait?'24px':'25px',color:'#582744'
-    }).setOrigin(.5));
-    const tracks=[
-      {id:'first_contact' as const,title:'FIRST CONTACT'}
-    ];
-    tracks.forEach((t,i)=>{
-      const y=H*(portrait?.33:.40)+i*(portrait?62:50);
-      const available=app.progress.has(t.id);
-      const item=this.add.text(W/2,y,available?t.title+'  /  PLAY':t.title+'  /  NOT FOUND',{
-        fontFamily:'monospace',fontSize:portrait?'11px':'12px',color:available?'#fff3e6':'#704f5b',
-        backgroundColor:available?'#582744':'#d4c8b6',padding:{x:12,y:13}
-      }).setOrigin(.5);
-      overlay.add(item);
-      if(available)item.setInteractive({useHandCursor:true}).on('pointerdown',()=>{
-        void app.audio.playPickup(t.id,()=>{});
-      });
-    });
-    overlay.add(this.add.text(W/2,H*.77,'Preview excerpts only.\nOther tracks arrive in later builds.',{
-      fontFamily:'Arial,sans-serif',fontSize:'11px',color:'#704f5b',align:'center'
-    }).setOrigin(.5));
-    const back=this.add.text(W/2,H*.89,'BACK TO PAUSE',{
-      fontFamily:'Arial,sans-serif',fontSize:'13px',color:'#fff7e7',backgroundColor:'#582744',padding:{x:20,y:12}
+  private action(label:string,x:number,y:number,w:number,h:number,callback:()=>void,filled=false,container?:Phaser.GameObjects.Container){
+    const rect=this.add.rectangle(x,y,w,h,filled?0x582744:0xf1eadb)
+      .setStrokeStyle(1,filled?0x582744:0x927486,.9);
+    const txt=this.add.text(x,y,label,{
+      fontFamily:'Arial,sans-serif',fontSize:'14px',fontStyle:'bold',
+      color:filled?'#fff5e8':'#582744'
+    }).setOrigin(.5);
+    // Invisible 52px-high pointer target, overlapping neither row.
+    const hit=this.add.zone(x,y,w,Math.min(52,h+7)).setInteractive({useHandCursor:true});
+    hit.on('pointerdown',callback);
+    if(container)container.add([rect,txt,hit]);
+    return {rect,txt,hit};
+  }
+  private baseOverlay(title:string){
+    this.overlay?.destroy(true);
+    const layer=this.add.container(0,0).setDepth(100);
+    layer.add(this.add.rectangle(240,135,480,270,0xf1eadb));
+    layer.add(this.add.rectangle(240,18,424,1,0xc7b69c));
+    layer.add(this.add.text(240,48,title,{fontFamily:'Georgia,serif',fontStyle:'italic',fontSize:'31px',color:'#582744'}).setOrigin(.5));
+    const back=this.add.text(240,236,'BACK TO PAUSE',{
+      fontFamily:'Arial,sans-serif',fontSize:'14px',color:'#fff4e5',
+      backgroundColor:'#582744',padding:{x:24,y:12}
     }).setOrigin(.5).setInteractive({useHandCursor:true});
-    overlay.add(back);
-    back.on('pointerdown',()=>overlay.destroy(true));
+    layer.add(back);
+    back.on('pointerdown',()=>{layer.destroy(true);this.overlay=null;});
+    this.overlay=layer;
+    return layer;
+  }
+  private showJukebox(){
+    const layer=this.baseOverlay('Discovered music');
+    const available=this.app.progress.has('first_contact');
+    layer.add(this.add.text(240,123,
+      available?'FIRST CONTACT  /  PREVIEW UNAVAILABLE':'FIRST CONTACT  /  NOT DISCOVERED',{
+      fontFamily:'Arial,sans-serif',fontSize:'14px',color:'#582744',align:'center'
+    }).setOrigin(.5));
+    layer.add(this.add.text(240,172,'The artist-approved excerpt is pending publication clearance.',{
+      fontFamily:'Arial,sans-serif',fontSize:'12px',color:'#755665',
+      align:'center',wordWrap:{width:390}
+    }).setOrigin(.5));
   }
   private showAccessibility(){
-    this.body.setText('Meditate: hold the sun to open the passage.\nWalk: hold a side or use A/D or arrows. Space jumps.\nCredo: drag the light, or press Space to continue.\nReduced-motion follows your device settings.');
+    const layer=this.baseOverlay('How to play');
+    layer.add(this.add.text(240,142,
+      'Hold the sun to enter.\nHold the right or left side to walk.\nRelease to stop. Tap to jump.\nKeyboard: A / D, arrows, Space.\nMotion follows your device preference.',{
+      fontFamily:'Arial,sans-serif',fontSize:'14px',lineSpacing:7,
+      color:'#582744',align:'center',wordWrap:{width:400}
+    }).setOrigin(.5));
   }
   private unpause(){
+    this.overlay?.destroy(true);
+    this.overlay=null;
     this.scene.resume(this.parentScene);
     this.app.audio.resume();
     this.scene.stop();
