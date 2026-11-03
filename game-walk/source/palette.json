@@ -1,0 +1,18 @@
+{
+  "note": "Approximate values sampled from the reference art. Verify and reduce to a shared palette of 32 colors or fewer in your art tool.",
+  "world": {
+    "sky_navy_top": "#001334",
+    "sky_navy_low": "#082753",
+    "night_navy_deep": "#021539",
+    "hill_ochre": "#774921",
+    "hill_rust": "#7e3313",
+    "sun_red_orange": "#cf2f00",
+    "title_gold": "#ffcc2e"
+  },
+  "brand_layer": {
+    "cream_ground": "#f5f1e8",
+    "tan_band": "#cdbd8f",
+    "title_maroon": "#602b4e"
+  },
+  "to_sample_from_art": ["alien skin blue", "cape maroon", "teal glow", "amber glow"]
+}

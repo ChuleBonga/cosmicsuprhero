@@ -1,0 +1,20 @@
+{
+  "name": "arcturian-awakening-walk-test",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "npm run check && npm test && vite build && node scripts/check-budget.mjs",
+    "preview": "vite preview --host 0.0.0.0",
+    "check": "tsc --noEmit",
+    "test": "node --experimental-strip-types scripts/test-journey.mjs"
+  },
+  "dependencies": {
+    "phaser": "3.90.0"
+  },
+  "devDependencies": {
+    "vite": "5.4.21",
+    "typescript": "5.9.3"
+  }
+}
