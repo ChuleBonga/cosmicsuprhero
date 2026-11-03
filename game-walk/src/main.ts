@@ -56,8 +56,11 @@ const stage = document.getElementById('cinema-stage');
 
 function resizeFrame(): void {
   if (!stage || !frame) return;
-  const maxWidth = Math.max(1,stage.clientWidth - 2);
-  const maxHeight = Math.max(1,stage.clientHeight - 2);
+  const stageStyle = getComputedStyle(stage);
+  const paddingX = parseFloat(stageStyle.paddingLeft) + parseFloat(stageStyle.paddingRight);
+  const paddingY = parseFloat(stageStyle.paddingTop) + parseFloat(stageStyle.paddingBottom);
+  const maxWidth = Math.max(1,stage.clientWidth - paddingX - 2);
+  const maxHeight = Math.max(1,stage.clientHeight - paddingY - 2);
   const ratio = GAME_WIDTH / GAME_HEIGHT;
   const physicalWidth = Math.max(1,Math.floor(Math.min(maxWidth,maxHeight*ratio)));
   const physicalHeight = physicalWidth / ratio;
