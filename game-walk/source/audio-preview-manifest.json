@@ -1,0 +1,53 @@
+{
+  "pickup_first_contact": {
+    "source": "First_Contact.wav",
+    "source_start_s": 120.4,
+    "length_s": 25,
+    "fade_in_s": 1.0,
+    "fade_out_s": 2.5,
+    "orig_lufs": -14.7,
+    "gain_db": -1.3,
+    "target_lufs": -16
+  },
+  "pickup_xaba": {
+    "source": "Xaba.wav",
+    "source_start_s": 78.9,
+    "length_s": 25,
+    "fade_in_s": 1.0,
+    "fade_out_s": 2.5,
+    "orig_lufs": -14.4,
+    "gain_db": -1.6,
+    "target_lufs": -16
+  },
+  "pickup_mama_calls_me_chule": {
+    "source": "Mama_calls_me_Chule.wav",
+    "source_start_s": 134.7,
+    "length_s": 25,
+    "fade_in_s": 1.0,
+    "fade_out_s": 2.5,
+    "orig_lufs": -15.2,
+    "gain_db": -0.8,
+    "target_lufs": -16
+  },
+  "pickup_songs_sent_to_god": {
+    "source": "Songs_sent_to_God.wav",
+    "source_start_s": 127.7,
+    "length_s": 25,
+    "fade_in_s": 1.0,
+    "fade_out_s": 2.5,
+    "orig_lufs": -21.0,
+    "gain_db": 5.0,
+    "target_lufs": -16
+  },
+  "score_awaken_now_loop": {
+    "source": "Awaken_now.wav",
+    "source_start_s": 30,
+    "length_s": 45,
+    "seam_crossfade_s": 3,
+    "orig_lufs": -21.2,
+    "gain_db": 1.2,
+    "target_lufs": -20,
+    "note": "loop with equal-power seam; test cut, confirm bar-aligned loop point in the DAW session"
+  },
+  "format": "44.1 kHz stereo; OGG Vorbis q4 and AAC 128k m4a for iOS Safari"
+}

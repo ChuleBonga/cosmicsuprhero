@@ -1,0 +1,33 @@
+{
+  "project": "Arcturian Awakening",
+  "kind": "source inventory, not an implementation plan",
+  "updatedAt": "2026-11-02",
+  "canonicalOriginal": "source/BRIEF.md from artist's uploaded v3 ZIP; subsequent artist instructions may override",
+  "code": {
+    "repo": "ChuleBonga/cosmicsuprhero",
+    "branch": "arcturian-build1-v3-preview-20261102",
+    "root": "game-walk/",
+    "mainUnmodified": true,
+    "previewVercelProject": "arcturian-walk-preview"
+  },
+  "artistSourceArchive": {
+    "storage": "ChatGPT personal Library",
+    "path": "/Projects/Arcturian Awakening/Arcturian_Awakening_Source_Vault_2026-11-02.zip",
+    "sha256": "0cf30962a64ba8415525e2a435f9e3b9fa78ae338a1e4f26c80c6d2af9985657",
+    "bytes": 34207308,
+    "files": 23,
+    "libraryFileId": "libfile_5b906c63c24c8191801a8f93aa15e645"
+  },
+  "artwork": {
+    "deployed": "game-walk/public/art/*",
+    "latestCandidate": "Source vault: art_candidates/revision3/*.png (3 layers plus scene preview); NOT yet integrated",
+    "originals": "Source vault: inputs/original_jpegs; inputs/upscaled_images_png.zip"
+  },
+  "audio": {
+    "previewExcerpts": "Source vault: briefs/arcturian_chatgpt_handoff_v3.zip :: pkg/audio",
+    "master": "Awaken now(2).wav remains in original conversation upload; not in repository or Library source vault",
+    "artistCutApproval": "pending"
+  },
+  "visualQuality": "Current branch has known unfinished visual composition and procedural placeholder details; no final approval or real-device fps measurement",
+  "note": "Project file attachments and personal Library records are distinct. This index and archive provide searchable recovery; the Library upload does not attach itself as a Project file."
+}
