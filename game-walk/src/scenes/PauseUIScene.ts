@@ -52,8 +52,7 @@ export class PauseUIScene extends Phaser.Scene {
       fontFamily:'Georgia,serif',fontStyle:'italic',fontSize:portrait?'24px':'25px',color:'#582744'
     }).setOrigin(.5));
     const tracks=[
-      {id:'first_contact' as const,title:'FIRST CONTACT'},
-      {id:'xaba' as const,title:'XABA'}
+      {id:'first_contact' as const,title:'FIRST CONTACT'}
     ];
     tracks.forEach((t,i)=>{
       const y=H*(portrait?.33:.40)+i*(portrait?62:50);
@@ -77,7 +76,7 @@ export class PauseUIScene extends Phaser.Scene {
     back.on('pointerdown',()=>overlay.destroy(true));
   }
   private showAccessibility(){
-    this.body.setText('Hold either side to walk. Tap while near the lights to call.\nKeyboard: A / D or arrows; Space interacts.\nMotion follows your system preference. All encounters are retryable.');
+    this.body.setText('Meditate: hold the sun to open the passage.\nWalk: hold a side or use A/D or arrows. Space jumps.\nCredo: drag the light, or press Space to continue.\nReduced-motion follows your device settings.');
   }
   private unpause(){
     this.scene.resume(this.parentScene);
