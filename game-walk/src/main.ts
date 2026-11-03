@@ -17,13 +17,11 @@ const audio = new AudioDirector(message => {
   if (status) status.textContent = message;
 });
 const app: GameContext = { audio, progress };
-const portrait=innerHeight>innerWidth;
-// Responsive logical camera with integer scaling: an iPhone viewport
-// becomes a native 195×422 scene at 2×, not a 270×480 island in empty space.
-// All sprites remain exactly one native art pixel per logical canvas pixel.
-const integerScale=portrait?2:Math.max(2,Math.round(innerWidth/480));
-const W=Math.max(160,Math.floor(innerWidth/integerScale));
-const H=Math.max(190,Math.floor(innerHeight/integerScale));
+
+// Exactly one authored 16:9 scene composition. Only its outer frame scales.
+// The previous viewport-derived logical dimensions distorted the title.
+export const GAME_WIDTH = 480;
+export const GAME_HEIGHT = 270;
 
 class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
@@ -43,27 +41,41 @@ class BootScene extends Phaser.Scene {
 }
 
 const game = new Phaser.Game({
-  type: Phaser.AUTO, parent: 'game', width: W, height: H,
-  backgroundColor: '#101c3c',
+  type: Phaser.AUTO, parent: 'game',
+  width: GAME_WIDTH, height: GAME_HEIGHT,
+  backgroundColor: '#06132d',
   render: { pixelArt: true, antialias: false, roundPixels: true, transparent: false },
   scale: { mode: Phaser.Scale.NONE },
   fps: { target: 60, min: 30 },
   input: { activePointers: 3 },
   scene: [BootScene, TitleScene, MeditateScene, CrossingScene, PrologueScene, CredoScene, PauseUIScene, SliceCompleteScene]
 });
-// Whole-number CSS scaling: no fractional pixel scaling.
-function resize() {
-  const factor=integerScale;
-  const canvas = document.querySelector('#game canvas') as HTMLCanvasElement | null;
+
+const frame = document.getElementById('cinema-frame');
+const stage = document.getElementById('cinema-stage');
+
+function resizeFrame(): void {
+  if (!stage || !frame) return;
+  const maxWidth = Math.max(1,stage.clientWidth - 2);
+  const maxHeight = Math.max(1,stage.clientHeight - 2);
+  const ratio = GAME_WIDTH / GAME_HEIGHT;
+  const physicalWidth = Math.max(1,Math.floor(Math.min(maxWidth,maxHeight*ratio)));
+  const physicalHeight = physicalWidth / ratio;
+  frame.style.width = `${physicalWidth}px`;
+  frame.style.height = `${physicalHeight}px`;
+  const canvas = document.querySelector<HTMLCanvasElement>('#game canvas');
   if (canvas) {
-    canvas.style.width = String(W * factor) + 'px';
-    canvas.style.height = String(H * factor) + 'px';
+    canvas.style.width = `${physicalWidth}px`;
+    canvas.style.height = `${physicalHeight}px`;
   }
 }
-resize();
-window.addEventListener('resize', resize);
-window.addEventListener('orientationchange', () => location.reload());
-game.events.once(Phaser.Core.Events.READY, resize);
+resizeFrame();
+requestAnimationFrame(resizeFrame);
+game.events.once(Phaser.Core.Events.READY, resizeFrame);
+window.addEventListener('resize', resizeFrame);
+window.visualViewport?.addEventListener('resize', resizeFrame);
+if (stage && typeof ResizeObserver !== 'undefined') new ResizeObserver(resizeFrame).observe(stage);
+
 window.addEventListener('pagehide', () => { progress.save(); audio.pause(); });
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) { progress.save(); audio.pause(); game.loop.sleep(); }
