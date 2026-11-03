@@ -28,7 +28,7 @@ export class MeditateScene extends Phaser.Scene {
     this.ring=this.add.graphics().setScrollFactor(0).setDepth(24);
     this.pauseControl=this.add.rectangle(W-17,18,28,28,0x382b48,.91).setDepth(25).setInteractive({useHandCursor:true});
     this.add.text(W-17,18,'II',{fontFamily:'monospace',fontSize:'13px',color:'#f0d5a9'}).setOrigin(.5).setDepth(26);
-    this.pauseControl.on('pointerdown',(_p,_lx,_ly,event:Phaser.Types.Input.EventData)=>{
+    this.pauseControl.on('pointerdown',(_p:Phaser.Input.Pointer,_lx:number,_ly:number,event:Phaser.Types.Input.EventData)=>{
       event.stopPropagation();this.openPause();
     });
     const gesture=(p:Phaser.Input.Pointer)=>{
