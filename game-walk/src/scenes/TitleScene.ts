@@ -32,6 +32,14 @@ export class TitleScene extends Phaser.Scene{
     const sunX=Math.round(W*.71),sunY=Math.round(H*(portrait?.26:.25));
     this.add.zone(sunX,sunY,96,96).setInteractive({useHandCursor:true})
       .on('pointerdown',()=>this.begin(app));
+    const presave=this.add.text(W-10,H-10,'PRE-SAVE',{
+      fontFamily:'Arial,sans-serif',fontSize:'11px',color:'#f8e8c9',
+      backgroundColor:'#453449',padding:{x:9,y:7}
+    }).setOrigin(1,1).setDepth(32).setInteractive({useHandCursor:true});
+    presave.on('pointerdown',(_p:Phaser.Input.Pointer,_lx:number,_ly:number,e:Phaser.Types.Input.EventData)=>{
+      e.stopPropagation();
+      window.open('https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening?utm_source=game&utm_medium=preview&utm_campaign=arcturian-awakening','_blank','noopener,noreferrer');
+    });
     this.input.keyboard?.once('keydown',()=>this.begin(app));
   }
   private begin(app:GameContext){
@@ -40,7 +48,9 @@ export class TitleScene extends Phaser.Scene{
     app.audio.start();
     app.audio.setMuted(app.progress.muted);
     if(app.progress.stage==='campfire')this.scene.start('SliceComplete');
-    else if(app.progress.stage==='name')this.scene.start('Name',{resume:true});
-    else this.scene.start('Prologue');
+    else if(app.progress.stage==='credo')this.scene.start('Credo');
+    else if(app.progress.stage==='first_contact')this.scene.start('Prologue');
+    else if(app.progress.stage==='crossing')this.scene.start('Crossing');
+    else this.scene.start('Meditate');
   }
 }
