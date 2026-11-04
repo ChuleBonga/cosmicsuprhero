@@ -40,6 +40,11 @@ export class MeditateScene extends Phaser.Scene {
     this.input.on('pointerup',()=>this.held=false);
     this.input.on('pointerupoutside',()=>this.held=false);
     this.input.on('gameout',()=>this.held=false);
+    const releaseForRotation=()=>{this.held=false;};
+    window.addEventListener('arcturian:release-controls',releaseForRotation);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>{
+      window.removeEventListener('arcturian:release-controls',releaseForRotation);
+    });
     this.input.keyboard?.on('keydown-SPACE',()=>this.held=true);
     this.input.keyboard?.on('keyup-SPACE',()=>this.held=false);
     this.input.keyboard?.on('keydown-ENTER',()=>this.held=true);
