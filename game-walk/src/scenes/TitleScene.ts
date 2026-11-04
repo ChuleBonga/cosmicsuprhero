@@ -18,7 +18,7 @@ export class TitleScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#0b0e1a');
 
     const traveler=this.add.sprite(74,world.groundY,'alien',0)
-      .setOrigin(.5,1).setDepth(20);
+      .setOrigin(.5,1).setScale(.34).setDepth(20);
     traveler.play('alien-idle');
     this.add.ellipse(74,world.groundY-1,24,5,0x080807,.55).setDepth(19);
 
