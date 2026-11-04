@@ -92,7 +92,7 @@ if (stage && typeof ResizeObserver !== 'undefined') new ResizeObserver(resizeFra
 window.addEventListener('pagehide', () => { progress.save(); audio.pause(); });
 document.addEventListener('visibilitychange', () => {
   if (document.hidden) { progress.save(); audio.pause(); game.loop.sleep(); }
-  else { game.loop.wake(); }
+  else { enforceOrientation(); }
 });
 
 // The accessible direct-access form lives outside Phaser so it works with
@@ -107,6 +107,8 @@ let ready=false;
 function showAccess():void {
   if(!accessDialog)return;
   if(!accessDialog.open)accessDialog.showModal();
+  enforceOrientation();
+  audio.pause();
   void probeAccess();
 }
 async function probeAccess():Promise<void>{
@@ -161,3 +163,61 @@ accessForm?.addEventListener('submit',async event=>{
 if(new URLSearchParams(location.search).get('access')==='direct'){
   requestAnimationFrame(showAccess);
 }
+
+
+/**
+ * Landscape-only play:
+ * iOS Safari does not expose a dependable orientation lock, so the page
+ * presents an authored portrait gate and pauses the renderer/input until
+ * the device is physically rotated. The lead-access dialog remains usable.
+ */
+const observatoryShell=document.getElementById('observatory-shell');
+const primaryAction=document.getElementById('journey-primary') as HTMLButtonElement|null;
+const topPause=document.getElementById('observatory-pause') as HTMLButtonElement|null;
+const stageSubtitle=document.getElementById('observatory-subtitle');
+const portraitMedia=matchMedia('(orientation: portrait)');
+
+function enforceOrientation():void {
+  const unavailable=portraitMedia.matches||Boolean(accessDialog?.open);
+  if(game.input){
+    game.input.enabled=!unavailable;
+    if(game.input.keyboard)game.input.keyboard.enabled=!unavailable;
+  }
+  if(!game.loop)return;
+  if(unavailable || document.hidden){
+    game.loop.sleep();
+    window.dispatchEvent(new Event('arcturian:release-controls'));
+  }else{
+    game.loop.wake();
+    resizeFrame();
+  }
+}
+primaryAction?.addEventListener('click',()=>{
+  if(portraitMedia.matches)return;
+  window.dispatchEvent(new Event('arcturian:begin'));
+});
+window.addEventListener('arcturian:entered',()=>{
+  if(observatoryShell)observatoryShell.dataset.scene='playing';
+  if(primaryAction)primaryAction.hidden=true;
+  if(topPause)topPause.hidden=false;
+  if(stageSubtitle)stageSubtitle.textContent='Hold left or right to walk. Tap to jump.';
+});
+topPause?.addEventListener('click',()=>{
+  if(portraitMedia.matches)return;
+  if(game.scene.isActive('PauseUI'))return;
+  const sceneId=['Meditate','Crossing','Prologue','Credo']
+    .find(id=>game.scene.isActive(id));
+  if(!sceneId)return;
+  game.scene.launch('PauseUI',{returnScene:sceneId});
+  game.scene.pause(sceneId);
+  audio.pause();
+});
+portraitMedia.addEventListener('change',enforceOrientation);
+window.addEventListener('orientationchange',enforceOrientation);
+window.addEventListener('resize',enforceOrientation);
+accessDialog?.addEventListener('close',()=>{
+  enforceOrientation();
+  if(!portraitMedia.matches)audio.resume();
+});
+game.events.once(Phaser.Core.Events.READY,enforceOrientation);
+requestAnimationFrame(enforceOrientation);
