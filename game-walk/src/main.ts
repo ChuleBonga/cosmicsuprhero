@@ -28,21 +28,9 @@ class BootScene extends Phaser.Scene {
   preload() {
     this.load.spritesheet('alien','/play/art/protagonist_atlas.png',{frameWidth:32,frameHeight:52});
     this.load.spritesheet('keeper','/play/art/keeper_atlas.png',{frameWidth:64,frameHeight:92});
-    this.load.image('far-tile','/play/art/far_tile.png');
-    this.load.image('middle-tile','/play/art/middle_tile.png');
-    this.load.image('near-tile','/play/art/near_tile.png');
-    // Rich painterly arrival assets. Authored layers are independent textures
-    // so camera movement produces actual depth, rather than a single JPEG pan.
-    const art='/play/art/arrival/';
-    this.load.image('arrival-sky',art+'sky.webp');
-    this.load.image('arrival-sun',art+'sun.webp');
-    this.load.image('arrival-far',art+'far.webp');
-    this.load.image('arrival-mid',art+'mid.webp');
-    this.load.image('arrival-near',art+'near.webp');
-    this.load.image('arrival-ground',art+'foreground.webp');
-    this.load.image('arrival-occluders',art+'foreground-occluders.webp');
-    this.load.image('arrival-atmosphere',art+'sun-atmosphere.webp');
-    this.load.spritesheet('arrival-landmark',art+'landmarks.webp',{frameWidth:96,frameHeight:128});
+    // High-resolution scenic paintings are decoded by the browser beneath
+    // Phaser. Loading old indexed terrain strips here would waste bandwidth.
+
   }
   create() {
     this.anims.create({key:'alien-idle',frames:this.anims.generateFrameNumbers('alien',{start:0,end:3}),frameRate:4,repeat:-1});
@@ -55,8 +43,8 @@ class BootScene extends Phaser.Scene {
 const game = new Phaser.Game({
   type: Phaser.AUTO, parent: 'game',
   width: GAME_WIDTH, height: GAME_HEIGHT,
-  backgroundColor: '#06132d',
-  render: { pixelArt: true, antialias: false, roundPixels: true, transparent: false },
+  backgroundColor: 'rgba(0,0,0,0)',
+  render: { pixelArt: false, antialias: true, roundPixels: false, transparent: true },
   scale: { mode: Phaser.Scale.NONE },
   fps: { target: 60, min: 30 },
   input: { activePointers: 3 },
