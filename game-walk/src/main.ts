@@ -101,6 +101,7 @@ const accessDialog=document.getElementById('access-dialog') as HTMLDialogElement
 const accessForm=document.getElementById('access-form') as HTMLFormElement|null;
 const accessStatus=document.getElementById('access-status');
 const accessResult=document.getElementById('access-result') as HTMLAnchorElement|null;
+const accessSuccess=document.getElementById('access-success');
 const submit=accessForm?.querySelector<HTMLButtonElement>('button[type=submit]');
 let ready=false;
 function showAccess():void {
@@ -148,8 +149,10 @@ accessForm?.addEventListener('submit',async event=>{
        typeof result.destination!=='string' ||
        !result.destination.startsWith('https://share.amuse.io/'))throw new Error('registration');
     if(accessResult){accessResult.href=result.destination;accessResult.hidden=false;}
-    if(accessStatus)accessStatus.textContent='Gateway ready. Open the album pre-save below.';
-    accessForm.querySelectorAll<HTMLInputElement>('input').forEach(el=>el.disabled=true);
+    if(accessStatus)accessStatus.textContent='Album access successfully registered.';
+    accessForm.hidden=true;
+    if(accessSuccess)accessSuccess.hidden=false;
+    // No lead data is kept in localStorage. The backend is the sole recorder.
   }catch{
     if(accessStatus)accessStatus.textContent='We could not complete your request. Your details were not confirmed as saved.';
     submit!.disabled=false;
