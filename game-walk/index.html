@@ -21,19 +21,33 @@
   </header>
   <div class="cinema-stage" id="cinema-stage">
     <div class="cinema-frame" id="cinema-frame">
+      <div class="painted-world" id="painted-world" aria-hidden="true">
+        <img class="painted-world__plate" data-arrival-plate="a" src="/play/art/plates/arrival-a.webp" alt="" draggable="false" decoding="async">
+        <img class="painted-world__plate" data-arrival-plate="b" src="/play/art/plates/arrival-b.webp" alt="" draggable="false" decoding="async" loading="lazy">
+        <img class="painted-world__plate" data-arrival-plate="c" src="/play/art/plates/arrival-c.webp" alt="" draggable="false" decoding="async" loading="lazy">
+      </div>
       <div id="game" role="application" aria-label="Playable desert world. Use the accessible touch controls below on mobile, or arrow keys to move and Space to interact on desktop."></div>
       <!-- The painterly opening is the approved 1672x941 master. It must
            not be substituted with cropped low-color layer approximations.
            Buttons are accessible, independent vector controls aligned
            to the source artwork rather than a second title painted on top. -->
       <div class="master-opening" id="master-opening">
-        <img class="master-opening__art" src="/play/art/arrival/title-master.webp"
+        <img class="master-opening__art" src="/play/art/plates/arrival-title.webp"
              alt="" aria-hidden="true" width="1672" height="941"
              decoding="async" fetchpriority="high">
-        <h1 class="sr-only">Arcturian Awakening. Chapter One: First Contact.</h1>
+        <div class="master-opening__identity" aria-label="Arcturian Awakening. Not an escape. A return.">
+          <svg class="master-opening__astrolabe" viewBox="0 0 240 84" aria-hidden="true" role="presentation">
+            <path d="M28 75 A92 92 0 0 1 212 75" fill="none" stroke="#d5ac76" stroke-width="1.2"/>
+            <path d="M120 7V38" stroke="#e4c18a" stroke-width="1.2"/>
+            <path d="M120 13L123 18L120 23L117 18Z" fill="#efc98a"/>
+          </svg>
+          <h1>Arcturian <span>Awakening</span></h1>
+          <p>Not an escape. A return.</p>
+        </div>
+        <p class="master-opening__chapter">PROLOGUE <span>FIRST CONTACT</span></p>
         <button type="button" class="master-opening__archive" id="master-title-archive" data-open-access
                 aria-label="Open the Sacred Observatory direct-access gateway">
-          <span class="sr-only">Open archive access</span>
+          <span>ARCHIVE</span>
         </button>
         <div class="master-opening__actions" aria-label="Choose your entrance">
           <button type="button" class="master-opening__action master-opening__action--enter" id="master-title-enter"
