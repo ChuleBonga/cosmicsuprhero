@@ -7,8 +7,14 @@
     "dev": "vite --host 0.0.0.0",
     "build": "tsc --noEmit && vite build && node scripts/check-budget.mjs",
     "preview": "vite preview --host 0.0.0.0",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "test:audio": "node --test scripts/elevenlabs-generate.test.mjs"
   },
-  "dependencies": {"phaser":"3.90.0"},
-  "devDependencies": {"vite":"5.4.21","typescript":"5.9.3"}
+  "dependencies": {
+    "phaser": "3.90.0"
+  },
+  "devDependencies": {
+    "vite": "5.4.21",
+    "typescript": "5.9.3"
+  }
 }
