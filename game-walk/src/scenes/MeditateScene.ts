@@ -1,57 +1,58 @@
 import Phaser from 'phaser';
 import type {GameContext} from '../main';
 import {buildWorld} from '../world/GrayboxWorld';
-import {bitmapText} from '../art/BitmapType';
 
+/** Arrival I. The artwork is the interface, not a box behind pixel text. */
 export class MeditateScene extends Phaser.Scene {
   private app!:GameContext;
   private held=false;
   private charge=0;
   private completed=false;
-  private lastTick=0;
   private ring!:Phaser.GameObjects.Graphics;
-  private pauseControl!:Phaser.GameObjects.Rectangle;
-  private sunX=0;private sunY=0;
+  private sunX=0;
+  private sunY=0;
   constructor(){super('Meditate');}
+
   create(){
     this.app=this.registry.get('app') as GameContext;
-    this.lastTick=performance.now();
-    const W=this.scale.width,H=this.scale.height,portrait=H>W;
-    this.cameras.main.setBackgroundColor('#001334');
-    buildWorld(this);
-    const groundY=Math.round(H-(portrait?75:57));
-    const hero=this.add.sprite(Math.round(W*.24),groundY,'alien',0)
+    const W=this.scale.width,H=this.scale.height;
+    this.cameras.main.setBackgroundColor('rgba(0,0,0,0)');
+    const world=buildWorld(this);
+    world.update(0);
+    const hero=this.add.sprite(Math.round(W*.24),world.groundY,'alien',0)
       .setOrigin(.5,1).setScale(.34).setDepth(8);
     hero.play('alien-idle');
-    this.sunX=Math.round(W*.71);this.sunY=Math.round(H*(portrait?.26:.25));
-    bitmapText(this,'MEDITATE',W/2,Math.round(H*.47),portrait?2:3,0xf5c774).setScrollFactor(0).setDepth(22);
-    bitmapText(this,'HOLD THE SUN TO ENTER',W/2,Math.round(H*.78),1,0xece1c5).setScrollFactor(0).setDepth(22);
+
+    // This is an interaction ring, not a drawn substitute for the sun.
+    this.sunX=Math.round(W*.775);
+    this.sunY=Math.round(H*.32);
     this.ring=this.add.graphics().setScrollFactor(0).setDepth(24);
-    this.pauseControl=this.add.rectangle(W-17,18,28,28,0x382b48,.91).setDepth(25).setInteractive({useHandCursor:true});
-    this.add.text(W-17,18,'II',{fontFamily:'monospace',fontSize:'13px',color:'#f0d5a9'}).setOrigin(.5).setDepth(26);
-    this.pauseControl.on('pointerdown',(_p:Phaser.Input.Pointer,_lx:number,_ly:number,event:Phaser.Types.Input.EventData)=>{
-      event.stopPropagation();this.openPause();
-    });
-    const gesture=(p:Phaser.Input.Pointer)=>{
-      if(p.x>W-43&&p.y<42)return;
+    const chapter=document.getElementById('scene-chapter');
+    const subtitle=document.getElementById('observatory-subtitle');
+    if(chapter)chapter.textContent='PROLOGUE / MEDITATE';
+    if(subtitle)subtitle.textContent='HOLD TO BREATHE WITH THE LIGHT';
+
+    const release=()=>{this.held=false};
+    this.input.on('pointerdown',(p:Phaser.Input.Pointer)=>{
+      if(p.y<38 && p.x>W-44)return;
       this.held=true;
-    };
-    this.input.on('pointerdown',gesture);
-    this.input.on('pointerup',()=>this.held=false);
-    this.input.on('pointerupoutside',()=>this.held=false);
-    this.input.on('gameout',()=>this.held=false);
-    const releaseForRotation=()=>{this.held=false;};
-    window.addEventListener('arcturian:release-controls',releaseForRotation);
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>{
-      window.removeEventListener('arcturian:release-controls',releaseForRotation);
     });
-    this.input.keyboard?.on('keydown-SPACE',()=>this.held=true);
-    this.input.keyboard?.on('keyup-SPACE',()=>this.held=false);
-    this.input.keyboard?.on('keydown-ENTER',()=>this.held=true);
-    this.input.keyboard?.on('keyup-ENTER',()=>this.held=false);
+    this.input.on('pointerup',release);
+    this.input.on('pointerupoutside',release);
+    this.input.on('gameout',release);
+    const releaseForRotation=()=>release();
+    window.addEventListener('arcturian:release-controls',releaseForRotation);
+
+    this.input.keyboard?.on('keydown-SPACE',()=>{this.held=true});
+    this.input.keyboard?.on('keyup-SPACE',release);
+    this.input.keyboard?.on('keydown-ENTER',()=>{this.held=true});
+    this.input.keyboard?.on('keyup-ENTER',release);
     this.input.keyboard?.on('keydown-ESC',()=>this.openPause());
     this.input.keyboard?.on('keydown-P',()=>this.openPause());
-    this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>this.app.progress.save());
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>{
+      window.removeEventListener('arcturian:release-controls',releaseForRotation);
+      this.app.progress.save();
+    });
   }
   private openPause(){
     this.held=false;
@@ -59,24 +60,25 @@ export class MeditateScene extends Phaser.Scene {
     this.scene.launch('PauseUI',{returnScene:'Meditate'});
     this.scene.pause();
   }
-  update(_time:number,_delta:number){
+  update(_time:number,delta:number){
     if(this.completed)return;
-    const now=performance.now();
-    const dt=Math.min(.25,Math.max(0,(now-this.lastTick)/1000));
-    this.lastTick=now;
-    if(this.held)this.charge=Math.min(1,this.charge+dt/1.75);
-    else this.charge=Math.max(0,this.charge-dt*.19);
-    const g=this.ring;g.clear();
-    const r=34;
-    for(let i=0;i<24;i++){
-      const a=(i/24)*Math.PI*2-Math.PI/2;
-      const x=Math.round(this.sunX+Math.cos(a)*r);
-      const y=Math.round(this.sunY+Math.sin(a)*r);
-      g.fillStyle(i<Math.ceil(this.charge*24)?0xf1d38b:0x503c54,i<Math.ceil(this.charge*24)?1:.52);
-      g.fillRect(x-1,y-1,3,3);
+    const dt=Math.min(.05,delta/1000);
+    this.charge=Phaser.Math.Clamp(this.charge+(this.held?dt/1.75:-dt*.2),0,1);
+    const g=this.ring;
+    g.clear();
+    // Smooth, minimal vector progress, matched to the sun's painted warmth.
+    g.lineStyle(1,0xefce9e,.28);
+    g.strokeCircle(this.sunX,this.sunY,39);
+    if(this.charge>0){
+      g.lineStyle(2,0xf0c27c,.72);
+      g.beginPath();
+      g.arc(this.sunX,this.sunY,39,-Math.PI/2,-Math.PI/2+this.charge*Math.PI*2,false);
+      g.strokePath();
     }
     if(this.charge>=1){
       this.completed=true;
+      const subtitle=document.getElementById('observatory-subtitle');
+      if(subtitle)subtitle.textContent='THE GATEWAY OPENS';
       this.app.progress.advance('OPEN_PORTAL');
       this.scene.start('Crossing');
     }
