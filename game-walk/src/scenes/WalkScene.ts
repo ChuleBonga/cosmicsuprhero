@@ -74,6 +74,13 @@ export class PrologueScene extends Phaser.Scene {
     this.input.on('pointerup',release);
     this.input.on('pointerupoutside',release);
     this.input.on('gameout',()=>{this.held=0;this.listening=false;this.pointerId=null;});
+    const releaseForRotation=()=>{
+      this.held=0;this.listening=false;this.pointerId=null;this.velocity=0;
+    };
+    window.addEventListener('arcturian:release-controls',releaseForRotation);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>{
+      window.removeEventListener('arcturian:release-controls',releaseForRotation);
+    });
     this.input.keyboard?.on('keydown-SPACE',(e:KeyboardEvent)=>{e.preventDefault();if(!this.canListen())this.jumpBuffer=.15;});
     this.input.keyboard?.on('keydown-ESC',()=>this.openPause());
     this.input.keyboard?.on('keydown-P',()=>this.openPause());
