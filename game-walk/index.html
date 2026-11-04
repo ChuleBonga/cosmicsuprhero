@@ -25,11 +25,11 @@
   </footer>
   <dialog class="access-dialog" id="access-dialog" aria-labelledby="access-title">
     <div class="access-dialog__heading">
-      <span class="access-dialog__eyebrow">ARCTURIAN AWAKENING / THE GATEWAY</span>
+      <span class="access-dialog__eyebrow">SACRED OBSERVATORY — DIRECT ARCHIVE ACCESS</span>
       <button type="button" class="access-dialog__close" data-close-access aria-label="Close direct access dialog">×</button>
     </div>
-    <h2 id="access-title">Two ways to the music.</h2>
-    <p class="access-dialog__intro">Complete the sixteen-chapter pilgrimage to reveal the pre-save naturally, or request direct access below.</p>
+    <h2 id="access-title">Bypass the Ridge</h2>
+    <p class="access-dialog__intro">Complete the playable passage to unlock the album naturally, or enter your name and email below for immediate access to the Arcturian Awakening pre-save.</p>
     <p class="access-dialog__note">The full journey is still being built. Direct access opens when secure registration is connected.</p>
     <form id="access-form" novalidate>
       <label for="access-name">Name</label>
@@ -42,10 +42,13 @@
       </label>
       <input name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" class="access-dialog__honeypot">
       <p class="access-dialog__privacy">Your name and email are used to process direct access. Marketing updates are optional, not a condition of access.</p>
-      <button class="access-dialog__submit" type="submit" disabled>Connect to album</button>
+      <button class="access-dialog__submit" type="submit" disabled>UNLOCK PRE-SAVE ACCESS</button>
       <p id="access-status" role="status" aria-live="polite">Checking availability…</p>
-      <a id="access-result" hidden target="_blank" rel="noopener noreferrer">Open album pre-save</a>
     </form>
+    <section id="access-success" class="access-dialog__success" hidden aria-live="polite" aria-label="Album access granted">
+      <p class="access-dialog__blessing">Thank you for taking a moment to get on the site. Your time is appreciated, and I hope you enjoy the music. Peace and overwhelming love and blessing to you.</p>
+      <a id="access-result" hidden target="_blank" rel="noopener noreferrer">PROCEED TO ALBUM PRE-SAVE</a>
+    </section>
   </dialog>
   <div id="dom-status" class="sr-only" role="status" aria-live="polite"></div>
 </main>
