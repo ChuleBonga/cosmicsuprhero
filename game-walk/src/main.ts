@@ -194,10 +194,12 @@ function enforceOrientation():void {
     resizeFrame();
   }
 }
-primaryAction?.addEventListener('click',()=>{
-  if(portraitMedia.matches)return;
+function enterJourney():void {
+  if(portraitMedia.matches || accessDialog?.open)return;
   window.dispatchEvent(new Event('arcturian:begin'));
-});
+}
+primaryAction?.addEventListener('click',enterJourney);
+document.getElementById('master-title-enter')?.addEventListener('click',enterJourney);
 window.addEventListener('arcturian:entered',()=>{
   if(observatoryShell)observatoryShell.dataset.scene='playing';
   if(primaryAction)primaryAction.hidden=true;
