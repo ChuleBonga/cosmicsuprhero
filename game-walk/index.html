@@ -22,15 +22,35 @@
   <div class="cinema-stage" id="cinema-stage">
     <div class="cinema-frame" id="cinema-frame">
       <div id="game" role="application" aria-label="Playable desert world. Use the accessible touch controls below on mobile, or arrow keys to move and Space to interact on desktop."></div>
-      <div class="title-emblem" id="title-emblem" aria-label="Arcturian Awakening, Chapter One">
-        <svg class="title-emblem__astrolabe" viewBox="0 0 220 75" role="presentation" aria-hidden="true">
-          <defs><linearGradient id="astrolabe-light"><stop stop-color="#9b7a5f" stop-opacity="0"/><stop offset=".5" stop-color="#f1c68b"/><stop offset="1" stop-color="#9b7a5f" stop-opacity="0"/></linearGradient></defs>
-          <path d="M22 68A88 88 0 0 1 198 68" stroke="url(#astrolabe-light)" stroke-width="1" fill="none"/>
-          <path d="M110 1V35" stroke="#d9b582" stroke-width="1"/>
-          <path d="M107 16L110 12L113 16L110 20Z" fill="#f1d19c"/>
-        </svg>
-        <h1>Arcturian <span>Awakening</span></h1>
-        <p>Not an escape. A return.</p>
+      <!-- The painterly opening is the approved 1672x941 master. It must
+           not be substituted with cropped low-color layer approximations.
+           Buttons are accessible, independent vector controls aligned
+           to the source artwork rather than a second title painted on top. -->
+      <div class="master-opening" id="master-opening">
+        <img class="master-opening__art" src="/play/art/arrival/title-master.webp"
+             alt="" aria-hidden="true" width="1672" height="941"
+             decoding="async" fetchpriority="high">
+        <h1 class="sr-only">Arcturian Awakening. Chapter One: First Contact.</h1>
+        <button type="button" class="master-opening__archive" id="master-title-archive"
+                aria-label="Open the Sacred Observatory direct-access gateway">
+          <span class="sr-only">Open archive access</span>
+        </button>
+        <div class="master-opening__actions" aria-label="Choose your entrance">
+          <button type="button" class="master-opening__action master-opening__action--enter" id="master-title-enter"
+                  aria-label="First Contact: enter the journey">
+            <svg viewBox="0 0 300 66" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M20 2H280L298 20V46L280 64H20L2 46V20Z" />
+            </svg>
+            <span>FIRST CONTACT</span>
+          </button>
+          <button type="button" class="master-opening__action master-opening__action--direct" id="master-title-direct" data-open-access
+                  aria-label="Direct pre-save access using name and email">
+            <svg viewBox="0 0 300 66" preserveAspectRatio="none" aria-hidden="true">
+              <path d="M20 2H280L298 20V46L280 64H20L2 46V20Z" />
+            </svg>
+            <span>DIRECT ACCESS</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
