@@ -74,30 +74,37 @@ a{color:inherit;text-decoration:none}
  .title-emblem__astrolabe{width:min(160px,24%)}
  .scene-bottom__edition{display:block}
 }
+
+/* Landscape is the only playable orientation. Portrait displays an authored
+   rotation gate; the server-backed direct access remains available. */
+.orientation-gate{position:fixed;inset:0;z-index:30;display:none;flex-direction:column;
+ justify-content:space-between;min-height:0;background:radial-gradient(ellipse 85% 45% at 50% 45%,#1e1721 0%,#080807 85%);
+ color:var(--cream);padding:max(22px,env(safe-area-inset-top)) max(22px,env(safe-area-inset-right))
+ max(20px,env(safe-area-inset-bottom)) max(22px,env(safe-area-inset-left));}
+.orientation-gate__top{display:flex;justify-content:space-between;gap:18px;
+ font:600 9px/1.6 Arial,sans-serif;letter-spacing:.21em;color:var(--bronze-light);}
+.orientation-gate__top span{text-align:right;color:#8a7461;}
+.orientation-gate__body{display:flex;align-items:center;justify-content:center;flex-direction:column;
+ flex:1;min-height:0;text-align:center;margin:auto;max-width:370px;gap:0;}
+.orientation-gate__eyebrow{font:600 10px/1.5 Arial,sans-serif;letter-spacing:.27em;color:var(--bronze-light);margin:0 0 15px;}
+.orientation-gate__symbol{width:min(165px,35vw);height:auto;margin-bottom:14px;max-height:22dvh;flex:none;}
+.orientation-gate h2{font:italic 500 clamp(30px,8.5vw,43px)/1.06 Georgia,serif;margin:0 0 19px;
+ letter-spacing:.01em;color:#eee1c9;}
+.orientation-gate__body>p:not(.orientation-gate__eyebrow){font:italic 17px/1.6 Georgia,serif;
+ color:#c0ad99;margin:0 0 13px;max-width:330px;}
+.orientation-gate__body .orientation-gate__hint{font:12px/1.55 Arial,sans-serif!important;
+ color:#8f827b!important;margin-top:9px!important;max-width:275px!important;}
+.orientation-gate__bottom{display:flex;flex-direction:column;align-items:center;gap:17px;
+ font:500 9px/1.6 Arial,sans-serif;letter-spacing:.2em;color:#927b66;}
+.orientation-gate__access{background:none;color:#e3c7a0;border:1px solid #b39371;
+ min-height:50px;width:min(100%,305px);font:600 11px Arial,sans-serif;letter-spacing:.19em;}
 @media(orientation:portrait){
- .scene-shell{grid-template-rows:14dvh minmax(0,58dvh) minmax(0,28dvh)}
- .scene-top{padding:env(safe-area-inset-top) 15px 0;grid-template-columns:minmax(0,1fr) 42px;
-  grid-template-rows:minmax(0,1fr) 35px;column-gap:8px}
- .scene-top__back{grid-column:1;grid-row:1;align-self:start;margin-top:clamp(12px,2.2dvh,21px);font-size:9px}
- .scene-top__pause{grid-column:2;grid-row:1;align-self:start;margin-top:clamp(8px,1.3dvh,15px)}
- .scene-top__chapter{grid-column:1 / -1;grid-row:2;gap:8px;letter-spacing:.16em;font-size:10px;align-self:center}
- .scene-top__chapter svg{width:40px}
- .cinema-stage{padding:0 1px}
- .cinema-frame{box-shadow:0 0 0 1px #9b7a5f50}
- .title-emblem{inset:auto 6% 27%;text-align:center}
- .title-emblem h1{font-size:clamp(31px,8vw,45px)}
- .title-emblem h1 span{letter-spacing:.045em}
- .title-emblem__astrolabe{width:125px}
- .title-emblem p{font-size:13px;margin-top:12px}
- .scene-bottom{padding:8px max(14px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));
- gap:9px;justify-content:space-evenly;border-top:1px solid #9b7a5f40}
- .scene-bottom__subtitle{font-size:15px;min-height:22px}
- .scene-bottom__actions{gap:7px;width:100%}
- .archival-button{width:50%;min-width:0;max-width:196px;height:53px;padding:0 4px;font-size:9px;letter-spacing:.09em}
- .scene-bottom__movement:not([hidden]){display:flex}
- .scene-bottom__edition{display:block;font-size:8px;text-align:center}
- .scene-shell[data-scene="title"] .scene-bottom__movement{display:none}
+  .orientation-gate{display:flex}
+  .scene-shell > .scene-top,.scene-shell > .cinema-stage,.scene-shell > .scene-bottom{
+    visibility:hidden;pointer-events:none;
+  }
 }
+@media(orientation:landscape){.orientation-gate{display:none}}
 @media(orientation:landscape) and (max-height:530px){
  .scene-shell{grid-template-rows:34px minmax(0,1fr) 74px}
  .scene-top{padding:0 14px}
