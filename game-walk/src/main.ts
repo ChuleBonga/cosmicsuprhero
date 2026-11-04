@@ -26,7 +26,7 @@ export const GAME_HEIGHT = 270;
 class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
   preload() {
-    this.load.spritesheet('alien','/play/art/protagonist_atlas.png',{frameWidth:32,frameHeight:52});
+    this.load.spritesheet('alien','/play/art/character/traveler-atlas.webp',{frameWidth:192,frameHeight:204});
     this.load.spritesheet('keeper','/play/art/keeper_atlas.png',{frameWidth:64,frameHeight:92});
     // High-resolution scenic paintings are decoded by the browser beneath
     // Phaser. Loading old indexed terrain strips here would waste bandwidth.
@@ -34,7 +34,8 @@ class BootScene extends Phaser.Scene {
   }
   create() {
     this.anims.create({key:'alien-idle',frames:this.anims.generateFrameNumbers('alien',{start:0,end:3}),frameRate:4,repeat:-1});
-    this.anims.create({key:'alien-walk',frames:this.anims.generateFrameNumbers('alien',{start:4,end:11}),frameRate:12,repeat:-1});
+    this.anims.create({key:'alien-walk',frames:this.anims.generateFrameNumbers('alien',{start:4,end:11}),frameRate:10,repeat:-1});
+    this.anims.create({key:'alien-walk-left',frames:this.anims.generateFrameNumbers('alien',{start:12,end:19}),frameRate:10,repeat:-1});
     this.anims.create({key:'keeper-idle',frames:this.anims.generateFrameNumbers('keeper',{start:0,end:1}),frameRate:1,repeat:-1});
     this.registry.set('app',app);this.scene.start('Title');
   }
