@@ -189,3 +189,46 @@ a{color:inherit;text-decoration:none}
 .access-dialog__blessing{font:italic clamp(20px,4vw,25px)/1.52 Georgia,serif;color:var(--cream);margin:32px 0}
 .access-dialog__honeypot{position:absolute!important;left:-10000px;opacity:0;width:1px;height:1px}
 @media(max-height:560px){.access-dialog{padding:16px}.access-dialog h2{font-size:28px;margin:10px 0}.access-dialog__note{margin-bottom:9px}}
+
+/* Gate 1: use the unaltered artist-approved First Contact painting on the
+   title frame. The landscape camera remains Phaser-powered after entry. */
+.master-opening{position:absolute;inset:0;z-index:6;overflow:hidden;isolation:isolate}
+.master-opening__art{display:block;position:absolute;inset:0;width:100%;height:100%;
+  object-fit:fill;image-rendering:auto;pointer-events:none}
+.master-opening__archive{position:absolute;right:3.0%;top:2.8%;width:7.3%;height:10.2%;
+  min-width:38px;min-height:36px;border:0;background:transparent;color:#f8dfb7;z-index:3;
+  touch-action:manipulation}
+.master-opening__archive:hover,.master-opening__archive:focus-visible{
+  outline:1px solid #e9b86e;outline-offset:-3px;background:#08080755
+}
+.master-opening__actions{position:absolute;inset:0;z-index:4;pointer-events:none}
+.master-opening__action{position:absolute;top:71.1%;width:26.9%;height:13.6%;
+  margin:0;border:0;background:transparent;padding:0;display:flex;align-items:center;
+  justify-content:center;isolation:isolate;touch-action:manipulation;pointer-events:auto;
+  color:#f9dfab;cursor:pointer;transition:filter .15s ease}
+.master-opening__action--enter{left:22.15%}
+.master-opening__action--direct{left:50.75%}
+.master-opening__action svg{position:absolute;left:0;top:12%;width:100%;height:76%;
+  pointer-events:none;overflow:visible}
+.master-opening__action svg path{fill:rgba(11,16,29,.92);stroke:#dfb675;stroke-width:1.35px;
+  vector-effect:non-scaling-stroke}
+.master-opening__action--direct svg path{stroke:#a9947d;fill:rgba(11,16,29,.92)}
+.master-opening__action span{position:relative;z-index:1;
+  font:600 clamp(9px,1.22vw,18px)/1.1 Georgia,serif;letter-spacing:.15em;
+  white-space:nowrap;text-shadow:0 1px 8px #040812}
+.master-opening__action:hover{filter:brightness(1.15)}
+.master-opening__action:active{filter:brightness(1.35)}
+.master-opening__action:focus-visible{outline:2px solid #f6d69c;outline-offset:-1px}
+.scene-shell[data-scene="title"] .scene-top__chapter{visibility:hidden}
+.scene-shell[data-scene="title"] .scene-top__pause{display:none}
+.scene-shell[data-scene="title"] .scene-top{background:none}
+.scene-shell[data-scene="title"] .scene-bottom{display:none}
+.scene-shell[data-scene="title"] .scene-top__back{color:#eadab9;text-shadow:0 2px 6px #040812}
+.scene-shell:not([data-scene="title"]) .master-opening{display:none}
+.scene-shell:not([data-scene="title"]) .scene-bottom__actions{display:none}
+@media(orientation:landscape) and (max-height:530px){
+ .master-opening__action span{font-size:clamp(9px,1.4vw,13px);letter-spacing:.13em}
+}
+@media(prefers-reduced-motion:reduce){
+ .master-opening__action{transition:none}
+}
