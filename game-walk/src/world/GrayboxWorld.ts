@@ -9,9 +9,9 @@ import Phaser from 'phaser';
  * under Phaser's transparent 480x270 logical interaction canvas. That keeps
  * image detail on desktop/retina displays without rescaling game physics.
  */
-export const WORLD_WIDTH=3200;
-export const FIRST_CONTACT_X=1450;
-export const CREDO_APPROACH_X=1800;
+export const WORLD_WIDTH=480;
+export const FIRST_CONTACT_X=416;
+export const CREDO_APPROACH_X=450;
 
 export interface WorldPreview {
   readonly groundY:number;
