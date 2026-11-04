@@ -41,7 +41,7 @@ export class PrologueScene extends Phaser.Scene {
     this.pickupDone=this.app.progress.has('first_contact');
     this.exactX=this.pickupDone?FIRST_CONTACT_X+70:118;
     this.player=this.add.container(this.exactX,this.world.groundY).setDepth(20);
-    this.hero=this.add.sprite(0,0,'alien',0).setOrigin(.5,1).setDepth(1);
+    this.hero=this.add.sprite(0,0,'alien',0).setOrigin(.5,1).setScale(.34).setDepth(1);
     this.hero.play('alien-idle');
     this.player.add(this.hero);
     // Soft contact shadow grounds the player's feet even as terrain pans.
@@ -160,7 +160,7 @@ export class PrologueScene extends Phaser.Scene {
     this.exactX=Phaser.Math.Clamp(this.exactX+this.velocity*dt,26,WORLD_WIDTH-26);
     this.player.x=Math.round(this.exactX);
     this.app.progress.setDistance(this.app.progress.distance+Math.abs(this.player.x-previous));
-    if(Math.abs(this.velocity)>6)this.player.scaleX=this.velocity<0?-1:1;
+    // Dedicated left-facing artwork avoids mirrored cape highlights.
     this.jumpBuffer=Math.max(0,this.jumpBuffer-dt);
     if(this.grounded)this.coyote=.1;else this.coyote=Math.max(0,this.coyote-dt);
     if(this.jumpBuffer>0&&this.coyote>0){
@@ -171,7 +171,7 @@ export class PrologueScene extends Phaser.Scene {
       if(this.air>=0){this.air=0;this.vy=0;this.grounded=true;}
     }
     this.player.y=Math.round(this.world.groundY+this.air);
-    const anim=Math.abs(this.velocity)>10&&this.grounded?'alien-walk':'alien-idle';
+    const anim=Math.abs(this.velocity)>10&&this.grounded?(this.velocity<0?'alien-walk-left':'alien-walk'):'alien-idle';
     if(this.hero.anims.currentAnim?.key!==anim)this.hero.play(anim);
 
     if(this.player.x>400)this.showBeat(1,'THE LAND REMEMBERS');
