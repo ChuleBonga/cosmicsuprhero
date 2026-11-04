@@ -208,8 +208,9 @@ topPause?.addEventListener('click',()=>{
   const sceneId=['Meditate','Crossing','Prologue','Credo']
     .find(id=>game.scene.isActive(id));
   if(!sceneId)return;
-  game.scene.launch('PauseUI',{returnScene:sceneId});
-  game.scene.pause(sceneId);
+  const current=game.scene.getScene(sceneId);
+  current.scene.launch('PauseUI',{returnScene:sceneId});
+  current.scene.pause();
   audio.pause();
 });
 portraitMedia.addEventListener('change',enforceOrientation);
