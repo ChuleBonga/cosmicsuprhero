@@ -21,7 +21,7 @@ export class MeditateScene extends Phaser.Scene {
     buildWorld(this);
     const groundY=Math.round(H-(portrait?75:57));
     const hero=this.add.sprite(Math.round(W*.24),groundY,'alien',0)
-      .setOrigin(.5,1).setDepth(8);
+      .setOrigin(.5,1).setScale(.34).setDepth(8);
     hero.play('alien-idle');
     this.sunX=Math.round(W*.71);this.sunY=Math.round(H*(portrait?.26:.25));
     bitmapText(this,'MEDITATE',W/2,Math.round(H*.47),portrait?2:3,0xf5c774).setScrollFactor(0).setDepth(22);
