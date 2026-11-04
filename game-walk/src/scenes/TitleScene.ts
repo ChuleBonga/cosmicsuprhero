@@ -1,45 +1,45 @@
 import Phaser from 'phaser';
 import type {GameContext} from '../main';
 import {buildWorld} from '../world/GrayboxWorld';
-import {bitmapText} from '../art/BitmapType';
 
-/** Fixed 480x270 title composition; only the outer frame scales. */
+/**
+ * The art owns the frame. The editorial title, astrolabe and actions are
+ * accessible HTML/SVG overlays anchored to the same frame, not pixel fonts
+ * or an opaque rectangle painted over the landscape.
+ */
 export class TitleScene extends Phaser.Scene {
   private started=false;
   constructor(){super('Title')}
   create(){
+    this.started=false;
     const app=this.registry.get('app') as GameContext;
-    const W=this.scale.width;
-    this.cameras.main.setBackgroundColor('#06132d');
     const world=buildWorld(this);
     world.update(0);
+    this.cameras.main.setBackgroundColor('#0b0e1a');
 
-    // The red sun owns the open sky; the title never intersects its silhouette.
-    const bandY=146,bandH=80;
-    this.add.rectangle(W/2,bandY,W,bandH,0xd2bd96,.91).setDepth(12);
-    this.add.rectangle(W/2,bandY-bandH/2,W,1,0xe3d3ad,.75).setDepth(13);
-    this.add.rectangle(W/2,bandY+bandH/2,W,1,0x836347,.7).setDepth(13);
+    const traveler=this.add.sprite(74,world.groundY,'alien',0)
+      .setOrigin(.5,1).setDepth(20);
+    traveler.play('alien-idle');
+    this.add.ellipse(74,world.groundY-1,24,5,0x080807,.55).setDepth(19);
 
-    bitmapText(this,'CHAPTER I',98,85,2,0xefc778,0x142443).setDepth(18);
-    bitmapText(this,'ARCTURIAN',W/2,132,4,0x6d314d,0xf2d69f).setDepth(20);
-    bitmapText(this,'AWAKENING',W/2,161,4,0x6d314d,0xf2d69f).setDepth(20);
-
-    // Player is visible to the left of the wordmark, not behind the title.
-    const hero=this.add.sprite(75,world.groundY,'alien',0).setOrigin(.5,1).setDepth(23);
-    hero.play('alien-idle');
-
-    const touch=matchMedia('(pointer:coarse)').matches;
-    bitmapText(this,touch?'TOUCH THE SUN TO BEGIN':'PRESS ENTER OR TOUCH SUN',304,239,2,0xf8d69c,0x09152f).setDepth(25);
-    this.add.zone(341,68,102,102).setInteractive({useHandCursor:true})
-      .on('pointerdown',()=>this.begin(app));
-    this.input.keyboard?.once('keydown-ENTER',()=>this.begin(app));
-    this.input.keyboard?.once('keydown-SPACE',()=>this.begin(app));
+    const begin=()=>this.begin(app);
+    window.addEventListener('arcturian:begin',begin);
+    this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>{
+      window.removeEventListener('arcturian:begin',begin);
+    });
+    // The sun is an optional world-space gesture. Native DOM buttons also
+    // work with keyboards, switches and assistive input.
+    this.add.zone(340,70,105,108).setInteractive({useHandCursor:true})
+      .on('pointerdown',begin);
+    this.input.keyboard?.once('keydown-ENTER',begin);
+    this.input.keyboard?.once('keydown-SPACE',begin);
   }
   private begin(app:GameContext){
     if(this.started)return;
     this.started=true;
     app.audio.start();
     app.audio.setMuted(app.progress.muted);
+    window.dispatchEvent(new Event('arcturian:entered'));
     if(app.progress.stage==='campfire')this.scene.start('SliceComplete');
     else if(app.progress.stage==='credo')this.scene.start('Credo');
     else if(app.progress.stage==='first_contact')this.scene.start('Prologue');
