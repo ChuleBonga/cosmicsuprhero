@@ -3,25 +3,55 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#06132d">
+<meta name="theme-color" content="#080807">
 <meta name="robots" content="noindex,nofollow">
 <meta name="description" content="Step inside Arcturian Awakening, a cinematic Chapter I game preview by Cosmicsuprhero.">
 <title>Arcturian Awakening | Chapter I</title>
 </head>
 <body>
-<main class="scene-shell" aria-label="Arcturian Awakening game">
+<main class="scene-shell" id="observatory-shell" data-scene="title" aria-label="Arcturian Awakening game">
   <header class="scene-top">
-    <a href="/" aria-label="Back to the Cosmicsuprhero album and observatory">← Cosmicsuprhero</a>
-    <span class="scene-top__chapter">Chapter I · Preview</span>
+    <a class="scene-top__back" href="/" aria-label="Return to the Cosmicsuprhero Observatory">COSMICSUPRHERO</a>
+    <div class="scene-top__chapter" aria-label="Prologue: First Contact">
+      <svg viewBox="0 0 62 8" width="62" height="8" aria-hidden="true"><path d="M0 4H55" stroke="currentColor" stroke-width="1"/><path d="M58 1L61 4L58 7L55 4Z" fill="currentColor"/></svg>
+      <span id="scene-chapter">PROLOGUE / FIRST CONTACT</span>
+      <svg viewBox="0 0 62 8" width="62" height="8" aria-hidden="true"><path d="M7 4H62" stroke="currentColor" stroke-width="1"/><path d="M4 1L7 4L4 7L1 4Z" fill="currentColor"/></svg>
+    </div>
+    <button id="observatory-pause" class="scene-top__pause" type="button" aria-label="Pause or resume the game" hidden>II</button>
   </header>
   <div class="cinema-stage" id="cinema-stage">
     <div class="cinema-frame" id="cinema-frame">
-      <div id="game" role="application" aria-label="Pixel-art desert game. Touch the red sun to begin; hold the screen's right side to walk and release to stop. On a keyboard, use arrows or A and D. Press Escape to pause."></div>
+      <div id="game" role="application" aria-label="Playable desert world. Use the accessible touch controls below on mobile, or arrow keys to move and Space to interact on desktop."></div>
+      <div class="title-emblem" id="title-emblem" aria-label="Arcturian Awakening, Chapter One">
+        <svg class="title-emblem__astrolabe" viewBox="0 0 220 75" role="presentation" aria-hidden="true">
+          <defs><linearGradient id="astrolabe-light"><stop stop-color="#9b7a5f" stop-opacity="0"/><stop offset=".5" stop-color="#f1c68b"/><stop offset="1" stop-color="#9b7a5f" stop-opacity="0"/></linearGradient></defs>
+          <path d="M22 68A88 88 0 0 1 198 68" stroke="url(#astrolabe-light)" stroke-width="1" fill="none"/>
+          <path d="M110 1V35" stroke="#d9b582" stroke-width="1"/>
+          <path d="M107 16L110 12L113 16L110 20Z" fill="#f1d19c"/>
+        </svg>
+        <h1>Arcturian <span>Awakening</span></h1>
+        <p>Not an escape. A return.</p>
+      </div>
     </div>
   </div>
-  <footer class="scene-bottom">
-    <span class="scene-bottom__note">Rotate your phone for a larger cinematic frame.</span>
-    <button class="scene-bottom__presave" type="button" data-open-access>Direct album access <span aria-hidden="true">↗</span></button>
+  <footer class="scene-bottom" id="observatory-deck">
+    <div class="scene-bottom__subtitle" id="observatory-subtitle" aria-live="polite">The path remembers.</div>
+    <div class="scene-bottom__actions">
+      <button type="button" class="archival-button archival-button--primary" id="journey-primary">
+        <svg viewBox="0 0 300 54" preserveAspectRatio="none" aria-hidden="true"><path d="M15 1H285L299 15V39L285 53H15L1 39V15Z" fill="none" stroke="currentColor" stroke-width="1.3"/></svg>
+        <span id="journey-primary-text">ENTER THE JOURNEY</span>
+      </button>
+      <button type="button" class="archival-button" id="journey-direct" data-open-access>
+        <svg viewBox="0 0 300 54" preserveAspectRatio="none" aria-hidden="true"><path d="M15 1H285L299 15V39L285 53H15L1 39V15Z" fill="none" stroke="currentColor" stroke-width="1"/></svg>
+        <span>DIRECT ACCESS</span>
+      </button>
+    </div>
+    <div class="scene-bottom__movement" id="portrait-movement" hidden>
+      <button type="button" id="move-left" aria-label="Walk left">LEFT</button>
+      <span class="movement-instruction" id="movement-instruction">HOLD TO WALK / HOLD TO LISTEN</span>
+      <button type="button" id="move-right" aria-label="Walk right">RIGHT</button>
+    </div>
+    <p class="scene-bottom__edition">CHAPTER I / AN INTERACTIVE ALBUM TRANSMISSION</p>
   </footer>
   <dialog class="access-dialog" id="access-dialog" aria-labelledby="access-title">
     <div class="access-dialog__heading">
