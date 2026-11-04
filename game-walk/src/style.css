@@ -190,6 +190,14 @@ a{color:inherit;text-decoration:none}
 .access-dialog__honeypot{position:absolute!important;left:-10000px;opacity:0;width:1px;height:1px}
 @media(max-height:560px){.access-dialog{padding:16px}.access-dialog h2{font-size:28px;margin:10px 0}.access-dialog__note{margin-bottom:9px}}
 
+/* Gameplay HUD: one subtitle source, no cropped navigation or redundant panels. */
+.scene-shell:not([data-scene="title"]) .scene-top__back{visibility:hidden}
+.scene-shell:not([data-scene="title"]) .scene-bottom__subtitle{
+  color:#f4dfb7;text-shadow:0 2px 9px #05070b,0 1px 3px #05070b;
+  font:italic clamp(13px,1.4vw,19px)/1.35 Georgia,serif;
+  min-height:20px;white-space:normal;max-width:90vw;
+}
+.scene-shell:not([data-scene="title"]) .scene-bottom{padding-bottom:max(14px,env(safe-area-inset-bottom))}
 /* Gate 1: use the unaltered artist-approved First Contact painting on the
    title frame. The landscape camera remains Phaser-powered after entry. */
 .master-opening{position:absolute;inset:0;z-index:6;overflow:hidden;isolation:isolate}
