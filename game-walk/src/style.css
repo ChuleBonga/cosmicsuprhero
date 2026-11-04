@@ -120,6 +120,34 @@ a{color:inherit;text-decoration:none}
  .title-emblem p{margin-top:6px;font-size:10px}
 }
 
+
+/* Use the whole landscape device for the authored frame. HUD floats above
+   the world instead of consuming 100+ px of the mobile screen's height. */
+@media(orientation:landscape){
+ .scene-shell{position:relative;display:block;width:100%;height:100dvh}
+ .cinema-stage{position:absolute;inset:0;width:100%;height:100%;padding:0}
+ .scene-top{position:absolute;inset:0 0 auto;z-index:8;height:clamp(32px,6dvh,63px);
+   pointer-events:none;background:linear-gradient(to bottom,#080807c7,#08080700)}
+ .scene-top__back,.scene-top__pause{pointer-events:auto}
+ .scene-bottom{position:absolute;inset:auto 0 0;z-index:8;min-height:clamp(62px,11dvh,110px);
+   pointer-events:none;background:linear-gradient(to bottom,transparent,#080807d9);
+   padding:10px 16px max(10px,env(safe-area-inset-bottom))}
+ .scene-bottom button{pointer-events:auto}
+ .scene-bottom__subtitle{font-size:clamp(11px,1.2vw,14px)}
+ .scene-bottom__edition{display:none}
+ .scene-top__chapter{color:#f3dfc0;text-shadow:0 2px 9px #080807}
+ .title-emblem{bottom:26%}
+}
+@media(orientation:landscape) and (max-height:530px){
+ .scene-shell{display:block}
+ .scene-top{height:40px;padding:0 max(14px,env(safe-area-inset-right)) 0 max(14px,env(safe-area-inset-left))}
+ .scene-bottom{min-height:68px;gap:2px;padding-bottom:max(7px,env(safe-area-inset-bottom))}
+ .archival-button{height:39px;width:min(245px,37vw);font-size:10px}
+ .title-emblem{bottom:29%}
+ .title-emblem h1{font-size:clamp(25px,4.5vw,42px)}
+ .title-emblem__astrolabe{width:108px}
+ .title-emblem p{margin-top:7px;font-size:11px}
+}
 /* Sacred Observatory direct gateway. Native form supports keyboard, autofill,
    screen readers and password managers without obscuring the game canvas. */
 :root{
