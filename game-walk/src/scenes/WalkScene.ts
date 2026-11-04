@@ -100,12 +100,11 @@ export class PrologueScene extends Phaser.Scene {
   }
 
   private makeArtifact(x:number,y:number){
-    const plant=this.add.sprite(0,0,'arrival-landmark',2).setScale(.75).setOrigin(.5,1);
-    const glimmer=this.add.circle(0,-63,6,0xe9aa71,.9);
-    const listeningText=this.add.text(0,-103,'',{fontFamily:'Georgia,serif',
-      fontStyle:'italic',fontSize:'13px',color:'#f5d7a2',stroke:'#0d182b',strokeThickness:4
-    }).setOrigin(.5);
-    return this.add.container(x,y,[plant,glimmer,listeningText]).setDepth(13);
+    // The carved monolith and desert flora are already part of the approved
+    // painting. Only this restrained signal pulse is rendered at runtime.
+    const glimmer=this.add.circle(0,-63,5,0xe9bd78,.74);
+    const corona=this.add.circle(0,-63,13,0xe9bd78,.08);
+    return this.add.container(x,y,[corona,glimmer]).setDepth(13);
   }
   private canListen():boolean{
     return !this.pickupDone && Math.abs(this.player.x-FIRST_CONTACT_X)<84 && this.grounded;
