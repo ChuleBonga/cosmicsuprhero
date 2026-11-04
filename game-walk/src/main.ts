@@ -40,6 +40,8 @@ class BootScene extends Phaser.Scene {
     this.load.image('arrival-mid',art+'mid.webp');
     this.load.image('arrival-near',art+'near.webp');
     this.load.image('arrival-ground',art+'foreground.webp');
+    this.load.image('arrival-occluders',art+'foreground-occluders.webp');
+    this.load.image('arrival-atmosphere',art+'sun-atmosphere.webp');
     this.load.spritesheet('arrival-landmark',art+'landmarks.webp',{frameWidth:96,frameHeight:128});
   }
   create() {
