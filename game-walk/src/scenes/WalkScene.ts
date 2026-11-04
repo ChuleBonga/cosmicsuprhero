@@ -85,14 +85,6 @@ export class PrologueScene extends Phaser.Scene {
     this.input.keyboard?.on('keydown-ESC',()=>this.openPause());
     this.input.keyboard?.on('keydown-P',()=>this.openPause());
 
-    const pause=this.add.text(W-12,12,'II',{
-      fontFamily:'monospace',fontSize:'15px',color:'#f5e8c4',
-      backgroundColor:'#342b3d',padding:{x:8,y:5}
-    }).setOrigin(1,0).setScrollFactor(0).setDepth(45).setInteractive({useHandCursor:true});
-    pause.on('pointerdown',(_p:Phaser.Input.Pointer,_lx:number,_ly:number,e:Phaser.Types.Input.EventData)=>{
-      e.stopPropagation();this.openPause();
-    });
-
     this.artifact=this.makeArtifact(FIRST_CONTACT_X,this.world.groundY);
     this.artifact.setVisible(!this.pickupDone);
     this.artifactHalo=this.add.circle(FIRST_CONTACT_X,this.world.groundY-46,13,0x8dd9c1,.04).setDepth(9);
@@ -100,7 +92,8 @@ export class PrologueScene extends Phaser.Scene {
     this.hint=this.add.text(W/2,H-27,this.pickupDone?'THE SIGNAL HAS BEEN HEARD':'MOVE TOWARD THE HORIZON',{
       fontFamily:'Georgia,serif',fontStyle:'italic',fontSize:'13px',
       color:'#f4ddaf',align:'center',stroke:'#111328',strokeThickness:3
-    }).setOrigin(.5).setScrollFactor(0).setDepth(40).setAlpha(.86);
+    }).setOrigin(.5).setScrollFactor(0).setDepth(40).setVisible(false);
+    this.caption(this.pickupDone?'THE SIGNAL HAS BEEN HEARD':'MOVE TOWARD THE HORIZON');
     this.app.audio.setMuted(this.app.progress.muted);
     this.world.setArrivalLighting(this.pickupDone?1:0);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>this.app.progress.save());
@@ -123,11 +116,16 @@ export class PrologueScene extends Phaser.Scene {
     this.scene.launch('PauseUI',{returnScene:'Prologue'});
     this.scene.pause();
   }
+  private caption(message:string):void {
+    const el=document.getElementById('observatory-subtitle');
+    if(el)el.textContent=message;
+  }
   private showBeat(value:number,message:string){
     if(this.beat>=value)return;
     this.beat=value;
     this.captionElapsed=0;
     this.hint.setText(message).setAlpha(.96);
+    this.caption(message);
   }
   private recover(){
     if(this.pickupDone)return;
@@ -137,10 +135,12 @@ export class PrologueScene extends Phaser.Scene {
     this.app.progress.discover('first_contact');
     this.waitingForMusic=true;
     this.hint.setText('FIRST CONTACT').setAlpha(1);
+    this.caption('FIRST CONTACT');
     this.cameras.main.flash(this.reduceMotion?0:350,220,172,101,false);
     void this.app.audio.playPickup('first_contact',()=>{
       this.waitingForMusic=false;
       this.hint.setText('THE WORLD REMEMBERS').setAlpha(1);
+      this.caption('THE WORLD REMEMBERS');
     });
   }
 
@@ -179,6 +179,7 @@ export class PrologueScene extends Phaser.Scene {
     if(this.player.x>910)this.showBeat(2,'A SIGNAL BEYOND THE RIDGE');
     if(inRange&&!this.pickupDone){
       this.hint.setText('HOLD TO LISTEN').setAlpha(1);
+      this.caption('HOLD TO LISTEN');
       this.captionElapsed=0;
       // The artifact becomes more luminous only with deliberate attention.
       this.listenCharge=Phaser.Math.Clamp(this.listenCharge+(wantsListen?dt/.95:-dt*.28),0,1);
