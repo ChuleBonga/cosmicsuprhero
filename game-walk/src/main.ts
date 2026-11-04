@@ -185,10 +185,12 @@ function enforceOrientation():void {
   }
   if(!game.loop)return;
   if(unavailable || document.hidden){
+    audio.pause();
     game.loop.sleep();
     window.dispatchEvent(new Event('arcturian:release-controls'));
   }else{
     game.loop.wake();
+    audio.resume();
     resizeFrame();
   }
 }
