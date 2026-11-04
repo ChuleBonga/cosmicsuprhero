@@ -39,7 +39,7 @@ export class PrologueScene extends Phaser.Scene {
     this.cameras.main.setBackgroundColor('#07152b');
     this.world=buildWorld(this);
     this.pickupDone=this.app.progress.has('first_contact');
-    this.exactX=this.pickupDone?FIRST_CONTACT_X+70:118;
+    this.exactX=this.pickupDone?FIRST_CONTACT_X+25:118;
     this.player=this.add.container(this.exactX,this.world.groundY).setDepth(20);
     this.hero=this.add.sprite(0,0,'alien',0).setOrigin(.5,1).setScale(.34).setDepth(1);
     this.hero.play('alien-idle');
@@ -107,7 +107,7 @@ export class PrologueScene extends Phaser.Scene {
     return this.add.container(x,y,[corona,glimmer]).setDepth(13);
   }
   private canListen():boolean{
-    return !this.pickupDone && Math.abs(this.player.x-FIRST_CONTACT_X)<84 && this.grounded;
+    return !this.pickupDone && Math.abs(this.player.x-FIRST_CONTACT_X)<30 && this.grounded;
   }
   private openPause(){
     this.held=0;this.listening=false;this.velocity=0;
@@ -153,7 +153,7 @@ export class PrologueScene extends Phaser.Scene {
     const keyListening=!!this.keyListen?.isDown && inRange;
     const wantsListen=inRange&&(this.listening||keyListening);
     const axis=wantsListen?0:((right?1:0)-(left?1:0)||this.held);
-    const max=119,acceleration=320,friction=450;
+    const max=64,acceleration=180,friction=260;
     const target=axis*max,dv=target-this.velocity;
     this.velocity+=Math.sign(dv)*Math.min(Math.abs(dv),(axis?acceleration:friction)*dt);
     const previous=this.player.x;
@@ -174,8 +174,8 @@ export class PrologueScene extends Phaser.Scene {
     const anim=Math.abs(this.velocity)>10&&this.grounded?(this.velocity<0?'alien-walk-left':'alien-walk'):'alien-idle';
     if(this.hero.anims.currentAnim?.key!==anim)this.hero.play(anim);
 
-    if(this.player.x>400)this.showBeat(1,'THE LAND REMEMBERS');
-    if(this.player.x>910)this.showBeat(2,'A SIGNAL BEYOND THE RIDGE');
+    if(this.player.x>215)this.showBeat(1,'THE LAND REMEMBERS');
+    if(this.player.x>320)this.showBeat(2,'A SIGNAL BEYOND THE RIDGE');
     if(inRange&&!this.pickupDone){
       this.hint.setText('HOLD TO LISTEN').setAlpha(1);
       this.caption('HOLD TO LISTEN');
