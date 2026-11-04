@@ -29,8 +29,20 @@ export function buildWorld(scene:Phaser.Scene):WorldPreview {
   // Artwork never reflows with screen size: the 480×270 camera is the authoring grid.
   const sky=scene.add.tileSprite(0,0,W,H,'arrival-sky')
     .setOrigin(0).setScrollFactor(0).setDepth(-15);
-  const sun=scene.add.image(Math.round(W*.708),70,'arrival-sun')
-    .setOrigin(.5).setScrollFactor(0).setDisplaySize(188,188).setDepth(-13);
+
+  // A deterministic field of tiny points supplements, rather than replaces,
+  // the high-color cosmic-vault artwork. Frame-to-frame shimmer is gentle.
+  const stars=Array.from({length:58},(_,i)=>({
+    x:(i*173+43)%W,y:4+(i*97)%151,
+    phase:i*2.137,opacity:(i%5)*.05+.12
+  }));
+  const starField=scene.add.graphics().setScrollFactor(0).setDepth(-14);
+  const sunX=Math.round(W*.708),sunY=Math.round(H*.345);
+  const warmAtmosphere=scene.add.image(sunX,sunY,'arrival-atmosphere')
+    .setOrigin(.5).setScrollFactor(0).setDisplaySize(246,246)
+    .setDepth(-13.5).setAlpha(.76);
+  const sun=scene.add.image(sunX,sunY,'arrival-sun')
+    .setOrigin(.5).setScrollFactor(0).setDisplaySize(170,170).setDepth(-13);
   const layers:Terrain[]=[
     scene.add.tileSprite(0,0,W,H,'arrival-far').setOrigin(0).setScrollFactor(0).setDepth(-11),
     scene.add.tileSprite(0,0,W,H,'arrival-mid').setOrigin(0).setScrollFactor(0).setDepth(-9),
@@ -39,6 +51,11 @@ export function buildWorld(scene:Phaser.Scene):WorldPreview {
   // The grounding plane is an independent translucent rocky surface.
   const ground=scene.add.tileSprite(0,groundY-7,W,70,'arrival-ground')
     .setOrigin(0).setScrollFactor(0).setDepth(-3);
+  // Real source-painted corner silhouettes sit in front of the traveler.
+  // Unlike decoration on a fixed HUD, these advance slightly faster than
+  // the player, strengthening the spatial read of the camera movement.
+  const occluders=scene.add.tileSprite(0,0,W,H,'arrival-occluders')
+    .setOrigin(0).setScrollFactor(0).setDepth(24).setAlpha(.92);
 
   // Original drawn detail anchors, not procedural scattering; the placements
   // are designed around the narrative stages of this vertical slice.
@@ -82,9 +99,20 @@ export function buildWorld(scene:Phaser.Scene):WorldPreview {
       layer.tilePositionX=Math.round(scroll*PARALLAX_SPEEDS[i+1]+[37,174,463][i]);
     });
     ground.tilePositionX=Math.round(scroll*.96);
-    sun.x=Math.round(W*.708-(reducedMotion?0:scroll*.011));
+    occluders.tilePositionX=Math.round(scroll*1.25);
+    sun.x=Math.round(sunX-(reducedMotion?0:scroll*.011));
+    warmAtmosphere.x=sun.x;
     elapsed+=reducedMotion?0:Math.min(.05,delta/1000);
     sun.setAlpha(.92+arrival*.08);
+    warmAtmosphere.setAlpha(.65+arrival*.21);
+    starField.clear();
+    for(const star of stars){
+      // Low-amplitude sine wave, no random per-frame flicker or strobe.
+      const shimmer=reducedMotion?.6:(.58+.28*Math.sin(elapsed*.8+star.phase));
+      starField.fillStyle(0xd6d6d9,star.opacity*shimmer);
+      const x=(star.x-scroll*.015%W+W)%W;
+      starField.fillRect(Math.round(x),star.y,1,1);
+    }
     // Once the player nears the signal, the stone begins to respond,
     // but a full reveal requires the explicit listening action.
     const nearSignal=Math.max(0,1-Math.abs(FIRST_CONTACT_X-scroll-W*.53)/320);
