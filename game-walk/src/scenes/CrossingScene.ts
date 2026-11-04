@@ -1,7 +1,6 @@
 import Phaser from 'phaser';
 import type {GameContext} from '../main';
 import {buildWorld} from '../world/GrayboxWorld';
-import {bitmapText} from '../art/BitmapType';
 
 export class CrossingScene extends Phaser.Scene{
   private app!:GameContext;
@@ -19,10 +18,12 @@ export class CrossingScene extends Phaser.Scene{
     this.cameras.main.setBackgroundColor('#001334');
     const world=buildWorld(this);
     world.update(0);
-    this.cx=Math.round(W*.71);this.cy=Math.round(H*(H>W?.26:.25));
+    this.cx=Math.round(W*.775);this.cy=Math.round(H*.32);
     this.ring=this.add.graphics().setScrollFactor(0).setDepth(25);
-    bitmapText(this,'FIRST CONTACT',W/2,Math.round(H*.72),W<230?1:2,0xf1cd8e)
-      .setDepth(26);
+    const chapter=document.getElementById('scene-chapter');
+    const subtitle=document.getElementById('observatory-subtitle');
+    if(chapter)chapter.textContent='PROLOGUE / FIRST CONTACT';
+    if(subtitle)subtitle.textContent='A SIGNAL CROSSES THE HORIZON';
     this.input.on('pointerdown',()=>this.finish());
     this.input.keyboard?.once('keydown-SPACE',()=>this.finish());
     this.input.keyboard?.once('keydown-ENTER',()=>this.finish());
