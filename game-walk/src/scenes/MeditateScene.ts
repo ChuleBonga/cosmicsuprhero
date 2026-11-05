@@ -6,6 +6,8 @@ import {bitmapText} from '../art/BitmapType';
 export class MeditateScene extends Phaser.Scene {
   private app!:GameContext;
   private held=false;
+  private activePointer:number|null=null;
+  private keyboardHeld=false;
   private charge=0;
   private completed=false;
   private lastTick=0;
@@ -25,31 +27,41 @@ export class MeditateScene extends Phaser.Scene {
     hero.play('alien-idle');
     this.sunX=Math.round(W*.71);this.sunY=Math.round(H*(portrait?.26:.25));
     bitmapText(this,'MEDITATE',W/2,Math.round(H*.47),portrait?2:3,0xf5c774).setScrollFactor(0).setDepth(22);
-    bitmapText(this,'HOLD THE SUN TO ENTER',W/2,Math.round(H*.78),1,0xece1c5).setScrollFactor(0).setDepth(22);
+    const touch=matchMedia('(pointer: coarse)').matches;
+    bitmapText(this,touch?'HOLD THE SUN TO ENTER':'HOLD SPACE OR ENTER',W/2,Math.round(H*.78),1,0xece1c5).setScrollFactor(0).setDepth(22);
     this.ring=this.add.graphics().setScrollFactor(0).setDepth(24);
     this.pauseControl=this.add.rectangle(W-17,18,28,28,0x382b48,.91).setDepth(25).setInteractive({useHandCursor:true});
     this.add.text(W-17,18,'II',{fontFamily:'monospace',fontSize:'13px',color:'#f0d5a9'}).setOrigin(.5).setDepth(26);
     this.pauseControl.on('pointerdown',(_p:Phaser.Input.Pointer,_lx:number,_ly:number,event:Phaser.Types.Input.EventData)=>{
       event.stopPropagation();this.openPause();
     });
-    const gesture=(p:Phaser.Input.Pointer)=>{
-      if(p.x>W-43&&p.y<42)return;
-      this.held=true;
+    // Only touching the visible sun charges the portal. Other screen taps
+    // no longer bypass the intended opening interaction.
+    const insideSun=(x:number,y:number)=>Math.hypot(x-this.sunX,y-this.sunY)<=47;
+    this.input.on('pointerdown',(p:Phaser.Input.Pointer)=>{
+      if(this.activePointer===null && insideSun(p.x,p.y))this.activePointer=p.id;
+    });
+    this.input.on('pointermove',(p:Phaser.Input.Pointer)=>{
+      if(this.activePointer===p.id && (!p.isDown || !insideSun(p.x,p.y)))this.activePointer=null;
+    });
+    const release=(p:Phaser.Input.Pointer)=>{
+      if(this.activePointer===p.id)this.activePointer=null;
     };
-    this.input.on('pointerdown',gesture);
-    this.input.on('pointerup',()=>this.held=false);
-    this.input.on('pointerupoutside',()=>this.held=false);
-    this.input.on('gameout',()=>this.held=false);
-    this.input.keyboard?.on('keydown-SPACE',()=>this.held=true);
-    this.input.keyboard?.on('keyup-SPACE',()=>this.held=false);
-    this.input.keyboard?.on('keydown-ENTER',()=>this.held=true);
-    this.input.keyboard?.on('keyup-ENTER',()=>this.held=false);
+    this.input.on('pointerup',release);
+    this.input.on('pointerupoutside',release);
+    this.input.on('gameout',()=>this.activePointer=null);
+    this.input.keyboard?.on('keydown-SPACE',()=>this.keyboardHeld=true);
+    this.input.keyboard?.on('keyup-SPACE',()=>this.keyboardHeld=false);
+    this.input.keyboard?.on('keydown-ENTER',()=>this.keyboardHeld=true);
+    this.input.keyboard?.on('keyup-ENTER',()=>this.keyboardHeld=false);
     this.input.keyboard?.on('keydown-ESC',()=>this.openPause());
     this.input.keyboard?.on('keydown-P',()=>this.openPause());
     this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>this.app.progress.save());
   }
   private openPause(){
     this.held=false;
+    this.activePointer=null;
+    this.keyboardHeld=false;
     this.app.audio.pause();
     this.scene.launch('PauseUI',{returnScene:'Meditate'});
     this.scene.pause();
@@ -59,6 +71,7 @@ export class MeditateScene extends Phaser.Scene {
     const now=performance.now();
     const dt=Math.min(.25,Math.max(0,(now-this.lastTick)/1000));
     this.lastTick=now;
+    this.held=this.keyboardHeld || this.activePointer!==null;
     if(this.held)this.charge=Math.min(1,this.charge+dt/1.75);
     else this.charge=Math.max(0,this.charge-dt*.19);
     const g=this.ring;g.clear();
