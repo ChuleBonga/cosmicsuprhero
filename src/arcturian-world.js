@@ -11,10 +11,40 @@ const musicIcon=$("#music-icon");
 const musicStatus=$("#music-status");
 const musicTime=$("#music-time");
 const musicScrub=$("#music-scrub");
-let soundDeclined=false;
+let previewReady=false;
 let musicFrame=0;
 let lastMoment="";
 const excerptLength=45;
+const previewUnavailableMessage="Audio preview is being prepared. You can explore without sound.";
+// An approved, cut-down excerpt is required at this local URL. Never fetch the
+// unreleased WAV masters from Google Drive in a public browser session.
+async function checkPreviewAvailability(){
+  const url=music.dataset.previewSrc;
+  if(!url || !url.startsWith("/") || url.startsWith("//")){
+    musicStatus.textContent=previewUnavailableMessage;
+    return;
+  }
+  try{
+    const response=await fetch(url,{method:"HEAD",cache:"no-store"});
+    const type=(response.headers.get("content-type")||"").toLowerCase();
+    // A missing file can resolve to Vercel's HTML SPA fallback (HTTP 200).
+    if(!response.ok || (!type.startsWith("audio/") && !type.includes("mp4") && !type.includes("octet-stream"))){
+      throw new Error("No deployable audio preview");
+    }
+    music.src=url;
+    previewReady=true;
+    musicButton.disabled=false;
+    musicScrub.disabled=false;
+    musicStatus.textContent="Sound is optional. Press Listen to hear the 45-second excerpt.";
+    updateMusicButton();
+  }catch{
+    previewReady=false;
+    musicButton.disabled=true;
+    musicScrub.disabled=true;
+    musicStatus.textContent=previewUnavailableMessage;
+    musicButton.setAttribute("aria-label","Awaken Now audio preview unavailable");
+  }
+}
 function fmtClock(t){
   const n=Math.max(0,Math.floor(Number.isFinite(t)?t:0));
   return Math.floor(n/60)+":"+String(n%60).padStart(2,"0");
@@ -52,7 +82,7 @@ function liveMusicTick(){
   if(!music.paused&&!music.ended){musicFrame=requestAnimationFrame(liveMusicTick);}
 }
 async function startMusic(){
-  soundDeclined=false;
+  if(!previewReady){musicStatus.textContent=previewUnavailableMessage;return;}
   try{
     if(music.ended||music.currentTime>=excerptLength-.25)music.currentTime=0;
     const pending=music.play();
@@ -65,7 +95,6 @@ async function startMusic(){
   }
 }
 function pauseMusic(){
-  soundDeclined=true;
   music.pause();
   musicStatus.textContent="Paused. Resume whenever you choose.";
   updateMusicButton();
@@ -75,6 +104,7 @@ musicButton.addEventListener("click",()=>{
   else{pauseMusic();}
 });
 musicScrub.addEventListener("input",()=>{
+  if(!previewReady)return;
   if(music.readyState===0){music.load();}
   try{if(music.seekable.length||music.readyState>0)music.currentTime=Number(musicScrub.value);}catch(_){}
   syncMusic();
@@ -91,7 +121,15 @@ music.addEventListener("pause",()=>{
   syncMusic();
   updateMusicButton();
 });
-music.addEventListener("timeupdate",syncMusic);
+music.addEventListener("timeupdate",()=>{
+  if(music.currentTime>=excerptLength && !music.paused){
+    music.pause();
+    try{music.currentTime=excerptLength;}catch{}
+    musicStatus.textContent="The excerpt has ended. Replay or continue the journey.";
+    updateMusicButton();
+  }
+  syncMusic();
+});
 music.addEventListener("loadedmetadata",syncMusic);
 music.addEventListener("waiting",()=>{if(!music.paused)musicStatus.textContent="Loading the music preview…";});
 music.addEventListener("playing",()=>{musicStatus.textContent="Playing a 45-second excerpt of Awaken Now.";});
@@ -103,6 +141,9 @@ music.addEventListener("ended",()=>{
 });
 music.addEventListener("error",()=>{
   painting.classList.remove("audio-playing");
+  previewReady=false;
+  musicButton.disabled=true;
+  musicScrub.disabled=true;
   cancelAnimationFrame(musicFrame);
   musicStatus.textContent="The music is temporarily unavailable. The journey and pre-save still work.";
   updateMusicButton();
@@ -150,7 +191,7 @@ function setChapter(chapter){
 }
 function startEncounter(){
   if(state.chapter!==1)return;
-  if(!soundDeclined&&music.paused&&!music.ended){void startMusic();}
+  // Entering the painting is not consent to play audio.
   cue("First Contact");
   setChapter(2);
 }
@@ -220,16 +261,15 @@ function completeJourney(){
   $("#painting-chapter").textContent="THE WORLD IS OURS";
   const end=$("#finale");
   end.hidden=false;
-  setTimeout(()=>end.scrollIntoView({block:"start",behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"instant":"smooth"}),650);
+  setTimeout(()=>end.scrollIntoView({block:"start",behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}),650);
 }
 function resetJourney(){
   state.chapter=1;state.echoes.clear();state.waypoint=0;state.completed=false;
   painting.dataset.routeProgress="0";painting.dataset.memoryFound="0";
   music.pause();
   try{music.currentTime=0;}catch(_){}
-  soundDeclined=false;
   syncMusic();
-  musicStatus.textContent="Sound is optional";
+  musicStatus.textContent=previewReady?"Sound is optional. Press Listen to play.":previewUnavailableMessage;
   line.setAttribute("points","54,17");
   count.textContent="00 / 03";
   entries.replaceChildren();
@@ -238,7 +278,7 @@ function resetJourney(){
   $("#finale").hidden=true;$("#journal").hidden=true;
   feedback.textContent="";
   setChapter(1);
-  $("#world").scrollIntoView({block:"start",behavior:"smooth"});
+  $("#world").scrollIntoView({block:"start",behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
   $("#sun-target").focus({preventScroll:true});
 }
 $("#play-again").addEventListener("click",resetJourney);
@@ -264,3 +304,4 @@ $("#cover-image").addEventListener("error",()=>{
   cue("Artwork is temporarily unavailable. Pre-save is still accessible.");
 });
 setChapter(1);
+void checkPreviewAvailability();
