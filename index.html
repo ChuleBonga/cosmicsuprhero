@@ -43,7 +43,7 @@
     <h1><span>Arcturian</span><span>Awakening</span></h1>
     <div class="artist-byline">Cosmicsuprhero</div>
     <div class="music-strip" id="music-strip" aria-label="Awaken Now music preview">
-      <button type="button" id="music-toggle" class="music-toggle" aria-label="Play Awaken Now preview" aria-pressed="false">
+      <button type="button" id="music-toggle" class="music-toggle" aria-label="Audio preview availability is being checked" aria-pressed="false" disabled>
         <svg id="music-icon" class="music-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
           <circle cx="24" cy="24" r="22.5" stroke="currentColor" stroke-width="1"/>
           <path class="music-icon__play" d="M20.5 16.5L32 24L20.5 31.5V16.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
@@ -55,13 +55,13 @@
         <div class="music-strip__heading"><div><span class="music-strip__eyebrow">A 45-second listening excerpt</span><strong>Awaken Now</strong></div><span class="music-strip__edition">COSMICSUPRHERO / 2026</span></div>
         <div class="music-strip__timeline">
           <label for="music-scrub" class="sr-only">Seek within the 45-second audio excerpt</label>
-          <input id="music-scrub" type="range" min="0" max="45" step="0.1" value="0" aria-label="Seek within Awaken Now excerpt">
+          <input id="music-scrub" type="range" min="0" max="45" step="0.1" value="0" disabled aria-label="Seek within Awaken Now excerpt">
           <div class="music-strip__time"><output id="music-time" for="music-scrub">0:00</output><span>0:45</span></div>
         </div>
       </div>
-      <p class="music-status" id="music-status" role="status" aria-live="polite">Sound is optional</p>
+      <p class="music-status" id="music-status" role="status" aria-live="polite">Checking audio preview availability…</p>
     </div>
-    <audio id="awaken-audio" preload="none" src="https://at.adobe.com/sy7io6UEBpLf6mPZ"></audio>
+    <audio id="awaken-audio" preload="none" data-preview-src="/audio/awaken-now-preview.m4a"></audio>
     <div class="intro-rule" aria-hidden="true"></div>
     <div class="chapter-details" id="chapter-details" aria-live="polite" aria-atomic="true">
       <span class="chapter-eyebrow" id="chapter-number">I. First Contact</span>
