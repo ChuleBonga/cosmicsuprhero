@@ -24,7 +24,6 @@ export class PrologueScene extends Phaser.Scene{
   private keyD?:Phaser.Input.Keyboard.Key;
   private duration=0;private lastSave=0;private dustClock=0;
   private waitingForMusic=false;
-  private listening=false;
   private listeningProgress=0;
   private focusPointer:number|null=null;
   private focusKey?:Phaser.Input.Keyboard.Key;
