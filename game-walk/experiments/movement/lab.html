@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Arcturian Awakening | Movement & Architecture Lab</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,Segoe UI,sans-serif;background:#081322;color:#ede6dc}
+*{box-sizing:border-box}body{margin:0;overflow:hidden}button{font:inherit}
+canvas{position:fixed;inset:0;width:100vw;height:100dvh;display:block;touch-action:none}
+header{position:fixed;z-index:4;left:max(18px,env(safe-area-inset-left));right:max(18px,env(safe-area-inset-right));top:max(16px,env(safe-area-inset-top));display:flex;justify-content:space-between;gap:16px;align-items:flex-start;pointer-events:none}
+.eyebrow{letter-spacing:.23em;text-transform:uppercase;font-size:10px;color:#ddb988}.brand{font-family:Georgia,serif;font-size:clamp(18px,3.5vw,31px);font-weight:400;letter-spacing:.085em;margin:.3rem 0}.caption{font-size:11px;color:#d1c6ba;max-width:390px;line-height:1.5}
+.chip{display:inline-flex;border:1px solid #a187663d;padding:7px 10px;background:#0b1624ae;backdrop-filter:blur(10px);text-align:right;font-size:10px;letter-spacing:.13em;text-transform:uppercase}
+.hud{position:fixed;z-index:4;left:max(18px,env(safe-area-inset-left));right:max(18px,env(safe-area-inset-right));bottom:calc(15px + env(safe-area-inset-bottom));display:flex;align-items:flex-end;justify-content:space-between;gap:12px;pointer-events:none}
+.metrics{font-variant-numeric:tabular-nums;font-size:11px;letter-spacing:.035em;line-height:1.8;color:#f5debb;background:#0a1624c7;border:1px solid #ccb28a30;padding:10px 12px;backdrop-filter:blur(10px)}.metrics strong{font-weight:600;color:#fff}
+.controls{display:flex;gap:10px;pointer-events:auto}.control{min-width:64px;min-height:64px;border:1px solid #e5cba777;border-radius:11px;background:#101b29c7;color:#ffead0;backdrop-filter:blur(10px);touch-action:none;user-select:none;-webkit-user-select:none;cursor:pointer}.control:active,.control.active{background:#a27649b8}.control:focus-visible{outline:3px solid white;outline-offset:3px}
+.tip{position:fixed;top:32%;left:50%;transform:translateX(-50%);max-width:min(90vw,540px);text-align:center;color:#eadcc8;line-height:1.6;opacity:.88;text-shadow:0 2px 12px #000;pointer-events:none;font-size:clamp(12px,1.5vw,15px)}
+@media(max-width:600px){.caption{max-width:240px;font-size:10px}.chip{max-width:110px;font-size:9px}.brand{font-size:20px}.control{min-width:58px;min-height:60px}.metrics{font-size:9px;max-width:120px;padding:7px}.tip{top:36%}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<canvas id="world" role="img" aria-label="Experimental side-view terrain and architecture, with a moving test character. This is not final game art."></canvas>
+<header><div><div class="eyebrow">Cosmicsuprhero / engineering study</div><h1 class="brand">Movement & world scale</h1><div class="caption">Playable physics and architectural blockout. Not the finished game. No music or publication-approved assets.</div></div><span class="chip">Vertical slice R&amp;D<br>Not final art</span></header>
+<div class="tip" id="tip">Explore the ridge. Notice changes in slope, braking and landing. The ruined structures are scale studies, not final level geometry.</div>
+<div class="hud"><div class="metrics" aria-live="off">POS <strong id="x">0</strong><br>STATE <strong id="phase">idle</strong><br>GROUND <strong id="ground">yes</strong><br>FPS <strong id="fps">—</strong><br><span style="opacity:.7">G debug · R reset · P pause</span></div><div class="controls"><button class="control" id="left" aria-label="Move left">◀</button><button class="control" id="right" aria-label="Move right">▶</button><button class="control" id="jump" aria-label="Jump">JUMP</button></div></div>
+<script type="module" src="./lab.mjs"></script>
+</body></html>
