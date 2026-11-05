@@ -52,9 +52,9 @@ function fmtClock(t){
 function updateMusicButton(){
   const active=!music.paused&&!music.ended;
   musicButton.setAttribute("aria-pressed",String(active));
-  musicAction.textContent=active?"Pause":(music.ended?"Replay":music.currentTime>0?"Resume":"Listen");
+  musicAction.textContent=active?"Pause":(music.ended||music.currentTime>=excerptLength-.25?"Replay":music.currentTime>0?"Resume":"Listen");
   musicButton.classList.toggle("is-playing",active);
-  musicButton.setAttribute("aria-label",active?"Pause Awaken Now excerpt":(music.ended?"Replay Awaken Now excerpt":"Play Awaken Now excerpt"));
+  musicButton.setAttribute("aria-label",active?"Pause Awaken Now excerpt":(music.ended||music.currentTime>=excerptLength-.25?"Replay Awaken Now excerpt":"Play Awaken Now excerpt"));
 }
 function visualMoment(time){
   if(time>=40.5)return "reveal";
