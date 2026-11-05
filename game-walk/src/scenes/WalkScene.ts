@@ -24,6 +24,13 @@ export class PrologueScene extends Phaser.Scene{
   private keyD?:Phaser.Input.Keyboard.Key;
   private duration=0;private lastSave=0;private dustClock=0;
   private waitingForMusic=false;
+  private listeningProgress=0;
+  private focusPointer:number|null=null;
+  private focusKey?:Phaser.Input.Keyboard.Key;
+  private focusControl!:Phaser.GameObjects.Text;
+  private focusLabel!:Phaser.GameObjects.Text;
+  private readonly contactX=1100;
+  private readonly exitX=1510;
   private pickupDone=false;
   private transitioned=false;
   private reduceMotion=false;
@@ -35,7 +42,7 @@ export class PrologueScene extends Phaser.Scene{
     this.cameras.main.setBackgroundColor('#001334');
     this.world=buildWorld(this);
     this.pickupDone=this.app.progress.has('first_contact');
-    const startX=this.pickupDone?7380:140;
+    const startX=this.pickupDone?1240:140;
     this.preciseX=startX;
     this.player=this.add.container(startX,this.world.groundY).setDepth(20);
     this.hero=this.add.sprite(0,0,'alien',0).setOrigin(.5,1);
@@ -46,8 +53,9 @@ export class PrologueScene extends Phaser.Scene{
     this.arrows=this.input.keyboard?.createCursorKeys();
     this.keyA=this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.keyD=this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    this.focusKey=this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.E);
     this.input.on('pointerdown',(p:Phaser.Input.Pointer)=>{
-      if(p.y<45)return;
+      if(p.y<45 || (this.focusControl && this.focusControl.getBounds().contains(p.x,p.y)))return;
       this.pointerId=p.id;this.held=p.x<W/2?-1:1;
       this.downAt=performance.now();this.downX=p.x;
     });
@@ -79,8 +87,26 @@ export class PrologueScene extends Phaser.Scene{
     }).setOrigin(.5).setScrollFactor(0).setDepth(40);
     // The plant is temporary native pixel art until its final authored pulse
     // sprite is approved. Its label belongs to the same container.
-    this.pickup=this.makePickup(8450,this.world.groundY);
+    this.pickup=this.makePickup(this.contactX,this.world.groundY);
     this.pickup.setVisible(!this.pickupDone);
+    // Listening is an intentional interaction rather than an automatic pickup.
+    // The HTML/audio system remains silent when no approved recording exists.
+    this.focusLabel=this.add.text(W/2,H-65,'',{fontFamily:'Arial,sans-serif',
+      fontSize:portrait?'10px':'12px',color:'#f7dfaf',align:'center',
+      stroke:'#111a34',strokeThickness:3}).setOrigin(.5).setScrollFactor(0).setDepth(40);
+    this.focusControl=this.add.text(W/2,H-94,'HOLD TO LISTEN',{fontFamily:'Arial,sans-serif',
+      fontSize:portrait?'10px':'12px',color:'#f5e8c4',backgroundColor:'#3b304b',
+      padding:{x:10,y:8}}).setOrigin(.5).setScrollFactor(0).setDepth(42)
+      .setInteractive({useHandCursor:true}).setVisible(false);
+    this.focusControl.on('pointerdown',(p:Phaser.Input.Pointer,_lx:number,_ly:number,e:Phaser.Types.Input.EventData)=>{
+      e.stopPropagation();this.focusPointer=p.id;this.held=0;
+    });
+    const stopFocus=(p:Phaser.Input.Pointer)=>{
+      if(this.focusPointer===p.id)this.focusPointer=null;
+    };
+    this.input.on('pointerup',stopFocus);
+    this.input.on('pointerupoutside',stopFocus);
+    this.input.on('gameout',()=>this.focusPointer=null);
     this.app.audio.setMuted(this.app.progress.muted);
     this.events.once(Phaser.Scenes.Events.SHUTDOWN,()=>this.app.progress.save());
   }
@@ -98,7 +124,7 @@ export class PrologueScene extends Phaser.Scene{
     return this.add.container(x,y,[g,label]).setDepth(13);
   }
   private openPause(){
-    this.held=0;this.velocity=0;
+    this.held=0;this.velocity=0;this.focusPointer=null;this.listeningProgress=0;
     this.app.audio.pause();
     this.scene.launch('PauseUI',{returnScene:'Prologue'});
     this.scene.pause();
@@ -108,6 +134,8 @@ export class PrologueScene extends Phaser.Scene{
     this.pickupDone=true;this.pickup.setVisible(false);
     this.app.progress.discover('first_contact');
     this.waitingForMusic=true;
+    this.focusControl.setVisible(false);
+    this.focusLabel.setText('');
     this.hint.setText('FIRST CONTACT  /  LISTENING').setAlpha(1);
     void this.app.audio.playPickup('first_contact',()=>{
       this.waitingForMusic=false;
@@ -121,13 +149,21 @@ export class PrologueScene extends Phaser.Scene{
     const left=!!(this.arrows?.left.isDown||this.keyA?.isDown);
     const right=!!(this.arrows?.right.isDown||this.keyD?.isDown);
     const axis=(right?1:0)-(left?1:0)||this.held;
+    const nearContact=!this.pickupDone&&Math.abs(this.player.x-this.contactX)<95;
+    const focusHeld=nearContact&&(this.focusKey?.isDown||this.focusPointer!==null);
+    if(!nearContact)this.focusPointer=null;
+    if(focusHeld){this.held=0;this.listeningProgress=Math.min(1,this.listeningProgress+dt/1.35);}
+    else this.listeningProgress=Math.max(0,this.listeningProgress-dt*.65);
+    if(this.listeningProgress>=1&&!this.pickupDone)this.recover();
+    this.focusControl.setVisible(nearContact&&!this.pickupDone);
+    this.focusLabel.setText(nearContact&&!this.pickupDone?
+      'LISTEN  '+Math.round(this.listeningProgress*100)+'%  /  HOLD E OR BUTTON':'');
     const max=155,acceleration=330,friction=440;
-    const vTarget=axis*max,vDelta=vTarget-this.velocity;
+    const vTarget=(focusHeld||this.waitingForMusic?0:axis*max),vDelta=vTarget-this.velocity;
     this.velocity+=Math.sign(vDelta)*Math.min(Math.abs(vDelta),(axis?acceleration:friction)*dt);
-    const previous=this.player.x;
     this.preciseX=Phaser.Math.Clamp(this.preciseX+this.velocity*dt,25,WORLD_WIDTH-25);
     this.player.x=Math.round(this.preciseX);
-    this.app.progress.setDistance(this.app.progress.distance+Math.abs(this.player.x-previous));
+    this.app.progress.setDistance(this.app.progress.distance+Math.abs(this.velocity*dt));
     if(Math.abs(this.velocity)>7)this.player.scaleX=this.velocity<0?-1:1;
     this.jumpBuffer=Math.max(0,this.jumpBuffer-dt);
     if(this.grounded)this.coyote=.1;else this.coyote=Math.max(0,this.coyote-dt);
@@ -150,12 +186,10 @@ export class PrologueScene extends Phaser.Scene{
         this.tweens.add({targets:dust,y:dust.y-7,alpha:0,duration:500,onComplete:()=>dust.destroy()});
       }
     }
-    const passed=previous<=this.pickup.x+24&&this.player.x>=this.pickup.x-24 ||
-      previous>=this.pickup.x-24&&this.player.x<=this.pickup.x+24;
-    if(!this.pickupDone&&passed)this.recover();
+    // Proximity only reveals a listening opportunity; it never auto-collects.
     if(this.duration>5&&!this.waitingForMusic&&this.hint.text==='HOLD RIGHT TO WALK')
       this.hint.setAlpha(Math.max(0,1-(this.duration-5)/3));
-    if(this.pickupDone&&!this.waitingForMusic&&this.player.x>9500){
+    if(this.pickupDone&&!this.waitingForMusic&&this.player.x>this.exitX){
       this.transitioned=true;
       this.app.progress.advance('ARRIVED_AT_CREDO');
       this.scene.start('Credo');
