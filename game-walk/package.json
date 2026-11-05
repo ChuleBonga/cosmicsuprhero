@@ -5,10 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "npm run check && npm test && vite build && node scripts/check-budget.mjs",
+    "build": "npm run check && npm test && npm run test:movement-lab && vite build && node scripts/check-budget.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "check": "tsc --noEmit",
-    "test": "node --experimental-strip-types scripts/test-journey.mjs"
+    "test": "node --experimental-strip-types scripts/test-journey.mjs",
+    "test:movement-lab": "node --test experiments/movement/movement-model.test.mjs experiments/movement/terrain.test.mjs"
   },
   "dependencies": {
     "phaser": "3.90.0"
