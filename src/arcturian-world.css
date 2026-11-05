@@ -164,6 +164,8 @@ footer{background:var(--wine);color:#f9eddf;padding:45px clamp(20px,6vw,100px) 2
 .music-strip__transport{display:flex;align-items:center;gap:15px}
 .music-toggle{min-width:100px;min-height:46px;display:inline-flex;align-items:center;justify-content:center;gap:9px;border:1px solid var(--wine);background:var(--wine);color:#fff7ea;font:700 11px var(--sans);letter-spacing:.02em;padding:11px 13px;transition:background .15s}
 .music-toggle:hover{background:#743252}
+.music-toggle:disabled{opacity:.48;cursor:not-allowed;background:var(--wine)}
+#music-scrub:disabled{opacity:.45;cursor:not-allowed}
 .music-toggle:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
 #music-icon{font-size:12px}
 .music-strip__timeline{flex:1;min-width:0}
