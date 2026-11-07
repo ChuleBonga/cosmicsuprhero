@@ -8,6 +8,7 @@ import { FeaturedSoilAndSun } from "./components/FeaturedSoilAndSun";
 import { FrequencyChambers } from "./components/FrequencyChambers";
 import { GrainOverlay } from "./components/GrainOverlay";
 import { Observatory } from "./components/Observatory";
+import { ArcturianAwakeningAccess } from "./components/ArcturianAwakeningAccess";
 import { ScrollChoreography } from "./components/ScrollChoreography";
 import { ShadowChamberPreview } from "./components/ShadowChamberPreview";
 import { SignalLoader } from "./components/SignalLoader";
@@ -55,6 +56,7 @@ function HomeArchive() {
       />
       <SignalThreshold />
       <Observatory />
+      <ArcturianAwakeningAccess />
       <FrequencyChambers />
       <TransmissionMarquee
         tone="cosmic"

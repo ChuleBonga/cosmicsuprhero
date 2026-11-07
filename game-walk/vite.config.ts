@@ -1,2 +1,16 @@
 import { defineConfig } from 'vite';
-export default defineConfig({base:'/play/',css:{postcss:{plugins:[]}},build:{target:'es2022',sourcemap:false,assetsInlineLimit:0,cssCodeSplit:true},server:{host:'0.0.0.0'}});
+export default defineConfig({
+  base: '/play/',
+  css: { postcss: { plugins: [] } },
+  build: {
+    target: 'es2022',
+    sourcemap: false,
+    assetsInlineLimit: 0,
+    cssCodeSplit: true,
+    rollupOptions: { input: {
+      main: 'index.html',
+      movementLab: 'experiments/movement/lab.html',
+    }},
+  },
+  server: { host: '0.0.0.0' },
+});
