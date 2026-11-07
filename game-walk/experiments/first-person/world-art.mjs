@@ -230,6 +230,40 @@ function spatialObstacles(scene,stone,oxide,warm){
  }
  return group;
 }
+// A distant, full-geometry landmark provides a stable scale reference.
+// Its irregular, missing spans reveal the structure's age; it cannot be reached
+// during this short preview, so no invisible collider is placed nearby.
+function horizonArray(scene,stone,oxide,warm){
+ const group=new THREE.Group();group.name='Horizon Array / distant monumental landmark';
+ group.position.set(0,groundHeight(0,-167),-167);group.rotation.y=.11;scene.add(group);
+ const radius=16.6;
+ const segments=15;
+ for(let i=0;i<segments;i++){
+  if(i===3||i===9||i===10)continue; // intentional historical fractures
+  const gap=.031+(i%5)*.003;
+  const angle=i*Math.PI*2/segments+gap;
+  const arc=Math.PI*2/segments-2*gap;
+  const section=mesh(group,new THREE.TorusGeometry(radius,1.28,8,14,arc),i%4===0?oxide:stone,0,20,0);
+  section.rotation.z=angle;
+  section.castShadow=false;
+  if(i%4===0){
+   const bond=mesh(group,new THREE.BoxGeometry(1.2,3.1,1.55),warm,
+     Math.cos(angle+arc*.5)*(radius+1.2),
+     20+Math.sin(angle+arc*.5)*(radius+1.2),-.15);
+   bond.rotation.z=angle+arc*.5-Math.PI/2;
+  }
+ }
+ for(const side of [-1,1]){
+  const pile=mesh(group,finGeometry(4.3,16,5.1),stone,side*17.1,0,.2);
+  pile.rotation.z=side*-.11;
+  pile.castShadow=false;
+  const footing=mesh(group,new THREE.CylinderGeometry(5.2,5.8,1.6,12),oxide,side*17.1,.5,.2);
+  footing.castShadow=false;
+ }
+ const crown=mesh(group,new THREE.BoxGeometry(4.4,1.55,5),oxide,0,39,0);
+ crown.rotation.z=.13;
+ return group;
+}
 function sky(scene){
  const geo=new THREE.SphereGeometry(800,48,26);
  const material=new THREE.ShaderMaterial({
@@ -266,6 +300,7 @@ export function createWorldArt(scene){
  rockScatter(root,stone,warm);mountainMass(root);
  gateway(root,-13,stone,oxide,1);gateway(root,-78,stone,oxide,.78);
  spatialObstacles(root,stone,oxide,warm);
+ horizonArray(root,stone,oxide,warm);
  const relic=artifact(root,stone,oxide);const skies=sky(scene);
  const exitStone=mesh(root,new THREE.CylinderGeometry(5.6,6.1,.32,20),warm,0,groundHeight(0,-110)+.11,-110);exitStone.castShadow=false;
  // Shared iconography becomes a material language across the route.
