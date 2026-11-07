@@ -211,8 +211,8 @@ function spatialObstacles(scene,stone,oxide,warm){
   if(data.id==='fallen-spire'){
    const base=mesh(tower,new THREE.CylinderGeometry(1.08,1.28,.42,9),stone,0,.24,0);
    base.castShadow=true;
-   const shaft=mesh(tower,finGeometry(1.75,5.6,1.9),stone,-.15,.4,0);
-   shaft.rotation.z=-.9;shaft.rotation.x=.1;shaft.castShadow=true;
+   const shaft=mesh(tower,finGeometry(1.75,4.8,1.9),stone,-.15,.4,0);
+   shaft.rotation.z=-.25;shaft.rotation.x=.1;shaft.castShadow=true;
    const rim=mesh(tower,new THREE.CylinderGeometry(.76,.83,.21,10),oxide,-.1,1.0,.25);
    rim.rotation.z=.85;
   }else{
