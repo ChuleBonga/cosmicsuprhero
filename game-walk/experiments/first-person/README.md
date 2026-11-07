@@ -14,14 +14,16 @@
 ## What has been built here
 - Native, browser-executed Three.js 3D scene (no remote GPU or video impostor).
 - Procedural actual terrain mesh, coherent canyon boundaries, layered geological faces, distant peak geometry, shared PBR-style procedural material maps, instanced stones, two original monumental gateway configurations, red-orange sun sky shader and distance fog.
-- First-person walking with fixed 60 Hz simulation, terrain normals/slope threshold, acceleration/braking normalized for diagonals, hard path boundaries and a physical circular relic collider.
+- First-person walking with fixed 60 Hz simulation, terrain normals/slope threshold, acceleration/braking normalized for diagonals, hard path boundaries and visible-space collision proxies for the plinth, leaning spire and two waystones. These are custom kinematic contacts, not full rigid-body physics.
 - Real 3D artifact geometry plus physically continuous object inspection: when near and facing the relic, press E or tap Inspect; the inspected model is a clone of the world model, rotated by mouse/touch.
 - Desktop WASD and mouse look; coarse-pointer mobile directional pad and drag look; accessible text and focusable controls; pause/restart, safe direct pre-save link, graceful WebGL error copy.
+- Awaken Now preview music control with visitor-initiated autoplay unlock, looping, volume adjustment, M mute shortcut, pause/resume, and cue ducking. Dedicated transport tests guard audio source and state changes. Only the **separate game project** has the audio; main site embedding still omits all audio.
+- A fractured horizon-scale architectural landmark beyond the path, close-up stone sculptures, and corridor walls aligned to the physical walking bounds.
 - Optional `?perf` frame-time overlay showing observed mean/p95, draw calls, triangle count, render scale, and world position. The overlay is **not GPU profiling**. Render scale may reduce if measured frame pacing is poor.
 - Regression tests in `world-logic.test.mjs` with deterministic 30/60/120 Hz scheduling equivalence, ground and slope validity, boundaries, braking, normalized diagonal travel, inspect proximity/facing, item collision and a single end location.
 
 ## Preview route
-`/play/experiments/first-person/index.html` (only when this branch is deployed).
+`/play/experiments/first-person/index.html` on the **independent `arcturian-walk-preview` Vercel project** (only when this branch is deployed). The root website's preview builds this route as well, but intentionally leaves audio out under the existing production protection.
 No homepage link and no merge to `main` without visual and control acceptance.
 
 ## Known limitations — not negotiable
@@ -50,3 +52,6 @@ The complete game build must also retain the existing independent Phaser game, t
 
 ## Art note
 The surrounding architecture borrows no layout from the user's unrelated game references. The player is first-person and there is no visible pixel-art character in this 3D study.
+
+## Score-preview and publishing guardrails
+The user's music direction is explicit: Awaken Now is the game's background theme. The source file was already tracked in the repository, and the game project already served it before this commit. This branch changes the **isolated first-person route** to actually play that loop after an entry gesture. It does not expose a new master recording, introduce other tracks, or remove the root site's audio-exclusion safeguard. A future merge to production would require explicit review of the precise loop, availability, desired edits, and release timing.

@@ -1,10 +1,27 @@
 import * as THREE from 'three';
 import {WORLD,groundHeight,initialState,stepMovement,canInspect,narrativeBeat,atEnd} from './world-logic.mjs';
 import {createWorldArt} from './world-art.mjs';
+import {AwakenNowScore} from './score.mjs';
 
 const $=id=>document.getElementById(id);
 const canvas=$('world'),intro=$('intro'),hud=$('hud'),hint=$('hint'),inspectButton=$('inspect');
 const touch=$('touch-controls'),panel=$('inspect-panel'),end=$('end'),perf=$('perf'),pauseOverlay=$('pause-overlay');
+const soundbar=$('soundbar'),scoreState=$('score-state'),scoreToggle=$('score-toggle'),scoreVolume=$('score-volume'),scoreRetry=$('score-retry');
+const score=new AwakenNowScore(message=>{
+ scoreState.textContent=message;
+ $('status').textContent=message;
+ if(message.includes('unavailable')||message.includes('could not start'))scoreRetry.hidden=false;
+ else scoreRetry.hidden=true;
+});
+function toggleMusic(){
+ score.setMuted(!score.muted);scoreToggle.textContent=score.muted?'Music off':'Music on';
+ scoreToggle.setAttribute('aria-pressed',String(score.muted));
+ if(!score.muted&&score.failed)void score.play();
+ $('status').textContent=score.muted?'Awaken Now muted':'Awaken Now unmuted';
+}
+scoreToggle.addEventListener('click',toggleMusic);
+scoreVolume.addEventListener('input',()=>{score.setVolume(Number(scoreVolume.value)/100);});
+scoreRetry.addEventListener('click',()=>{void score.play();});
 const coarse=matchMedia('(pointer:coarse)').matches;
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const showPerf=new URLSearchParams(location.search).has('perf');
@@ -88,6 +105,7 @@ function clearKeys(){
 function setPaused(value){
  if(!started||finished||inspecting)return;
  paused=value;clearKeys();pauseOverlay.hidden=!value;
+ if(value)score.pause();else void score.play();
  $('pause').textContent=value?'Resume':'Pause';
  hint.hidden=value;inspectButton.hidden=value;
  if(value){if(document.pointerLockElement===canvas)document.exitPointerLock?.();}
@@ -95,7 +113,9 @@ function setPaused(value){
  $('status').textContent=value?'Experience paused':'Experience resumed';
 }
 function begin(){
- intro.hidden=true;hud.hidden=false;touch.hidden=!coarse;
+ intro.hidden=true;hud.hidden=false;touch.hidden=!coarse;soundbar.hidden=false;
+ // play() executes synchronously under the player's explicit enter gesture.
+ void score.play();
  $('reticle').hidden=false;paused=false;started=true;finished=false;previous=performance.now();
  if(!coarse)canvas.requestPointerLock?.().catch(()=>{});
  canvas.focus();$('status').textContent='World entered. Walk with WASD, look with the mouse, E to examine an object.';
@@ -103,6 +123,7 @@ function begin(){
 function closeInspection(){
  if(!inspecting)return;
  inspecting=false;panel.hidden=true;inspectedObject.visible=false;inspectionLight.visible=false;
+ score.setSceneLevel(1);
  paused=false;previous=performance.now();
  $('reticle').hidden=false;
  if(!coarse)canvas.requestPointerLock?.().catch(()=>{});
@@ -113,6 +134,7 @@ function inspect(){
  clearKeys();inspecting=true;paused=true;hasInspected=true;
  $('reticle').hidden=true;hint.hidden=true;inspectButton.hidden=true;
  panel.hidden=false;inspectedObject.visible=true;inspectionLight.visible=true;
+ score.setSceneLevel(.33);
  if(document.pointerLockElement===canvas)document.exitPointerLock?.();
  art.sky.material.uniforms.warm.value=.26;
  $('leave-inspect').focus();$('status').textContent='First Contact examined. Drag the model to rotate, then return to the world.';
@@ -120,6 +142,7 @@ function inspect(){
 function finish(){
  if(finished)return;
  clearKeys();finished=true;paused=true;end.hidden=false;hud.hidden=true;
+ score.setSceneLevel(.47); // Keep the theme beneath the final pre-save invitation.
  hint.hidden=true;inspectButton.hidden=true;touch.hidden=true;$('reticle').hidden=true;
  if(document.pointerLockElement===canvas)document.exitPointerLock?.();
  if(hasInspected)$('end-caption').textContent='You paused to look more closely. This is still the first part of a world being built; the rest of the journey continues in the album.';
@@ -133,6 +156,7 @@ $('leave-inspect').addEventListener('click',closeInspection);
 $('restart').addEventListener('click',()=>{
  end.hidden=true;hud.hidden=false;motion=initialState();yaw=0;pitch=-.04;
  finished=false;started=true;inspecting=false;paused=false;hasInspected=false;
+ score.setSceneLevel(1);if(score.audio.paused)void score.play();
  touch.hidden=!coarse;$('reticle').hidden=false;art.sky.material.uniforms.warm.value=0;
  previous=performance.now();canvas.focus();
 });
@@ -141,6 +165,7 @@ document.addEventListener('keydown',e=>{
  if(e.code==='Escape'){e.preventDefault();if(started&&!finished)setPaused(!paused);return;}
  if(e.target instanceof HTMLElement&&e.target.closest('a,button,input,textarea'))return;
  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();
+ if(e.code==='KeyM'&&started){toggleMusic();return;}
  if(e.code==='KeyE'){inspect();return;}
  if(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))activeKeys.add(e.code);
 });
@@ -202,6 +227,7 @@ function tick(timestamp){
  requestAnimationFrame(tick);
  const delta=previous?clamp((timestamp-previous)/1000,0,.05):0;
  previous=timestamp;
+ score.tick(delta);
  if(started&&!paused&&!finished){
   accumulator+=delta;let steps=0;
   while(accumulator>=FDT&&steps<4){
@@ -254,4 +280,4 @@ window.__AA_DEV__={getState:()=>({...motion,yaw,pitch,paused,inspecting,finished
  motion={...motion,x:1.95,z:WORLD.artifact.z+1.7};motion.y=groundHeight(motion.x,motion.z);
  yaw=-.85;
 },goToEnd:()=>{motion={...motion,x:0,z:WORLD.endZ+.95};motion.y=groundHeight(motion.x,motion.z);}};
-window.addEventListener('pagehide',()=>{clearKeys();art.dispose();renderer.dispose()});
+window.addEventListener('pagehide',()=>{clearKeys();score.destroy();art.dispose();renderer.dispose()});

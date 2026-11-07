@@ -10,6 +10,14 @@ export const WORLD = Object.freeze({
   artifact:Object.freeze({x:-0.9,z:-35}),
   inspectDistance:3.25
 });
+// All obstacle colliders share coordinates with the authored 3D meshes.
+ // Radius excludes the player's own horizontal capsule footprint.
+export const WORLD_OBSTACLES = Object.freeze([
+  Object.freeze({id:'first-contact-plinth',x:WORLD.artifact.x,z:WORLD.artifact.z,radius:2.36}),
+  Object.freeze({id:'fallen-spire',x:3.65,z:-54,radius:2.05}),
+  Object.freeze({id:'west-waystone',x:-4.1,z:-73,radius:1.25}),
+  Object.freeze({id:'east-waystone',x:4.1,z:-91,radius:1.25})
+]);
 const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
 const mix=(a,b,t)=>a+(b-a)*t;
 const fract=v=>v-Math.floor(v);
@@ -35,9 +43,8 @@ export function groundNormal(x,z){
 export function halfWidth(z){return z>-12?7.5:z>-64?6.1:8.1}
 export function initialState(){
   const {x,z}=WORLD.start;
-  return {x,z,y:groundHeight(x,z),vx:0,vz:0,distance:0};
+  return {x,z,y:groundHeight(x,z),vx:0,vz:0,distance:0,groundNormal:groundNormal(x,z),grounded:true};
 }
-function approach(current,target,delta){return current<target?Math.min(current+delta,target):Math.max(current-delta,target);}
 export function stepMovement(state,forward=0,right=0,yaw=0,dt=1/WORLD.hz){
   if(!(dt>0&&dt<=1/30))throw new RangeError('Use fixed physics timestep');
   const s={...state};
@@ -55,14 +62,27 @@ export function stepMovement(state,forward=0,right=0,yaw=0,dt=1/WORLD.hz){
   const intendedX=s.x+s.vx*dt,intendedZ=s.z+s.vz*dt;
   let nextZ=clamp(intendedZ,WORLD.endZ-1.8,26);
   let nextX=clamp(intendedX,-halfWidth(nextZ)+WORLD.radius,halfWidth(nextZ)-WORLD.radius);
-  // Material relic and its base have a genuine circular collision proxy.
-  const obstacleRadius=1.82+WORLD.radius;
-  let dx=nextX-WORLD.artifact.x,dz=nextZ-WORLD.artifact.z,dist=Math.hypot(dx,dz);
-  if(dist<obstacleRadius){
-    const scale=obstacleRadius/Math.max(dist,1e-5);
-    if(dist<1e-5){dx=1;dz=0;}
-    nextX=clamp(WORLD.artifact.x+dx*scale,-halfWidth(nextZ)+WORLD.radius,halfWidth(nextZ)-WORLD.radius);
-    nextZ=WORLD.artifact.z+dz*scale;
+  // Horizontal capsule-vs-cylinder contacts. Iterative projection supplies
+  // a simple but grounded sliding contact response for close-set architecture.
+  // Every collider is reflected by a visible mesh authored in world-art.mjs.
+  for(let pass=0;pass<3;pass++){
+    let touched=false;
+    for(const obstacle of WORLD_OBSTACLES){
+      const dx=nextX-obstacle.x,dz=nextZ-obstacle.z;
+      const radius=obstacle.radius+WORLD.radius;
+      const distance=Math.hypot(dx,dz);
+      if(distance>=radius)continue;
+      const nx=distance>1e-6?dx/distance:(state.x-obstacle.x>=0?1:-1);
+      const nz=distance>1e-6?dz/distance:0;
+      nextX=obstacle.x+nx*radius;
+      nextZ=obstacle.z+nz*radius;
+      // Remove velocity directed into the obstacle, preserving tangential slide.
+      const into=s.vx*nx+s.vz*nz;
+      if(into<0){s.vx-=into*nx;s.vz-=into*nz;}
+      nextX=clamp(nextX,-halfWidth(nextZ)+WORLD.radius,halfWidth(nextZ)-WORLD.radius);
+      touched=true;
+    }
+    if(!touched)break;
   }
   const nextY=groundHeight(nextX,nextZ);
   const angle=Math.acos(clamp(groundNormal(nextX,nextZ).y,-1,1))*180/Math.PI;
@@ -71,6 +91,8 @@ export function stepMovement(state,forward=0,right=0,yaw=0,dt=1/WORLD.hz){
   }
   const deltaX=nextX-s.x,deltaZ=nextZ-s.z;
   s.x=nextX;s.z=nextZ;s.y=nextY;s.distance+=Math.hypot(deltaX,deltaZ);
+  s.groundNormal=groundNormal(nextX,nextZ);
+  s.grounded=true;
   if(Math.abs(deltaX-(intendedX-state.x))>.02)s.vx=0;
   if(Math.abs(deltaZ-(intendedZ-state.z))>.02)s.vz=0;
   return s;

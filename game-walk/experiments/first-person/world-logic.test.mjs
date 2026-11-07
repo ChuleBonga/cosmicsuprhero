@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {WORLD,groundHeight,groundNormal,halfWidth,initialState,stepMovement,canInspect,inspectDistance,narrativeBeat,atEnd} from './world-logic.mjs';
+import {WORLD,groundHeight,groundNormal,halfWidth,WORLD_OBSTACLES,initialState,stepMovement,canInspect,inspectDistance,narrativeBeat,atEnd} from './world-logic.mjs';
 test('world and ground geometry are finite with normalized normals',()=>{
  for(let z=-117;z<=26;z+=3)for(let x=-10;x<=10;x+=2){
   assert.ok(Number.isFinite(groundHeight(x,z)));
@@ -50,4 +50,30 @@ test('story beats are one uninterrupted spatial journey',()=>{
 test('there is one terminal location, without required collectibles',()=>{
  let s={...initialState(),z:WORLD.endZ};assert.equal(atEnd(s),true);
  assert.equal(atEnd(initialState()),false);
+});
+
+test('physical landmarks remain within authored navigable corridor',()=>{
+ for(const o of WORLD_OBSTACLES){
+  assert.ok(Number.isFinite(o.x)&&Number.isFinite(o.z)&&o.radius>0,o.id);
+  assert.ok(Math.abs(o.x)+o.radius<=halfWidth(o.z)+.01,o.id);
+ }
+});
+test('moving forward cannot penetrate physically represented stone landmarks',()=>{
+ for(const o of WORLD_OBSTACLES){
+  const startZ=o.z+o.radius+WORLD.radius+1.7;
+  let s={...initialState(),x:o.x,z:startZ,y:groundHeight(o.x,startZ),vx:0,vz:0};
+  for(let i=0;i<280;i++){
+   s=stepMovement(s,1,0,0);
+   assert.ok(Math.hypot(s.x-o.x,s.z-o.z)>=o.radius+WORLD.radius-.002,o.id+' '+i);
+  }
+ }
+});
+test('strafe and forward contacts preserve finite grounded velocity',()=>{
+ let s=initialState();
+ for(let i=0;i<1600;i++){
+  s=stepMovement(s,1, i<500?0:Math.sin(i/40),.045);
+  assert.ok(Number.isFinite(s.x)&&Number.isFinite(s.y)&&Number.isFinite(s.z));
+  assert.ok(Math.hypot(s.vx,s.vz)<=WORLD.walkSpeed+.0001);
+  assert.equal(s.grounded,true);
+ }
 });

@@ -4,7 +4,7 @@
  * Deliberately NOT considered final: the authored Blender material/scan pass is pending.
  */
 import * as THREE from 'three';
-import {WORLD,groundHeight} from './world-logic.mjs';
+import {WORLD,WORLD_OBSTACLES,groundHeight,halfWidth} from './world-logic.mjs';
 const seedRand=(initial)=>{let s=initial>>>0;return()=>((s=Math.imul(s,1664525)+1013904223>>>0)/4294967296)};
 const rng=seedRand(20261106);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -78,9 +78,10 @@ function cliffWall(scene,side,startZ,endZ,stone){
  const dark=c(0x34445e),mid=c(0x63718a),rim=c(0x9a806b);
  for(let s=0;s<=steps;s++){
   const z=mix(startZ,endZ,s/steps);
-  const bend=Math.sin(z*.073+side)*2.1+Math.cos(z*.14)*1.2;
+  // Place the visible rock wall just outside the controller's physical corridor.
+  const bend=Math.sin(z*.073+side)*.28+Math.cos(z*.14)*.18;
   for(let h=0;h<rings;h++){
-   const y=h*3.5,ridge=side*(10.2+h*.75+bend+Math.sin(s*.62+h*2.5)*.7);
+   const y=h*3.5,ridge=side*(halfWidth(z)+1.2+h*.88+bend+Math.sin(s*.62+h*2.5)*.22);
    const fracturedY=groundHeight(ridge,z)+y+Math.sin(s*.48+h*.91)*.9;
    positions.push(ridge,fracturedY,z);
    uvs.push(z*.09,h*.17);
@@ -198,6 +199,71 @@ function artifact(scene,stone,oxide){
  const light=new THREE.PointLight(0xf0a16e,1.35,9,2);light.position.set(0,3.0,0);root.add(light);
  return {root,core,light};
 }
+// Standing stones and fallen architecture share their positions with
+// world-logic.mjs collider definitions, keeping visual and physical space aligned.
+function spatialObstacles(scene,stone,oxide,warm){
+ const group=new THREE.Group();group.name='Physical path landmarks';scene.add(group);
+ for(const data of WORLD_OBSTACLES){
+  if(data.id==='first-contact-plinth')continue;
+  const baseY=groundHeight(data.x,data.z);
+  const tower=new THREE.Group();tower.name=data.id;
+  tower.position.set(data.x,baseY,data.z);group.add(tower);
+  if(data.id==='fallen-spire'){
+   const base=mesh(tower,new THREE.CylinderGeometry(1.08,1.28,.42,9),stone,0,.24,0);
+   base.castShadow=true;
+   const shaft=mesh(tower,finGeometry(1.75,4.8,1.9),stone,-.15,.4,0);
+   shaft.rotation.z=-.25;shaft.rotation.x=.1;shaft.castShadow=true;
+   const rim=mesh(tower,new THREE.CylinderGeometry(.76,.83,.21,10),oxide,-.1,1.0,.25);
+   rim.rotation.z=.85;
+  }else{
+   const left=data.id==='west-waystone';
+   const h=left?6.4:8.6;
+   const slab=mesh(tower,finGeometry(1.4,h,1.45),stone,0,0,0);
+   slab.rotation.z=left?-.09:.065;slab.castShadow=true;
+   const base=mesh(tower,new THREE.CylinderGeometry(data.radius*.86,data.radius*.97,.4,11),warm,0,.16,0);
+   base.castShadow=true;
+   for(let n=0;n<6;n++){
+    const stripe=mesh(tower,new THREE.BoxGeometry(.09,.11,.09),oxide,.1+(n%2)*.22,1.2+n*.55,.78);
+    stripe.rotation.z=n%2?.3:-.2;
+   }
+  }
+ }
+ return group;
+}
+// A distant, full-geometry landmark provides a stable scale reference.
+// Its irregular, missing spans reveal the structure's age; it cannot be reached
+// during this short preview, so no invisible collider is placed nearby.
+function horizonArray(scene,stone,oxide,warm){
+ const group=new THREE.Group();group.name='Horizon Array / distant monumental landmark';
+ group.position.set(0,groundHeight(0,-167),-167);group.rotation.y=.11;scene.add(group);
+ const radius=16.6;
+ const segments=15;
+ for(let i=0;i<segments;i++){
+  if(i===3||i===9||i===10)continue; // intentional historical fractures
+  const gap=.031+(i%5)*.003;
+  const angle=i*Math.PI*2/segments+gap;
+  const arc=Math.PI*2/segments-2*gap;
+  const section=mesh(group,new THREE.TorusGeometry(radius,1.28,8,14,arc),i%4===0?oxide:stone,0,20,0);
+  section.rotation.z=angle;
+  section.castShadow=false;
+  if(i%4===0){
+   const bond=mesh(group,new THREE.BoxGeometry(1.2,3.1,1.55),warm,
+     Math.cos(angle+arc*.5)*(radius+1.2),
+     20+Math.sin(angle+arc*.5)*(radius+1.2),-.15);
+   bond.rotation.z=angle+arc*.5-Math.PI/2;
+  }
+ }
+ for(const side of [-1,1]){
+  const pile=mesh(group,finGeometry(4.3,16,5.1),stone,side*17.1,0,.2);
+  pile.rotation.z=side*-.11;
+  pile.castShadow=false;
+  const footing=mesh(group,new THREE.CylinderGeometry(5.2,5.8,1.6,12),oxide,side*17.1,.5,.2);
+  footing.castShadow=false;
+ }
+ const crown=mesh(group,new THREE.BoxGeometry(4.4,1.55,5),oxide,0,39,0);
+ crown.rotation.z=.13;
+ return group;
+}
 function sky(scene){
  const geo=new THREE.SphereGeometry(800,48,26);
  const material=new THREE.ShaderMaterial({
@@ -233,6 +299,8 @@ export function createWorldArt(scene){
  cliffWall(root,1,40,-190,basalt);cliffWall(root,-1,40,-190,basalt);
  rockScatter(root,stone,warm);mountainMass(root);
  gateway(root,-13,stone,oxide,1);gateway(root,-78,stone,oxide,.78);
+ spatialObstacles(root,stone,oxide,warm);
+ horizonArray(root,stone,oxide,warm);
  const relic=artifact(root,stone,oxide);const skies=sky(scene);
  const exitStone=mesh(root,new THREE.CylinderGeometry(5.6,6.1,.32,20),warm,0,groundHeight(0,-110)+.11,-110);exitStone.castShadow=false;
  // Shared iconography becomes a material language across the route.
