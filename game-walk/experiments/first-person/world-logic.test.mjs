@@ -23,8 +23,8 @@ test('release of controls brakes rather than sliding',()=>{
  assert.equal(s.vz,0);
 });
 test('diagonal input does not exceed straight speed',()=>{
- let a=initialState(),b=initialState();for(let i=0;i<180;i++){a=stepMovement(a,1,0,0);b=stepMovement(b,1,1,0);}
- assert.ok(Math.abs(a.distance-b.distance)<.1);
+ let a=initialState(),b=initialState();for(let i=0;i<60;i++){a=stepMovement(a,1,0,0);b=stepMovement(b,1,1,0);}
+ assert.ok(Math.abs(a.distance-b.distance)<.03);
 });
 test('path boundaries prevent walking through cliffs',()=>{
  let s=initialState();for(let i=0;i<900;i++)s=stepMovement(s,0,1,0);
