@@ -73,34 +73,114 @@ function terrain(scene,stone,clay){
  const ground=mesh(scene,g,base);ground.castShadow=false;
  return ground;
 }
+/**
+ * A continuous stone face with coherent geological bedding, transverse
+ * fractures and weather-softened pockets. The collider follows halfWidth(z).
+ * Static topology: two meshes, not a collection of disconnected rock props.
+ */
 function cliffWall(scene,side,startZ,endZ,stone){
- const steps=48,rings=7,positions=[],uvs=[],colors=[],indices=[];
- const dark=c(0x34445e),mid=c(0x63718a),rim=c(0x9a806b);
+ const steps=128,rings=14,positions=[],uvs=[],colors=[],indices=[];
+ const dark=c(0x283b5e),mid=c(0x536987),rim=c(0x917b71),ochre=c(0xbaa183);
  for(let s=0;s<=steps;s++){
-  const z=mix(startZ,endZ,s/steps);
-  // Place the visible rock wall just outside the controller's physical corridor.
-  const bend=Math.sin(z*.073+side)*.28+Math.cos(z*.14)*.18;
+  const z=mix(startZ,endZ,s/steps),fz=s/steps;
+  const bedTilt=Math.sin(z*.035+side)*.15;
+  const base=halfWidth(z)+1.12+Math.sin(z*.074+side)*.27;
   for(let h=0;h<rings;h++){
-   const y=h*3.5,ridge=side*(halfWidth(z)+1.2+h*.88+bend+Math.sin(s*.62+h*2.5)*.22);
-   const fracturedY=groundHeight(ridge,z)+y+Math.sin(s*.48+h*.91)*.9;
-   positions.push(ridge,fracturedY,z);
-   uvs.push(z*.09,h*.17);
-   const tone=dark.clone().lerp(mid,h/(rings-1)).lerp(rim,Math.max(0,Math.sin(h*1.75+s*.15))*.19);
-   colors.push(tone.r,tone.g,tone.b);
+   const t=h/(rings-1),layerHeight=h*1.72;
+   const sediment=Math.sin(h*2.31+z*.11)*.22+Math.sin(h*.83-z*.029)*.31;
+   const shear=Math.sin(fz*70+h*2.13)*.37+Math.cos(fz*132-h*1.3)*.22;
+   const fault=Math.sin(z*.056+h*.97)> .88?.55:0;
+   const x=side*(base+t*10.9+shear+sediment+fault);
+   const y=groundHeight(x,z)+layerHeight+bedTilt+.33*Math.sin(h*.79+fz*25);
+   positions.push(x,y,z);
+   uvs.push(z*.083,layerHeight*.11);
+   const color=dark.clone().lerp(mid,clamp(t*.96+.07,0,1));
+   const variegation=.54+.46*Math.sin(z*.067+h*2.49);
+   color.lerp(rim,clamp(t*.18+variegation*.09,0,.4));
+   color.lerp(ochre,Math.pow(Math.max(0,Math.sin(h*2.02+z*.12)),7)*.19);
+   color.multiplyScalar(1+.065*Math.sin(z*.36+h*1.6));
+   colors.push(color.r,color.g,color.b);
   }
  }
- for(let s=0;s<steps;s++)for(let h=0;h<rings-1;h++){
-  const i=s*rings+h,ii=(s+1)*rings+h;
-  if(side===1)indices.push(i,ii,i+1,ii,ii+1,i+1);
-  else indices.push(i,i+1,ii,ii,i+1,ii+1);
+ for(let j=0;j<steps;j++)for(let h=0;h<rings-1;h++){
+  const p=j*rings+h,q=(j+1)*rings+h;
+  if(side===1)indices.push(p,q,p+1,q,q+1,p+1);
+  else indices.push(p,p+1,q,q,p+1,q+1);
  }
  const geo=new THREE.BufferGeometry();
  geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
  geo.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
  geo.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
  geo.setIndex(indices);geo.computeVertexNormals();
- const wallMat=mat(0xffffff,.98,{vertexColors:true,side:THREE.DoubleSide,map:stone.albedo,normalMap:stone.normal,roughnessMap:stone.roughness});
- mesh(scene,geo,wallMat).castShadow=false;
+ const face=mat(0xffffff,.96,{side:THREE.DoubleSide,vertexColors:true,map:stone.albedo,normalMap:stone.normal,roughnessMap:stone.roughness});
+ face.map.repeat.set(13,3);face.normalMap.repeat.set(13,3);face.roughnessMap.repeat.set(13,3);
+ const m=mesh(scene,geo,face);m.name=side===1?'East cliff bedding':'West cliff bedding';m.castShadow=false;
+ return m;
+}
+/**
+ * Small run of ancient paving. Shapes, chipped edges and missing slabs imply
+ * an engineered route slowly disappearing into the rock. 4 instanced meshes
+ * (rather than hundreds of draw calls). Walk contact uses underlying terrain
+ * and a sub-step (<0.1m) paved surface.
+ */
+function causeway(scene,stone,warm){
+ const pavers=new THREE.Group();pavers.name='Buried stone causeway';scene.add(pavers);
+ const geoTypes=[];
+ for(let type=0;type<4;type++){
+  const geometry=new THREE.BoxGeometry(1,.16,1,4,1,4);
+  const pos=geometry.attributes.position;
+  for(let i=0;i<pos.count;i++){
+   const x=pos.getX(i),z=pos.getZ(i);
+   const chipped=Math.sin(i*13.8+type*7.71)*.022+Math.cos(i*5.77+type*.9)*.013;
+   pos.setX(i,x+(x>=0?1:-1)*chipped);
+   pos.setZ(i,z+(z>=0?1:-1)*chipped);
+   if(pos.getY(i)>0)pos.setY(i,pos.getY(i)+.018*Math.sin(i*3.61+type*1.87));
+  }
+  pos.needsUpdate=true;geometry.computeVertexNormals();geoTypes.push(geometry);
+ }
+ const o=new THREE.Object3D(),counts=[0,0,0,0],placements=[[],[],[],[]];
+ const rngLocal=seedRand(74322);
+ for(let row=0;row<2;row++)for(let segment=0;segment<94;segment++){
+  if((segment*11+row*17)%23===0 || (segment>45&&segment<50&&row===0))continue;
+  const type=(segment*7+row*3)%4;
+  const z=18-segment*1.36+(rngLocal()-.5)*.11;
+  const x=(row===0?-1:1)*(.81+(rngLocal()-.5)*.13);
+  const wid=.96+rngLocal()*.26;
+  const dep=.94+rngLocal()*.31;
+  const y=groundHeight(x,z)-.08;
+  o.position.set(x,y,z);o.rotation.set(0,(rngLocal()-.5)*.1,(rngLocal()-.5)*.035);
+  o.scale.set(wid,1,dep);o.updateMatrix();
+  placements[type].push(o.matrix.clone());counts[type]++;
+ }
+ const meshes=[];
+ for(let i=0;i<4;i++){
+  const im=new THREE.InstancedMesh(geoTypes[i],i===2?warm:stone,counts[i]);
+  im.name='Causeway stone variation '+i;
+  for(let k=0;k<counts[i];k++)im.setMatrixAt(k,placements[i][k]);
+  im.instanceMatrix.needsUpdate=true;im.receiveShadow=true;im.castShadow=false;
+  im.frustumCulled=false;pavers.add(im);meshes.push(im);
+ }
+ return pavers;
+}
+function groundDebris(scene,stone,warm){
+ const root=new THREE.Group();root.name='Small geological fragments';scene.add(root);
+ const r=seedRand(347817),shape=new THREE.IcosahedronGeometry(1,0),o=new THREE.Object3D();
+ for(let materialId=0;materialId<2;materialId++){
+  const im=new THREE.InstancedMesh(shape,materialId?warm:stone,materialId?250:380);
+  for(let i=0;i<im.count;i++){
+   const z=20-r()*136;
+   const side=r()<.5?-1:1;
+   const x=side*(1.8+r()*5.9);
+   const size=.024+Math.pow(r(),2.3)*.23;
+   o.position.set(x,groundHeight(x,z)+size*.24,z);
+   o.rotation.set(r()*6.2,r()*6.2,r()*6.2);
+   o.scale.set(size*(.6+r()*.95),size*(.23+r()*.36),size*(.6+r()*.95));
+   o.updateMatrix();im.setMatrixAt(i,o.matrix);
+  }
+  im.instanceMatrix.needsUpdate=true;im.receiveShadow=true;im.castShadow=false;
+  root.add(im);
+ }
+ return root;
 }
 function rockScatter(scene,basalt,ochre){
  const geom=new THREE.DodecahedronGeometry(.7,1),o=new THREE.Object3D(),groups=[];
@@ -328,6 +408,7 @@ export function createWorldArt(scene){
  const warm=mat(0xdfb39a,.96,{map:ochre.albedo,normalMap:ochre.normal,roughnessMap:ochre.roughness});
  const oxide=mat(0x3c4b60,.76,{metalness:.18});
  terrain(root,basalt,ochre);
+ causeway(root,stone,warm);groundDebris(root,stone,warm);
  cliffWall(root,1,40,-190,basalt);cliffWall(root,-1,40,-190,basalt);
  rockScatter(root,stone,warm);mountainMass(root);
  gateway(root,-13,stone,oxide,1);gateway(root,-78,stone,oxide,.78);
