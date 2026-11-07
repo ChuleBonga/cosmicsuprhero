@@ -1,0 +1,252 @@
+/**
+ * Original spatial art study for Arcturian Awakening.
+ * Everything traversable is 3D; no screen-facing photo panels or fake parallax.
+ * Deliberately NOT considered final: the authored Blender material/scan pass is pending.
+ */
+import * as THREE from 'three';
+import {WORLD,groundHeight} from './world-logic.mjs';
+const seedRand=(initial)=>{let s=initial>>>0;return()=>((s=Math.imul(s,1664525)+1013904223>>>0)/4294967296)};
+const rng=seedRand(20261106);
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+const mix=(a,b,t)=>a+(b-a)*t;
+const c=(hex)=>new THREE.Color(hex);
+const mat=(color,roughness=1,extra={})=>new THREE.MeshStandardMaterial({color,roughness,metalness:0,...extra});
+const mesh=(parent,geometry,material,x=0,y=0,z=0)=>{
+ const m=new THREE.Mesh(geometry,material);m.position.set(x,y,z);m.castShadow=false;m.receiveShadow=true;parent.add(m);return m;
+};
+function valueNoise(values,size,x,y){
+ const fx=x-Math.floor(x),fy=y-Math.floor(y),u=fx*fx*(3-2*fx),v=fy*fy*(3-2*fy);
+ const ix=Math.floor(x),iy=Math.floor(y),read=(a,b)=>values[((b%size+size)%size)*size+(a%size+size)%size];
+ return mix(mix(read(ix,iy),read(ix+1,iy),u),mix(read(ix,iy+1),read(ix+1,iy+1),u),v);
+}
+function materialFamily(kind){
+ const size=256,r=seedRand(kind==='basalt'?55403:38071),random=new Float32Array(size*size);
+ for(let i=0;i<random.length;i++)random[i]=r();
+ const height=new Float32Array(random.length);
+ const base=kind==='basalt'?[51,70,98]:[130,93,70];
+ for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+   const n1=valueNoise(random,size,x*.085,y*.085);
+   const n2=valueNoise(random,size,x*.022,y*.022);
+   const n3=random[y*size+x];
+   const bedding=Math.sin(y*.14+Math.sin(x*.027)*3)*.075;
+   const fault=(Math.sin(x*.022+y*.055+Math.sin(y*.09)*.28)>.995)?-.13:0;
+   height[y*size+x]=clamp(n1*.42+n2*.43+n3*.15+bedding+fault,0,1);
+ }
+ function mapFromPixels(type){
+  const cnv=document.createElement('canvas');cnv.width=cnv.height=size;
+  const ctx=cnv.getContext('2d',{willReadFrequently:true}),id=ctx.createImageData(size,size);
+  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
+   const i=y*size+x,k=4*i,v=height[i],dx=height[y*size+(x+1)%size]-height[y*size+(x+size-1)%size],dy=height[((y+1)%size)*size+x]-height[((y+size-1)%size)*size+x];
+   if(type==='albedo'){
+    const variation=(v-.5)*112+(Math.sin(y*.07)*9);
+    for(let j=0;j<3;j++)id.data[k+j]=clamp(base[j]+variation+(j===2?10:0),1,255);
+   }else if(type==='normal'){
+    const n=new THREE.Vector3(-dx*6,-dy*6,1).normalize();
+    id.data[k]=(n.x*.5+.5)*255;id.data[k+1]=(n.y*.5+.5)*255;id.data[k+2]=(n.z*.5+.5)*255;
+   }else{
+    const rough=clamp((kind==='basalt'?.81:.9)+(v-.5)*.27,.53,.99);
+    id.data[k]=id.data[k+1]=id.data[k+2]=rough*255;
+   }
+   id.data[k+3]=255;
+  }
+  ctx.putImageData(id,0,0);
+  const tex=new THREE.CanvasTexture(cnv);
+  tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.anisotropy=4;
+  if(type==='albedo')tex.colorSpace=THREE.SRGBColorSpace;
+  return tex;
+ }
+ return {albedo:mapFromPixels('albedo'),normal:mapFromPixels('normal'),roughness:mapFromPixels('roughness')};
+}
+function terrain(scene,stone,clay){
+ const g=new THREE.PlaneGeometry(205,350,140,220);g.rotateX(-Math.PI/2);g.translate(0,0,-112);
+ const p=g.attributes.position,colors=new Float32Array(p.count*3),a=c(0x825c4f),b=c(0xb79a76),d=c(0x425773);
+ for(let i=0;i<p.count;i++){
+  const x=p.getX(i),z=p.getZ(i);
+  p.setY(i,groundHeight(x,z));
+  const noise=Math.sin(x*.36+z*.23)*.07+Math.sin(x*.1-z*.06)*.06;
+  const col=a.clone().lerp(b,clamp(.5+noise,0,1)).lerp(d,clamp((Math.abs(x)-6)/32,0,1)*.5);
+  colors[3*i]=col.r;colors[3*i+1]=col.g;colors[3*i+2]=col.b;
+ }
+ g.setAttribute('color',new THREE.BufferAttribute(colors,3));g.computeVertexNormals();
+ const base=mat(0xffffff,.92,{vertexColors:true,map:clay.albedo,normalMap:clay.normal,roughnessMap:clay.roughness});
+ for(const m of [base.map,base.normalMap,base.roughnessMap])m.repeat.set(36,64);
+ const ground=mesh(scene,g,base);ground.castShadow=false;
+ return ground;
+}
+function cliffWall(scene,side,startZ,endZ,stone){
+ const steps=48,rings=7,positions=[],uvs=[],colors=[],indices=[];
+ const dark=c(0x34445e),mid=c(0x63718a),rim=c(0x9a806b);
+ for(let s=0;s<=steps;s++){
+  const z=mix(startZ,endZ,s/steps);
+  const bend=Math.sin(z*.073+side)*2.1+Math.cos(z*.14)*1.2;
+  for(let h=0;h<rings;h++){
+   const y=h*3.5,ridge=side*(10.2+h*.75+bend+Math.sin(s*.62+h*2.5)*.7);
+   const fracturedY=groundHeight(ridge,z)+y+Math.sin(s*.48+h*.91)*.9;
+   positions.push(ridge,fracturedY,z);
+   uvs.push(z*.09,h*.17);
+   const tone=dark.clone().lerp(mid,h/(rings-1)).lerp(rim,Math.max(0,Math.sin(h*1.75+s*.15))*.19);
+   colors.push(tone.r,tone.g,tone.b);
+  }
+ }
+ for(let s=0;s<steps;s++)for(let h=0;h<rings-1;h++){
+  const i=s*rings+h,ii=(s+1)*rings+h;
+  if(side===1)indices.push(i,ii,i+1,ii,ii+1,i+1);
+  else indices.push(i,i+1,ii,ii,i+1,ii+1);
+ }
+ const geo=new THREE.BufferGeometry();
+ geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+ geo.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
+ geo.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
+ geo.setIndex(indices);geo.computeVertexNormals();
+ const wallMat=mat(0xffffff,.98,{vertexColors:true,side:THREE.DoubleSide,map:stone.albedo,normalMap:stone.normal,roughnessMap:stone.roughness});
+ mesh(scene,geo,wallMat).castShadow=false;
+}
+function rockScatter(scene,basalt,ochre){
+ const geom=new THREE.DodecahedronGeometry(.7,1),o=new THREE.Object3D(),groups=[];
+ for(let set=0;set<2;set++){
+  const im=new THREE.InstancedMesh(geom,set===0?basalt:ochre,440);
+  let filled=0,tries=0;
+  while(filled<440&&tries++<6000){
+   const z=27-rng()*210,s=rng()<.5?-1:1,x=s*(4.9+rng()*55);
+   if(Math.abs(x)<8&&z>-115)continue;
+   const size=.19+Math.pow(rng(),2)*4.9;
+   o.position.set(x,groundHeight(x,z)+size*.12,z);
+   o.rotation.set(rng()*3,rng()*7,rng()*2);
+   o.scale.set(size*(.6+rng()*1.2),size*(.15+rng()*.65),size*(.7+rng()*1.3));
+   o.updateMatrix();im.setMatrixAt(filled++,o.matrix);
+  }
+  im.count=filled;im.instanceMatrix.needsUpdate=true;im.castShadow=false;im.receiveShadow=true;scene.add(im);groups.push(im);
+ }
+ return groups;
+}
+function mountainMass(scene){
+ const root=new THREE.Group();scene.add(root);
+ const materials=[mat(0x263e67,1,{flatShading:true}),mat(0x394868,1,{flatShading:true}),mat(0x465a75,1,{flatShading:true})];
+ for(let tier=0;tier<3;tier++){
+  const shape=new THREE.ConeGeometry(20,70,7,5);
+  const im=new THREE.InstancedMesh(shape,materials[tier],18),o=new THREE.Object3D();
+  for(let i=0;i<18;i++){
+   const z=-185-rng()*205-tierFix(tier);
+   const x=(i-9)*25+(rng()-.5)*33;
+   const h=25+rng()*65+tier*12;
+   o.position.set(x,groundHeight(x,z)+h*.4,z);
+   o.scale.set(.6+rng()*.9,h/70,.65+rng()*.8);
+   o.rotation.set(0,rng()*6.28,0);o.updateMatrix();im.setMatrixAt(i,o.matrix);
+  }
+  im.instanceMatrix.needsUpdate=true;im.castShadow=false;root.add(im);
+ }
+ return root;
+}
+function tierFix(tier){return tier*34}
+function finGeometry(width=2.15,height=12,depth=2.9){
+ const points=[],idx=[],uv=[];
+ const rows=[[0,1.15,.88],[.4,1,.86],[height*.48,.82,.71],[height*.82,.7,.64],[height,.81,.7]];
+ for(const [y,w,d] of rows)for(const [sx,sz] of [[-1,-1],[1,-1],[1,1],[-1,1]]){
+  points.push(sx*width*.5*w,y,sz*depth*.5*d);uv.push(sx*.5+.5,y/height);
+ }
+ for(let j=0;j<rows.length-1;j++)for(let k=0;k<4;k++){
+  const a=j*4+k,b=j*4+(k+1)%4,c=(j+1)*4+k,d=(j+1)*4+(k+1)%4;
+  idx.push(a,b,c,b,d,c);
+ }
+ idx.push(16,17,18,16,18,19);
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(points,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return g;
+}
+function gateway(scene,z,stone,oxide,scale=1){
+ const root=new THREE.Group();root.position.z=z;root.scale.setScalar(scale);scene.add(root);
+ const h=groundHeight(0,z),pylon=finGeometry(3.6,12.4,3.8);
+ for(const side of [-1,1]){
+  const fin=mesh(root,pylon,stone,side*8.15,h,z===0?0:0);fin.rotation.z=side*.048;
+  // Wedge-shaped supporting fins cast distinct silhouettes in first-person perspective.
+  const buttress=mesh(root,finGeometry(2.25,7.4,4.5),stone,side*10.4,h,2.0);buttress.rotation.z=side*-.18;
+  for(let n=0;n<5;n++){
+   const lip=mesh(root,new THREE.BoxGeometry(.14,.22,1.5),oxide,side*(7.22+n*.052),h+2+n*1.63,2.1);
+   lip.rotation.z=side*.13;
+  }
+  const plinth=mesh(root,new THREE.BoxGeometry(4.8,.44,4.5),stone,side*8.15,h+.21,0);
+  plinth.rotation.y=side*.015;
+ }
+ const lintel=mesh(root,new THREE.BoxGeometry(19.2,1.82,3.9),stone,0,h+12.45,0);
+ const inset=mesh(root,new THREE.BoxGeometry(15.6,.34,.14),oxide,0,h+12.46,2.04);inset.castShadow=false;
+ // Identity motif: alternating vertical strokes and broken diagonals, not borrowed writing.
+ const marks=new THREE.Group();root.add(marks);
+ for(let i=0;i<23;i++){
+  const x=-8.25+i*.75;
+  const bar=mesh(marks,new THREE.BoxGeometry(.09,.2+(i%3)*.09,.1),oxide,x,h+12.42,2.17);
+  bar.rotation.z=i%2?.31:-.31;
+ }
+ const cap=mesh(root,new THREE.BoxGeometry(12.8,.24,4.5),oxide,0,h+13.58,0);
+ cap.rotation.z=.014;
+ return root;
+}
+function artifact(scene,stone,oxide){
+ const root=new THREE.Group();root.position.set(WORLD.artifact.x,groundHeight(WORLD.artifact.x,WORLD.artifact.z),WORLD.artifact.z);scene.add(root);
+ const pedestal=mesh(root,new THREE.CylinderGeometry(2.14,2.36,.35,12),stone,0,.18,0);
+ mesh(root,new THREE.CylinderGeometry(1.85,2.05,.23,12),oxide,0,.48,0);
+ const base=mesh(root,new THREE.CylinderGeometry(1.45,1.75,1.6,10),stone,0,1.38,0);
+ base.rotation.y=Math.PI/10;
+ const ring=mesh(root,new THREE.TorusGeometry(1.24,.13,9,48),oxide,0,2.3,0);
+ ring.rotation.x=Math.PI/2;
+ const core=new THREE.Group();core.position.set(0,2.25,0);root.add(core);
+ // Original sculpture: stone carapace, enclosed cobalt glass core, four asymmetrical binding fins.
+ const shell=mesh(core,new THREE.IcosahedronGeometry(.74,2),mat(0x1c3554,.42,{metalness:.17}),0,.44,0);
+ const glass=mesh(core,new THREE.OctahedronGeometry(.42,1),mat(0x8aa5bc,.26,{metalness:.31,emissive:0x23334a,emissiveIntensity:.18}),0,.55,.28);
+ for(let i=0;i<4;i++){
+  const fin=mesh(core,new THREE.BoxGeometry(.17,1.1,.36),oxide,Math.sin(i*Math.PI/2)*.63,.31,Math.cos(i*Math.PI/2)*.63);
+  fin.rotation.set(.14*i,i*Math.PI/2,.14*Math.sin(i));
+ }
+ const bezel=mesh(core,new THREE.TorusGeometry(.72,.07,8,48),oxide,0,.43,0);bezel.rotation.x=.42;
+ const light=new THREE.PointLight(0xf0a16e,1.35,9,2);light.position.set(0,3.0,0);root.add(light);
+ return {root,core,light};
+}
+function sky(scene){
+ const geo=new THREE.SphereGeometry(800,48,26);
+ const material=new THREE.ShaderMaterial({
+  side:THREE.BackSide,depthWrite:false,fog:false,uniforms:{warm:{value:0}},
+  vertexShader:`varying vec3 vDir;void main(){vDir=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+  fragmentShader:`varying vec3 vDir;uniform float warm;
+  void main(){vec3 d=normalize(vDir);float horizon=clamp(d.y*.87+.31,0.,1.);
+   vec3 blue=vec3(.014,.044,.16),indigo=vec3(.045,.115,.28),dust=vec3(.24,.17,.18);
+   vec3 col=mix(dust,indigo,smoothstep(.05,.53,horizon));
+   col=mix(col,blue,smoothstep(.46,.96,horizon));
+   vec3 sunDir=normalize(vec3(-.32,.16,-1.));
+   float cd=dot(d,sunDir);
+   float halo=pow(max(cd,0.),32.);
+   float disc=smoothstep(.969,.974,cd),core=smoothstep(.983,.988,cd);
+   float edge=sin(atan(d.y,d.x)*16.+d.y*36.)*.0014;
+   disc=smoothstep(.968+edge,.974+edge,cd);
+   col+=vec3(.29,.064,.014)*halo*.7;
+   col=mix(col,vec3(.75,.105,.025),disc);
+   col=mix(col,vec3(.99,.22,.042),core*.55);
+   col+=warm*vec3(.08,.025,.01);
+   gl_FragColor=vec4(col,1.);}`
+ });
+ const sphere=new THREE.Mesh(geo,material);sphere.renderOrder=-100;sphere.frustumCulled=false;scene.add(sphere);
+ return {sphere,material};
+}
+export function createWorldArt(scene){
+ const root=new THREE.Group();root.name='The Sunward Causeway / original art study';scene.add(root);
+ const basalt=materialFamily('basalt'),ochre=materialFamily('ochre');
+ const stone=mat(0xa3b0c4,.94,{map:basalt.albedo,normalMap:basalt.normal,roughnessMap:basalt.roughness});
+ const warm=mat(0xdfb39a,.96,{map:ochre.albedo,normalMap:ochre.normal,roughnessMap:ochre.roughness});
+ const oxide=mat(0x3c4b60,.76,{metalness:.18});
+ terrain(root,basalt,ochre);
+ cliffWall(root,1,40,-190,basalt);cliffWall(root,-1,40,-190,basalt);
+ rockScatter(root,stone,warm);mountainMass(root);
+ gateway(root,-13,stone,oxide,1);gateway(root,-78,stone,oxide,.78);
+ const relic=artifact(root,stone,oxide);const skies=sky(scene);
+ const exitStone=mesh(root,new THREE.CylinderGeometry(5.6,6.1,.32,20),warm,0,groundHeight(0,-110)+.11,-110);exitStone.castShadow=false;
+ // Shared iconography becomes a material language across the route.
+ const shards=new THREE.InstancedMesh(new THREE.TetrahedronGeometry(.025),mat(0xd3a485,.95),160);
+ const dummy=new THREE.Object3D();
+ for(let i=0;i<160;i++){
+  const x=(rng()-.5)*27,z=26-rng()*160,y=groundHeight(x,z)+.3+rng()*11;
+  dummy.position.set(x,y,z);dummy.scale.setScalar(.5+rng()*2.4);dummy.rotation.y=rng()*5;
+  dummy.updateMatrix();shards.setMatrixAt(i,dummy.matrix);
+ }
+ shards.instanceMatrix.needsUpdate=true;shards.frustumCulled=false;shards.castShadow=false;root.add(shards);
+ const maps=[basalt.albedo,basalt.normal,basalt.roughness,ochre.albedo,ochre.normal,ochre.roughness];
+ return {root,sky:skies,artifact:relic,dispose(){
+  root.traverse(o=>{if(o.geometry)o.geometry.dispose()});
+  for(const tex of maps)tex.dispose();skies.sphere.geometry.dispose();skies.material.dispose();
+ }};
+}
