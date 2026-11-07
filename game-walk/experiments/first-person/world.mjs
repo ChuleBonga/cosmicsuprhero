@@ -13,11 +13,13 @@ const score=new AwakenNowScore(message=>{
  if(message.includes('unavailable')||message.includes('could not start'))scoreRetry.hidden=false;
  else scoreRetry.hidden=true;
 });
-scoreToggle.addEventListener('click',()=>{
+function toggleMusic(){
  score.setMuted(!score.muted);scoreToggle.textContent=score.muted?'Music off':'Music on';
  scoreToggle.setAttribute('aria-pressed',String(score.muted));
  if(!score.muted&&score.failed)void score.play();
-});
+ $('status').textContent=score.muted?'Awaken Now muted':'Awaken Now unmuted';
+}
+scoreToggle.addEventListener('click',toggleMusic);
 scoreVolume.addEventListener('input',()=>{score.setVolume(Number(scoreVolume.value)/100);});
 scoreRetry.addEventListener('click',()=>{void score.play();});
 const coarse=matchMedia('(pointer:coarse)').matches;
@@ -163,6 +165,7 @@ document.addEventListener('keydown',e=>{
  if(e.code==='Escape'){e.preventDefault();if(started&&!finished)setPaused(!paused);return;}
  if(e.target instanceof HTMLElement&&e.target.closest('a,button,input,textarea'))return;
  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();
+ if(e.code==='KeyM'&&started){toggleMusic();return;}
  if(e.code==='KeyE'){inspect();return;}
  if(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))activeKeys.add(e.code);
 });
