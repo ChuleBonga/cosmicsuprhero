@@ -120,25 +120,57 @@ function rockScatter(scene,basalt,ochre){
  }
  return groups;
 }
+/**
+ * Continuous, fractured ridge meshes instead of repeated conical mountains.
+ * 3 depth layers, mesh-backed irregular crests and varying strata. Geometry
+ * remains original, fully 3D, and one draw call per ridge.
+ */
 function mountainMass(scene){
- const root=new THREE.Group();scene.add(root);
- const materials=[mat(0x263e67,1,{flatShading:true}),mat(0x394868,1,{flatShading:true}),mat(0x465a75,1,{flatShading:true})];
- for(let tier=0;tier<3;tier++){
-  const shape=new THREE.ConeGeometry(20,70,7,5);
-  const im=new THREE.InstancedMesh(shape,materials[tier],18),o=new THREE.Object3D();
-  for(let i=0;i<18;i++){
-   const z=-185-rng()*205-tierFix(tier);
-   const x=(i-9)*25+(rng()-.5)*33;
-   const h=25+rng()*65+tier*12;
-   o.position.set(x,groundHeight(x,z)+h*.4,z);
-   o.scale.set(.6+rng()*.9,h/70,.65+rng()*.8);
-   o.rotation.set(0,rng()*6.28,0);o.updateMatrix();im.setMatrixAt(i,o.matrix);
+ const root=new THREE.Group();root.name='Distant indigo fold mountains';scene.add(root);
+ const layerColors=[0x1c365d,0x2b4568,0x405671,0x53637a];
+ const ranges=[{z:-425,span:390,peak:74,base:-9},{z:-312,span:350,peak:62,base:-2},{z:-225,span:260,peak:39,base:0}];
+ for(let layer=0;layer<ranges.length;layer++){
+  const {z,span,peak,base}=ranges[layer],segments=118,depthSteps=4;
+  const points=[],uv=[],colors=[],indices=[];
+  const seed=seedRand(15154+layer*133);
+  const peaks=Array.from({length:segments+1},(_,i)=>{
+   const x=i/segments, octave=(a,b,offset)=>Math.sin(x*a+offset)*b;
+   const long=Math.abs(octave(13.1,1,layer*.81)+octave(23.7,.43,1.2)+octave(31.2,.23,2.6));
+   const folding=Math.pow(Math.abs(Math.sin(x*32.3+layer*.56)),2.8)*.18;
+   const jag=Math.sin(x*177.+layer*4.7)*.045+Math.sin(x*91.)*.052;
+   return peak*(.39+.35*long+folding+jag)+seed()*.7;
+  });
+  for(let j=0;j<=depthSteps;j++){
+   const t=j/depthSteps;
+   for(let i=0;i<=segments;i++){
+    const x=(i/segments-.5)*span,shoulder=Math.max(0,1-Math.pow(Math.abs(2*i/segments-1),3));
+    const relief=peaks[i]*shoulder;
+    const height=base+relief*(1-.38*t);
+    const zz=z-(t-.5)*16+Math.sin(i*.77+layer)*2*t;
+    points.push(x,height,zz);
+    uv.push(i/segments*8,t*3);
+    const color=new THREE.Color(layerColors[layer]).lerp(new THREE.Color(0xa18b85),Math.pow(t,.6)*.065);
+    const strata=Math.sin(i*.13+j*3.2+layer)*.034 +Math.sin(i*.5+j*.31)*.02;
+    color.multiplyScalar(1+strata);
+    colors.push(color.r,color.g,color.b);
+   }
   }
-  im.instanceMatrix.needsUpdate=true;im.castShadow=false;root.add(im);
+  for(let j=0;j<depthSteps;j++)for(let i=0;i<segments;i++){
+   const a=j*(segments+1)+i,b=a+1,d=a+(segments+1),c=d+1;
+   indices.push(a,d,b,b,d,c);
+  }
+  const g=new THREE.BufferGeometry();
+  g.setAttribute('position',new THREE.Float32BufferAttribute(points,3));
+  g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));
+  g.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
+  g.setIndex(indices);g.computeVertexNormals();
+  const m=mat(0xffffff,.98,{side:THREE.DoubleSide,vertexColors:true,flatShading:true});
+  const ridgeMesh=mesh(root,g,m);
+  ridgeMesh.name='Fossil ridge '+(layer+1);
+  ridgeMesh.castShadow=false;
  }
  return root;
 }
-function tierFix(tier){return tier*34}
 function finGeometry(width=2.15,height=12,depth=2.9){
  const points=[],idx=[],uv=[];
  const rows=[[0,1.15,.88],[.4,1,.86],[height*.48,.82,.71],[height*.82,.7,.64],[height,.81,.7]];
