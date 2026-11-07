@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#08152d"><meta name="color-scheme" content="dark">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Arcturian Awakening — first-person world and tactile artifact study, an early preview by Cosmicsuprhero.">
+<title>Arcturian Awakening | The Sunward Causeway — Art Study</title>
+<link rel="stylesheet" href="./world.css">
+</head>
+<body>
+<main class="experience" aria-label="Arcturian Awakening first-person art and interaction study">
+<canvas id="world" tabindex="0" aria-label="Navigable first-person 3D landscape; use WASD to move, mouse to look, E to inspect"></canvas>
+<div class="static-grain" aria-hidden="true"></div>
+<section class="intro" id="intro" aria-labelledby="main-title">
+ <div class="intro-inner">
+  <p class="eyebrow">COSMICSUPRHERO <span aria-hidden="true">/</span> ARCTURIAN AWAKENING</p>
+  <p class="eyebrow muted">FIRST-PERSON WORLD STUDY · BUILD 01</p>
+  <h1 id="main-title">The sun remembers<br><em>the way.</em></h1>
+  <p class="intro-copy">Enter a place that existed before the words. Cross the weathered causeway. Find what was left behind.</p>
+  <p class="study-label">This is a working art-and-movement study, not the finished five-minute game. The album's theme, <em>Awaken Now</em>, is not included until an approved web excerpt is ready.</p>
+  <div class="entry-actions"><button id="begin" class="button-primary" type="button">Enter the world <span aria-hidden="true">→</span></button><a href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" rel="noopener noreferrer" target="_blank">Pre-save without playing</a></div>
+  <p class="controls-note">Desktop: WASD to walk · mouse or drag to look · E to inspect · Esc to pause. Mobile: movement pad and drag to look.</p>
+ </div>
+ <span class="entry-index">A JOURNEY, NOT AN ESCAPE · ORIGINAL DEVELOPMENT STUDY</span>
+</section>
+<header class="hud" id="hud" hidden>
+ <div class="identity"><span>COSMICSUPRHERO / 2026</span><strong>ARCTURIAN AWAKENING</strong><small id="stage" aria-live="polite">THE ARRIVAL</small></div>
+ <div class="toolbar"><button type="button" id="pause" aria-label="Pause first-person movement">Pause</button><a href="/">Exit world</a></div>
+</header>
+<div id="reticle" class="reticle" hidden aria-hidden="true"><span></span></div>
+<p id="hint" class="hint" hidden role="status" aria-live="polite">E / INSPECT THE OBJECT</p>
+<button id="inspect" class="inspect" hidden type="button">Examine the object</button>
+<div class="touch-controls" id="touch-controls" hidden>
+ <div class="dpad" aria-label="Movement controls">
+  <button data-dir="left" aria-label="Move left" type="button">←</button>
+  <button data-dir="forward" aria-label="Move forward" type="button">↑</button>
+  <button data-dir="backward" aria-label="Move backward" type="button">↓</button>
+  <button data-dir="right" aria-label="Move right" type="button">→</button>
+ </div>
+ <span>DRAG TO LOOK</span>
+</div>
+<section class="inspect-panel" id="inspect-panel" role="dialog" aria-modal="true" aria-labelledby="artifact-title" hidden>
+ <div class="inspect-description">
+  <span class="eyebrow">RECOVERED OBJECT / 01</span>
+  <h2 id="artifact-title">First Contact</h2>
+  <p>Something remains here. Its surface remembers the passage of time.</p>
+  <p class="study-label">The final connection between this object and the music is still being authored. Drag to rotate the physical model.</p>
+  <button id="leave-inspect" class="button-primary" type="button">Return to the world <span aria-hidden="true">→</span></button>
+ </div>
+ <div class="inspect-interaction" id="inspect-interaction" aria-label="Drag horizontally or vertically to rotate the artifact"></div>
+ <span class="inspect-tip">DRAG TO EXAMINE · NO INVENTORY REQUIRED</span>
+</section>
+<section class="end" id="end" aria-labelledby="end-title" hidden>
+ <p class="eyebrow">THE JOURNEY CONTINUES IN THE MUSIC</p>
+ <h2 id="end-title">Not an escape.<br><em>A return.</em></h2>
+ <p id="end-caption">This scene is a technical and visual study. The full five-minute narrative is still in production.</p>
+ <a class="button-primary" href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" target="_blank" rel="noopener noreferrer">Pre-save Arcturian Awakening <span aria-hidden="true">→</span></a>
+ <button id="restart" class="text-button" type="button">Walk the causeway again</button>
+</section>
+<div class="pause-overlay" id="pause-overlay" hidden><p>THE WORLD HOLDS ITS BREATH</p><button id="resume" class="button-primary" type="button">Resume journey <span aria-hidden="true">→</span></button><a href="/">Return to the album</a></div>
+<div id="perf" class="perf" hidden aria-live="off"></div>
+<a class="presave-rail" href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" target="_blank" rel="noopener noreferrer">PRE-SAVE THE ALBUM <span aria-hidden="true">↗</span></a>
+<div id="status" class="sr-only" role="status" aria-live="polite"></div>
+</main>
+<script type="module" src="./world.mjs"></script>
+</body>
+</html>
