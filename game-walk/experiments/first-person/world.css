@@ -54,3 +54,11 @@ button,a{font:inherit}button{cursor:pointer}a{color:inherit}.experience{position
 @media(min-width:801px) and (pointer:fine){.touch-controls{display:none!important}}
 @media(max-width:760px){.intro,.end{padding:1.5rem}.intro{background:linear-gradient(0deg,rgba(4,13,31,.95),rgba(4,13,31,.65) 75%,rgba(4,13,31,.35))}.intro h1{font-size:clamp(3rem,11vw,5.1rem)}.intro-inner{max-width:520px}.intro-copy{font-size:.95rem}.controls-note{font-size:.67rem}.entry-index{left:1.5rem}.hud{padding:.95rem}.identity strong{font-size:1.05rem}.identity small,.identity span{font-size:.52rem}.toolbar a,.toolbar button{font-size:.63rem;padding:.55rem}.presave-rail{bottom:calc(1rem + env(safe-area-inset-bottom));font-size:.58rem}.hint{bottom:33%}.inspect{bottom:24%}.inspect-panel{align-items:flex-start;padding-top:18vh}.inspect-description{max-width:260px}.inspect-description h2{font-size:2.7rem}.inspect-interaction{width:100%;height:56%;left:0;top:auto}.inspect-tip{bottom:1.1rem;right:1.2rem;font-size:.55rem}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
+
+.soundbar{position:absolute;z-index:7;top:5.5rem;right:clamp(1rem,3vw,2rem);display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;max-width:min(480px,calc(100vw - 2rem));background:rgba(6,20,40,.83);border:1px solid rgba(230,190,150,.43);padding:.5rem .7rem;font-size:.65rem;backdrop-filter:blur(8px)}
+.soundbar button{min-height:2rem;padding:.4rem .7rem;border:1px solid rgba(233,199,162,.48);background:#1c304e;color:#f2ddc4;font-size:.68rem;cursor:pointer}
+.soundbar button:hover{background:#324861}
+.soundbar label{color:#dfc3a4;font-size:.6rem;letter-spacing:.09em}
+.soundbar input{width:90px;accent-color:#e7be8d;cursor:pointer}
+.soundbar #score-state{font-size:.61rem;color:#b9cad4;max-width:170px;line-height:1.4}
+@media(max-width:760px){.soundbar{top:auto;bottom:calc(7.1rem + env(safe-area-inset-bottom));right:.8rem;max-width:190px;gap:.35rem}.soundbar input{width:76px}.soundbar #score-state{max-width:160px;font-size:.54rem}}
