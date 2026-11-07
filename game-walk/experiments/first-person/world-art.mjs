@@ -155,9 +155,9 @@ function gateway(scene,z,stone,oxide,scale=1){
  const root=new THREE.Group();root.position.z=z;root.scale.setScalar(scale);scene.add(root);
  const h=groundHeight(0,z),pylon=finGeometry(3.6,12.4,3.8);
  for(const side of [-1,1]){
-  const fin=mesh(root,pylon,stone,side*8.15,h,z===0?0:0);fin.rotation.z=side*.048;
+  const fin=mesh(root,pylon,stone,side*8.15,h,0);fin.rotation.z=side*.048;fin.castShadow=true;
   // Wedge-shaped supporting fins cast distinct silhouettes in first-person perspective.
-  const buttress=mesh(root,finGeometry(2.25,7.4,4.5),stone,side*10.4,h,2.0);buttress.rotation.z=side*-.18;
+  const buttress=mesh(root,finGeometry(2.25,7.4,4.5),stone,side*10.4,h,2.0);buttress.rotation.z=side*-.18;buttress.castShadow=true;
   for(let n=0;n<5;n++){
    const lip=mesh(root,new THREE.BoxGeometry(.14,.22,1.5),oxide,side*(7.22+n*.052),h+2+n*1.63,2.1);
    lip.rotation.z=side*.13;
@@ -165,7 +165,7 @@ function gateway(scene,z,stone,oxide,scale=1){
   const plinth=mesh(root,new THREE.BoxGeometry(4.8,.44,4.5),stone,side*8.15,h+.21,0);
   plinth.rotation.y=side*.015;
  }
- const lintel=mesh(root,new THREE.BoxGeometry(19.2,1.82,3.9),stone,0,h+12.45,0);
+ const lintel=mesh(root,new THREE.BoxGeometry(19.2,1.82,3.9),stone,0,h+12.45,0);lintel.castShadow=true;
  const inset=mesh(root,new THREE.BoxGeometry(15.6,.34,.14),oxide,0,h+12.46,2.04);inset.castShadow=false;
  // Identity motif: alternating vertical strokes and broken diagonals, not borrowed writing.
  const marks=new THREE.Group();root.add(marks);
@@ -180,9 +180,9 @@ function gateway(scene,z,stone,oxide,scale=1){
 }
 function artifact(scene,stone,oxide){
  const root=new THREE.Group();root.position.set(WORLD.artifact.x,groundHeight(WORLD.artifact.x,WORLD.artifact.z),WORLD.artifact.z);scene.add(root);
- const pedestal=mesh(root,new THREE.CylinderGeometry(2.14,2.36,.35,12),stone,0,.18,0);
+ const pedestal=mesh(root,new THREE.CylinderGeometry(2.14,2.36,.35,12),stone,0,.18,0);pedestal.castShadow=true;
  mesh(root,new THREE.CylinderGeometry(1.85,2.05,.23,12),oxide,0,.48,0);
- const base=mesh(root,new THREE.CylinderGeometry(1.45,1.75,1.6,10),stone,0,1.38,0);
+ const base=mesh(root,new THREE.CylinderGeometry(1.45,1.75,1.6,10),stone,0,1.38,0);base.castShadow=true;
  base.rotation.y=Math.PI/10;
  const ring=mesh(root,new THREE.TorusGeometry(1.24,.13,9,48),oxide,0,2.3,0);
  ring.rotation.x=Math.PI/2;
