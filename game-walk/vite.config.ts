@@ -10,6 +10,7 @@ export default defineConfig({
     rollupOptions: { input: {
       main: 'index.html',
       movementLab: 'experiments/movement/lab.html',
+      firstPersonStudy: 'experiments/first-person/index.html',
     }},
   },
   server: { host: '0.0.0.0' },
