@@ -266,32 +266,56 @@ function finGeometry(width=2.15,height=12,depth=2.9){
  idx.push(16,17,18,16,18,19);
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(points,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return g;
 }
+/**
+ * Sunward threshold: load-bearing paired pylons, fractured transverse bridge,
+ * copper-oxide inlays, and repeated original glyph units. Instancing cuts
+ * decorative details to three draw calls instead of dozens.
+ */
 function gateway(scene,z,stone,oxide,scale=1){
- const root=new THREE.Group();root.position.z=z;root.scale.setScalar(scale);scene.add(root);
+ const root=new THREE.Group();root.name='Sunward threshold '+z;
+ root.position.z=z;root.scale.setScalar(scale);scene.add(root);
  const h=groundHeight(0,z),pylon=finGeometry(3.6,12.4,3.8);
+ const o=new THREE.Object3D();
+ const rib=new THREE.InstancedMesh(new THREE.BoxGeometry(.14,.22,1.5),oxide,10);
+ rib.name='Pylon structural inlays';rib.castShadow=false;rib.receiveShadow=true;
+ let ri=0;
  for(const side of [-1,1]){
-  const fin=mesh(root,pylon,stone,side*8.15,h,0);fin.rotation.z=side*.048;fin.castShadow=true;
-  // Wedge-shaped supporting fins cast distinct silhouettes in first-person perspective.
-  const buttress=mesh(root,finGeometry(2.25,7.4,4.5),stone,side*10.4,h,2.0);buttress.rotation.z=side*-.18;buttress.castShadow=true;
+  const fin=mesh(root,pylon,stone,side*8.15,h,0);fin.name='Worn supporting pylon';
+  fin.rotation.z=side*.048;fin.castShadow=true;
+  const buttress=mesh(root,finGeometry(2.25,7.4,4.5),stone,side*10.4,h,2);
+  buttress.rotation.z=side*-.18;buttress.castShadow=true;
   for(let n=0;n<5;n++){
-   const lip=mesh(root,new THREE.BoxGeometry(.14,.22,1.5),oxide,side*(7.22+n*.052),h+2+n*1.63,2.1);
-   lip.rotation.z=side*.13;
+   o.position.set(side*(7.22+n*.052),h+2+n*1.63,2.1);
+   o.rotation.set(0,0,side*.13);o.scale.set(1,1,1);o.updateMatrix();
+   rib.setMatrixAt(ri++,o.matrix);
   }
   const plinth=mesh(root,new THREE.BoxGeometry(4.8,.44,4.5),stone,side*8.15,h+.21,0);
-  plinth.rotation.y=side*.015;
+  plinth.rotation.y=side*.015;plinth.castShadow=false;
  }
- const lintel=mesh(root,new THREE.BoxGeometry(19.2,1.82,3.9),stone,0,h+12.45,0);lintel.castShadow=true;
- const inset=mesh(root,new THREE.BoxGeometry(15.6,.34,.14),oxide,0,h+12.46,2.04);inset.castShadow=false;
- // Identity motif: alternating vertical strokes and broken diagonals, not borrowed writing.
- const marks=new THREE.Group();root.add(marks);
- for(let i=0;i<23;i++){
-  const x=-8.25+i*.75;
-  const bar=mesh(marks,new THREE.BoxGeometry(.09,.2+(i%3)*.09,.1),oxide,x,h+12.42,2.17);
-  bar.rotation.z=i%2?.31:-.31;
- }
+ rib.instanceMatrix.needsUpdate=true;root.add(rib);
+ const lintel=mesh(root,new THREE.BoxGeometry(19.2,1.82,3.9),stone,0,h+12.45,0);
+ lintel.castShadow=true;
+ const inset=mesh(root,new THREE.BoxGeometry(15.6,.34,.14),oxide,0,h+12.46,2.04);
+ inset.castShadow=false;
  const cap=mesh(root,new THREE.BoxGeometry(12.8,.24,4.5),oxide,0,h+13.58,0);
  cap.rotation.z=.014;
- return root;
+ const glyph=mat(0xc18c5a,.62,{metalness:.21,emissive:0x75391e,emissiveIntensity:.07});
+ const marks=new THREE.InstancedMesh(new THREE.BoxGeometry(.09,.2,.1),glyph,23);
+ marks.name='Ancient original glyph strokes';
+ for(let i=0;i<23;i++){
+  o.position.set(-8.25+i*.75,h+12.42,2.17);
+  o.rotation.set(0,0,i%2?.31:-.31);
+  o.scale.set(1,1+(i%3)*.45,1);o.updateMatrix();marks.setMatrixAt(i,o.matrix);
+ }
+ marks.instanceMatrix.needsUpdate=true;root.add(marks);
+ // Hairline expansion joints support a plausible construction history.
+ const joint=new THREE.InstancedMesh(new THREE.BoxGeometry(.055,.78,.06),glyph,8);
+ for(let i=0;i<8;i++){
+  o.position.set(-6.8+i*1.91,h+12.49,2.01);
+  o.rotation.set(0,0,(i%2?-.05:.05));o.scale.set(1,1,1);o.updateMatrix();joint.setMatrixAt(i,o.matrix);
+ }
+ joint.instanceMatrix.needsUpdate=true;root.add(joint);
+ return {root,glyph};
 }
 function artifact(scene,stone,oxide){
  const root=new THREE.Group();root.position.set(WORLD.artifact.x,groundHeight(WORLD.artifact.x,WORLD.artifact.z),WORLD.artifact.z);scene.add(root);
@@ -413,7 +437,7 @@ export function createWorldArt(scene){
  causeway(root,stone,warm);groundDebris(root,stone,warm);
  cliffWall(root,1,40,-190,basalt);cliffWall(root,-1,40,-190,basalt);
  rockScatter(root,stone,warm);mountainMass(root);
- gateway(root,-13,stone,oxide,1);gateway(root,-78,stone,oxide,.78);
+ const gateways=[gateway(root,-13,stone,oxide,1),gateway(root,-78,stone,oxide,.78)];
  spatialObstacles(root,stone,oxide,warm);
  horizonArray(root,stone,oxide,warm);
  const relic=artifact(root,stone,oxide);const skies=sky(scene);
@@ -428,7 +452,12 @@ export function createWorldArt(scene){
  }
  shards.instanceMatrix.needsUpdate=true;shards.frustumCulled=false;shards.castShadow=false;root.add(shards);
  const maps=[basalt.albedo,basalt.normal,basalt.roughness,ochre.albedo,ochre.normal,ochre.roughness,...terrainData.textures];
- return {root,sky:skies,artifact:relic,dispose(){
+ return {root,sky:skies,artifact:relic,
+  reveal(progress){
+   const t=clamp(progress,0,1);
+   for(const g of gateways)g.glyph.emissiveIntensity=.07+t*.62;
+  },
+  dispose(){
   root.traverse(o=>{if(o.geometry)o.geometry.dispose()});
   for(const tex of maps)tex.dispose();skies.sphere.geometry.dispose();skies.material.dispose();
  }};
