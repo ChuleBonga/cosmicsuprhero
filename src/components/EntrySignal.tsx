@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowDown, Headphones, RadioTower, Compass } from "lucide-react";
+import { ArrowDown, Headphones, RadioTower } from "lucide-react";
 import { artistIdentity } from "../data/contact";
 import { platformLinks } from "../data/releases";
 import { useAudioPlayer } from "../hooks/useAudioPlayer";
@@ -87,13 +87,6 @@ export function EntrySignal() {
               <Headphones size={18} aria-hidden="true" />
               Listen Now
             </a>
-          </div>
-          <div className="entry-signal__game-entry">
-            <a href="#arcturian-awakening">
-              <Compass size={15} aria-hidden="true" />
-              Explore Arcturian Awakening
-            </a>
-            <span>Playable early preview</span>
           </div>
         </motion.div>
 
