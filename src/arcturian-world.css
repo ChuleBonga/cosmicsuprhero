@@ -307,3 +307,24 @@ footer{background:var(--wine);color:#f9eddf;padding:45px clamp(20px,6vw,100px) 2
 /* Additive entry to the separate playable Chapter I preview. */
 .game-entry .game-entry__external{pointer-events:auto;display:inline-flex;align-items:center;gap:12px;background:rgba(17,26,48,.86);border:1px solid rgba(247,231,195,.75);color:#fff4d9;padding:10px 13px;font:600 11px/1.4 var(--sans);text-decoration:none;max-width:100%;transition:background .15s}
 .game-entry .game-entry__external:hover,.game-entry .game-entry__external:focus-visible{background:rgba(55,39,72,.95)}
+
+
+/* Public entry to the existing standalone game and engineering study.
+   Contained below the artwork so no additional target obscures the painting. */
+.build-preview{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(16rem,.65fr);gap:clamp(2rem,5vw,5rem);align-items:end;padding:clamp(2.5rem,6vw,6rem) clamp(1.35rem,7vw,8rem);background:#eee6dc;border-top:1px solid #d5c7b9;color:#542b43;}
+.build-preview__eyebrow{font:600 10px/1.4 var(--sans);letter-spacing:.19em;text-transform:uppercase;color:#906878;margin:0 0 1.1rem;}
+.build-preview h2{font:400 clamp(2.8rem,5vw,5.5rem)/.94 var(--serif);letter-spacing:-.02em;margin:0 0 1.6rem;}
+.build-preview h2 em{font-weight:400;}
+.build-preview__copy>p:not(.build-preview__eyebrow){font:400 clamp(.86rem,1.15vw,1rem)/1.7 var(--sans);max-width:44rem;color:#624c57;margin:0 0 1.1rem;}
+.build-preview__copy .build-preview__disclosure{font-size:.76rem!important;color:#806977!important;max-width:39rem;}
+.build-preview__links{display:flex;flex-direction:column;gap:.75rem;align-items:stretch;max-width:25rem;width:100%;justify-self:end;}
+.build-preview__links a{display:flex;gap:1rem;align-items:center;justify-content:space-between;min-height:3.5rem;padding:1rem 1.1rem;font:600 .82rem/1.3 var(--sans);text-decoration:none;transition:background .16s,color .16s,border-color .16s;}
+.build-preview__links a svg{width:19px;height:19px;flex:none;}
+.build-preview__primary{color:#fff9f2;background:#592b45;border:1px solid #592b45;}
+.build-preview__primary:hover{background:#763a5e;}
+.build-preview__secondary{color:#592b45;background:transparent;border:1px solid #a88c99;}
+.build-preview__secondary:hover{background:#e4d4d1;border-color:#592b45;}
+.build-preview__links a:focus-visible{outline:3px solid #b66d41;outline-offset:3px;}
+.build-preview__links>span{font:500 10px/1.5 var(--sans);letter-spacing:.06em;color:#876e7c;margin-top:.35rem;}
+@media(max-width:900px){.build-preview{grid-template-columns:1fr;gap:1.5rem;padding-inline:clamp(1.25rem,5vw,3.5rem)}.build-preview__links{justify-self:start;max-width:32rem;}}
+@media(prefers-reduced-motion:reduce){.build-preview__links a{transition:none!important;}}
