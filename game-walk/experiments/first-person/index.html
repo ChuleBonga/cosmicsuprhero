@@ -18,7 +18,7 @@
   <p class="eyebrow muted">FIRST-PERSON WORLD STUDY · BUILD 01</p>
   <h1 id="main-title">The sun remembers<br><em>the way.</em></h1>
   <p class="intro-copy">Enter a place that existed before the words. Cross the weathered causeway. Find what was left behind.</p>
-  <p class="study-label">This is a working art-and-movement study, not the finished five-minute game. The album's theme, <em>Awaken Now</em>, is not included until an approved web excerpt is ready.</p>
+  <p class="study-label">This is a working art-and-movement study, not the finished five-minute game. The existing <em>Awaken Now</em> preview loop begins when you enter this development build. The complete five-minute story and final audio mix are still being authored.</p>
   <div class="entry-actions"><button id="begin" class="button-primary" type="button">Enter the world <span aria-hidden="true">→</span></button><a href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" rel="noopener noreferrer" target="_blank">Pre-save without playing</a></div>
   <p class="controls-note">Desktop: WASD to walk · mouse or drag to look · E to inspect · Esc to pause. Mobile: movement pad and drag to look.</p>
  </div>
@@ -28,6 +28,13 @@
  <div class="identity"><span>COSMICSUPRHERO / 2026</span><strong>ARCTURIAN AWAKENING</strong><small id="stage" aria-live="polite">THE ARRIVAL</small></div>
  <div class="toolbar"><button type="button" id="pause" aria-label="Pause first-person movement">Pause</button><a href="/">Exit world</a></div>
 </header>
+<section class="soundbar" id="soundbar" hidden aria-label="Awaken Now theme music controls">
+ <button id="score-toggle" type="button" aria-pressed="false">Music on</button>
+ <label for="score-volume">Volume</label>
+ <input id="score-volume" type="range" min="0" max="100" step="5" value="68" aria-label="Awaken Now volume">
+ <button id="score-retry" type="button" hidden>Enable music</button>
+ <span id="score-state" aria-live="polite">Awaken Now</span>
+</section>
 <div id="reticle" class="reticle" hidden aria-hidden="true"><span></span></div>
 <p id="hint" class="hint" hidden role="status" aria-live="polite">E / INSPECT THE OBJECT</p>
 <button id="inspect" class="inspect" hidden type="button">Examine the object</button>
