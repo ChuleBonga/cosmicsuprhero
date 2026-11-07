@@ -68,10 +68,13 @@ function terrain(scene,stone,clay){
   colors[3*i]=col.r;colors[3*i+1]=col.g;colors[3*i+2]=col.b;
  }
  g.setAttribute('color',new THREE.BufferAttribute(colors,3));g.computeVertexNormals();
- const base=mat(0xffffff,.92,{vertexColors:true,map:clay.albedo,normalMap:clay.normal,roughnessMap:clay.roughness});
- for(const m of [base.map,base.normalMap,base.roughnessMap])m.repeat.set(36,64);
+ // Dedicated textures for terrain preserve 1x1 repeat UVs on architectural
+ // and collectible materials. Prior builds accidentally tiled all ochre props.
+ const terrainMaps=[clay.albedo.clone(),clay.normal.clone(),clay.roughness.clone()];
+ const base=mat(0xffffff,.92,{vertexColors:true,map:terrainMaps[0],normalMap:terrainMaps[1],roughnessMap:terrainMaps[2]});
+ for(const m of terrainMaps){m.repeat.set(36,64);m.needsUpdate=true;}
  const ground=mesh(scene,g,base);ground.castShadow=false;
- return ground;
+ return {ground,textures:terrainMaps};
 }
 /**
  * A continuous stone face with coherent geological bedding, transverse
@@ -113,7 +116,6 @@ function cliffWall(scene,side,startZ,endZ,stone){
  geo.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
  geo.setIndex(indices);geo.computeVertexNormals();
  const face=mat(0xffffff,.96,{side:THREE.DoubleSide,vertexColors:true,map:stone.albedo,normalMap:stone.normal,roughnessMap:stone.roughness});
- face.map.repeat.set(13,3);face.normalMap.repeat.set(13,3);face.roughnessMap.repeat.set(13,3);
  const m=mesh(scene,geo,face);m.name=side===1?'East cliff bedding':'West cliff bedding';m.castShadow=false;
  return m;
 }
@@ -407,7 +409,7 @@ export function createWorldArt(scene){
  const stone=mat(0xa3b0c4,.94,{map:basalt.albedo,normalMap:basalt.normal,roughnessMap:basalt.roughness});
  const warm=mat(0xdfb39a,.96,{map:ochre.albedo,normalMap:ochre.normal,roughnessMap:ochre.roughness});
  const oxide=mat(0x3c4b60,.76,{metalness:.18});
- terrain(root,basalt,ochre);
+ const terrainData=terrain(root,basalt,ochre);
  causeway(root,stone,warm);groundDebris(root,stone,warm);
  cliffWall(root,1,40,-190,basalt);cliffWall(root,-1,40,-190,basalt);
  rockScatter(root,stone,warm);mountainMass(root);
@@ -425,7 +427,7 @@ export function createWorldArt(scene){
   dummy.updateMatrix();shards.setMatrixAt(i,dummy.matrix);
  }
  shards.instanceMatrix.needsUpdate=true;shards.frustumCulled=false;shards.castShadow=false;root.add(shards);
- const maps=[basalt.albedo,basalt.normal,basalt.roughness,ochre.albedo,ochre.normal,ochre.roughness];
+ const maps=[basalt.albedo,basalt.normal,basalt.roughness,ochre.albedo,ochre.normal,ochre.roughness,...terrainData.textures];
  return {root,sky:skies,artifact:relic,dispose(){
   root.traverse(o=>{if(o.geometry)o.geometry.dispose()});
   for(const tex of maps)tex.dispose();skies.sphere.geometry.dispose();skies.material.dispose();
