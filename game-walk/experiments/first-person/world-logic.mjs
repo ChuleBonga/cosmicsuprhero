@@ -45,8 +45,13 @@ export function stepMovement(state,forward=0,right=0,yaw=0,dt=1/WORLD.hz){
   const f=clamp(forward/len,-1,1),r=clamp(right/len,-1,1);
   const goalX=(Math.sin(yaw)*f+Math.cos(yaw)*r)*WORLD.walkSpeed;
   const goalZ=(-Math.cos(yaw)*f+Math.sin(yaw)*r)*WORLD.walkSpeed;
+  // Vector-space acceleration is independent of strafe angle. Per-axis easing
+  // incorrectly accelerated diagonals by sqrt(2), causing a speed advantage.
   const dv=(f||r?WORLD.acceleration:WORLD.brake)*dt;
-  s.vx=approach(s.vx,goalX,dv);s.vz=approach(s.vz,goalZ,dv);
+  const offsetX=goalX-s.vx,offsetZ=goalZ-s.vz;
+  const remaining=Math.hypot(offsetX,offsetZ);
+  const fraction=remaining>0?Math.min(1,dv/remaining):0;
+  s.vx+=offsetX*fraction;s.vz+=offsetZ*fraction;
   const intendedX=s.x+s.vx*dt,intendedZ=s.z+s.vz*dt;
   let nextZ=clamp(intendedZ,WORLD.endZ-1.8,26);
   let nextX=clamp(intendedX,-halfWidth(nextZ)+WORLD.radius,halfWidth(nextZ)-WORLD.radius);
