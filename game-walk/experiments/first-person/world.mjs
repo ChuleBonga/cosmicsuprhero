@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {WORLD,groundHeight,initialState,stepMovement,canInspect,narrativeBeat,atEnd} from './world-logic.mjs';
 import {createWorldArt} from './world-art.mjs';
 import {AwakenNowScore} from './score.mjs';
+import {stickVector,lookDelta} from './control-math.mjs';
 
 const $=id=>document.getElementById(id);
 const canvas=$('world'),intro=$('intro'),hud=$('hud'),hint=$('hint'),inspectButton=$('inspect');
@@ -193,9 +194,9 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('keyup',e=>activeKeys.delete(e.code));
 function look(dx,dy){
  if(!started||paused||inspecting||finished)return;
- const scale=Number(sensitivity.value)||1;
- yaw+=dx*.00215*scale;
- pitch=clamp(pitch-dy*.0017*scale*(invertLook.checked?-1:1),-1.05,.93);
+ const delta=lookDelta(dx,dy,Number(sensitivity.value),invertLook.checked);
+ yaw+=delta.yaw;
+ pitch=clamp(pitch+delta.pitch,-1.05,.93);
 }
 document.addEventListener('mousemove',e=>{if(document.pointerLockElement===canvas)look(e.movementX,e.movementY);});
 document.addEventListener('pointerlockchange',()=>{
@@ -223,15 +224,9 @@ let stickPointer=null;
 function moveStick(e){
  const rect=stick.getBoundingClientRect();
  const cx=rect.left+rect.width*.5,cy=rect.top+rect.height*.44;
- const maxRadius=39;
- const dx=e.clientX-cx,dy=e.clientY-cy,len=Math.hypot(dx,dy);
- const factor=len>maxRadius?maxRadius/len:1;
- const x=dx*factor,y=dy*factor;
- const magnitude=Math.hypot(x,y)/maxRadius;
- const active=Math.max(0,(magnitude-.11)/.89);
- touchAxes.right=magnitude>0?x/maxRadius/magnitude*active:0;
- touchAxes.forward=magnitude>0?-y/maxRadius/magnitude*active:0;
- stickThumb.style.transform=`translate(calc(-50% + ${x}px),calc(-50% + ${y}px))`;
+ const v=stickVector(e.clientX-cx,e.clientY-cy);
+ touchAxes.right=v.right;touchAxes.forward=v.forward;
+ stickThumb.style.transform=`translate(calc(-50% + ${v.visualX}px),calc(-50% + ${v.visualY}px))`;
 }
 stick.addEventListener('pointerdown',e=>{
  if(!started||paused||finished||inspecting)return;
