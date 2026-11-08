@@ -41,8 +41,12 @@ function materialFamily(kind){
     const variation=(v-.5)*112+(Math.sin(y*.07)*9);
     for(let j=0;j<3;j++)id.data[k+j]=clamp(base[j]+variation+(j===2?10:0),1,255);
    }else if(type==='normal'){
-    const n=new THREE.Vector3(-dx*6,-dy*6,1).normalize();
-    id.data[k]=(n.x*.5+.5)*255;id.data[k+1]=(n.y*.5+.5)*255;id.data[k+2]=(n.z*.5+.5)*255;
+    // Avoid allocating a Vector3 per texture pixel (131,072 allocations on
+    // initial load across two material families).
+    const nx=-dx*6,ny=-dy*6,inv=1/Math.hypot(nx,ny,1);
+    id.data[k]=(nx*inv*.5+.5)*255;
+    id.data[k+1]=(ny*inv*.5+.5)*255;
+    id.data[k+2]=(inv*.5+.5)*255;
    }else{
     const rough=clamp((kind==='basalt'?.81:.9)+(v-.5)*.27,.53,.99);
     id.data[k]=id.data[k+1]=id.data[k+2]=rough*255;
@@ -59,12 +63,12 @@ function materialFamily(kind){
 }
 function terrain(scene,stone,clay){
  const g=new THREE.PlaneGeometry(205,350,140,220);g.rotateX(-Math.PI/2);g.translate(0,0,-112);
- const p=g.attributes.position,colors=new Float32Array(p.count*3),a=c(0x825c4f),b=c(0xb79a76),d=c(0x425773);
+ const p=g.attributes.position,colors=new Float32Array(p.count*3),a=c(0x825c4f),b=c(0xb79a76),d=c(0x425773),col=new THREE.Color();
  for(let i=0;i<p.count;i++){
   const x=p.getX(i),z=p.getZ(i);
   p.setY(i,groundHeight(x,z));
   const noise=Math.sin(x*.36+z*.23)*.07+Math.sin(x*.1-z*.06)*.06;
-  const col=a.clone().lerp(b,clamp(.5+noise,0,1)).lerp(d,clamp((Math.abs(x)-6)/32,0,1)*.5);
+  col.copy(a).lerp(b,clamp(.5+noise,0,1)).lerp(d,clamp((Math.abs(x)-6)/32,0,1)*.5);
   colors[3*i]=col.r;colors[3*i+1]=col.g;colors[3*i+2]=col.b;
  }
  g.setAttribute('color',new THREE.BufferAttribute(colors,3));g.computeVertexNormals();
