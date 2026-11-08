@@ -187,6 +187,7 @@ $('restart').addEventListener('click',()=>{
 document.addEventListener('keydown',e=>{
  if(inspecting){
   if(e.code==='Escape'){e.preventDefault();closeInspection();return;}
+  if(e.code==='Tab'){e.preventDefault();$('leave-inspect').focus();return;}
   if(inspectionRig.key(e.code)){e.preventDefault();return;}
   return;
  }
