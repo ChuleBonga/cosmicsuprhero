@@ -72,6 +72,9 @@ Object.assign(sun.shadow.camera,{left:-40,right:40,top:35,bottom:-35,near:1,far:
 sun.shadow.bias=-.0008;
 const bounce=new THREE.DirectionalLight(0x4666b8,.95);bounce.position.set(40,15,10);scene.add(bounce);
 const art=createWorldArt(scene);
+const lightBefore=scene.fog.color.clone(),lightAfter=new THREE.Color(0x596179);
+const baseSunIntensity=sun.intensity;
+let revealLevel=0,revealTarget=0;
 const inspectedObject=art.artifact.core.clone(true);
 inspectedObject.name='Inspection duplicate: same physical geometry and materials';
 inspectedObject.position.set(0,-.31,-2.1);
@@ -137,6 +140,7 @@ function closeInspection(){
  if(!inspecting)return;
  inspecting=false;panel.hidden=true;inspectedObject.visible=false;inspectionLight.visible=false;
  score.setSceneLevel(1);
+ revealTarget=1;
  paused=false;previous=performance.now();
  $('reticle').hidden=false;
  if(!coarse)canvas.requestPointerLock?.().catch(()=>{});
@@ -148,6 +152,7 @@ function inspect(){
  $('reticle').hidden=true;hint.hidden=true;inspectButton.hidden=true;
  panel.hidden=false;inspectedObject.visible=true;inspectionLight.visible=true;
  score.setSceneLevel(.33);
+ revealTarget=Math.max(revealTarget,.54);
  if(document.pointerLockElement===canvas)document.exitPointerLock?.();
  art.sky.material.uniforms.warm.value=.26;
  $('leave-inspect').focus();$('status').textContent='First Contact examined. Drag the model to rotate, then return to the world.';
@@ -156,6 +161,7 @@ function finish(){
  if(finished)return;
  clearKeys();finished=true;paused=true;end.hidden=false;hud.hidden=true;
  score.setSceneLevel(.47); // Keep the theme beneath the final pre-save invitation.
+ revealTarget=1;
  hint.hidden=true;inspectButton.hidden=true;touch.hidden=true;$('reticle').hidden=true;
  if(document.pointerLockElement===canvas)document.exitPointerLock?.();
  if(hasInspected)$('end-caption').textContent='You paused to look more closely. This is still the first part of a world being built; the rest of the journey continues in the album.';
@@ -169,7 +175,9 @@ $('leave-inspect').addEventListener('click',closeInspection);
 $('restart').addEventListener('click',()=>{
  end.hidden=true;hud.hidden=false;motion=initialState();priorMotion={...motion};yaw=0;pitch=-.04;
  finished=false;started=true;inspecting=false;paused=false;hasInspected=false;
- score.setSceneLevel(1);if(score.audio.paused)void score.play();
+ score.setSceneLevel(1);revealLevel=0;revealTarget=0;art.reveal(0);
+ scene.fog.color.copy(lightBefore);
+ if(score.audio.paused)void score.play();
  touch.hidden=!coarse;$('reticle').hidden=false;art.sky.material.uniforms.warm.value=0;
  previous=performance.now();canvas.focus();
 });
@@ -264,6 +272,13 @@ function tick(timestamp){
  const delta=previous?clamp((timestamp-previous)/1000,0,.05):0;
  previous=timestamp;
  score.tick(delta);
+ if(revealLevel!==revealTarget){
+  revealLevel+= (revealTarget-revealLevel)*Math.min(1,delta*.88);
+  if(Math.abs(revealLevel-revealTarget)<.0001)revealLevel=revealTarget;
+  art.reveal(revealLevel);
+  scene.fog.color.copy(lightBefore).lerp(lightAfter,revealLevel*.24);
+  sun.intensity=baseSunIntensity+revealLevel*.28;
+ }
  if(started&&!paused&&!finished){
   accumulator+=delta;let steps=0;
   while(accumulator>=FDT&&steps<4){
