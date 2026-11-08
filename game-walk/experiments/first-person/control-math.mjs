@@ -1,6 +1,6 @@
 /** Pure input transforms for physically consistent desktop and touch motion. */
 export const clamp=(v,a,b)=>Math.min(Math.max(v,a),b);
-export function stickVector(dx,dy,radius=39,deadZone=.11){
+export function stickVector(dx,dy,radius=39,deadZone=.16){
  if(!Number.isFinite(dx)||!Number.isFinite(dy)||!(radius>0))return {right:0,forward:0,visualX:0,visualY:0};
  const length=Math.hypot(dx,dy);
  if(length<1e-9)return {right:0,forward:0,visualX:0,visualY:0};
