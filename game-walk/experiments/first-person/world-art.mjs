@@ -5,6 +5,7 @@
  */
 import * as THREE from 'three';
 import {WORLD,WORLD_OBSTACLES,groundHeight,halfWidth} from './world-logic.mjs';
+import {createFirstContactEncounter} from './encounter-art.mjs';
 const seedRand=(initial)=>{let s=initial>>>0;return()=>((s=Math.imul(s,1664525)+1013904223>>>0)/4294967296)};
 const rng=seedRand(20261106);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -321,26 +322,6 @@ function gateway(scene,z,stone,oxide,scale=1){
  joint.instanceMatrix.needsUpdate=true;root.add(joint);
  return {root,glyph};
 }
-function artifact(scene,stone,oxide){
- const root=new THREE.Group();root.position.set(WORLD.artifact.x,groundHeight(WORLD.artifact.x,WORLD.artifact.z),WORLD.artifact.z);scene.add(root);
- const pedestal=mesh(root,new THREE.CylinderGeometry(2.14,2.36,.35,12),stone,0,.18,0);pedestal.castShadow=true;
- mesh(root,new THREE.CylinderGeometry(1.85,2.05,.23,12),oxide,0,.48,0);
- const base=mesh(root,new THREE.CylinderGeometry(1.45,1.75,1.6,10),stone,0,1.38,0);base.castShadow=true;
- base.rotation.y=Math.PI/10;
- const ring=mesh(root,new THREE.TorusGeometry(1.24,.13,9,48),oxide,0,2.3,0);
- ring.rotation.x=Math.PI/2;
- const core=new THREE.Group();core.position.set(0,2.25,0);root.add(core);
- // Original sculpture: stone carapace, enclosed cobalt glass core, four asymmetrical binding fins.
- const shell=mesh(core,new THREE.IcosahedronGeometry(.74,2),mat(0x1c3554,.42,{metalness:.17}),0,.44,0);
- const glass=mesh(core,new THREE.OctahedronGeometry(.42,1),mat(0x8aa5bc,.26,{metalness:.31,emissive:0x23334a,emissiveIntensity:.18}),0,.55,.28);
- for(let i=0;i<4;i++){
-  const fin=mesh(core,new THREE.BoxGeometry(.17,1.1,.36),oxide,Math.sin(i*Math.PI/2)*.63,.31,Math.cos(i*Math.PI/2)*.63);
-  fin.rotation.set(.14*i,i*Math.PI/2,.14*Math.sin(i));
- }
- const bezel=mesh(core,new THREE.TorusGeometry(.72,.07,8,48),oxide,0,.43,0);bezel.rotation.x=.42;
- const light=new THREE.PointLight(0xf0a16e,1.35,9,2);light.position.set(0,3.0,0);root.add(light);
- return {root,core,light};
-}
 // Standing stones and fallen architecture share their positions with
 // world-logic.mjs collider definitions, keeping visual and physical space aligned.
 function spatialObstacles(scene,stone,oxide,warm){
@@ -444,7 +425,8 @@ export function createWorldArt(scene){
  const gateways=[gateway(root,-13,stone,oxide,1),gateway(root,-78,stone,oxide,.78)];
  spatialObstacles(root,stone,oxide,warm);
  horizonArray(root,stone,oxide,warm);
- const relic=artifact(root,stone,oxide);const skies=sky(scene);
+ const relic=createFirstContactEncounter(root,{x:WORLD.artifact.x,z:WORLD.artifact.z,groundHeight,halfWidth,stone,oxide,warm});
+ const skies=sky(scene);
  const exitStone=mesh(root,new THREE.CylinderGeometry(5.6,6.1,.32,20),warm,0,groundHeight(0,-110)+.11,-110);exitStone.castShadow=false;
  // Shared iconography becomes a material language across the route.
  const shards=new THREE.InstancedMesh(new THREE.TetrahedronGeometry(.025),mat(0xd3a485,.95),160);
