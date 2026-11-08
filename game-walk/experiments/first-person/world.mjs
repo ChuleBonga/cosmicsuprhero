@@ -307,10 +307,10 @@ function tick(timestamp){
  }
  syncCamera();
  art.sky.sphere.position.copy(camera.position);
- if(started&&!reducedMotion&&!paused){
-  art.artifact.core.rotation.y+=delta*.075;
-  art.artifact.light.intensity=.8+Math.sin(timestamp*.0015)*.12;
- }
+ // The relic is a heavy material object anchored to its plinth. It does
+ // not float or rotate as a generic collectible. Inspection is the player's
+ // deliberate action; atmospheric light responds only to that discovery.
+ art.artifact.light.intensity=.8+revealLevel*.22;
  renderer.render(scene,camera);
  if(!started||paused||delta<=0)return;
  const ms=delta*1000;samples.push(ms);if(samples.length>180)samples.shift();
