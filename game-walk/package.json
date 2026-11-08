@@ -5,14 +5,16 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "npm run check && npm test && npm run test:movement-lab && npm run test:first-person && npm run test:score && npm run test:controls && vite build && node scripts/check-budget.mjs",
+    "build": "npm run check && npm test && npm run test:movement-lab && npm run test:first-person && npm run test:score && npm run test:controls && npm run test:encounter && npm run test:inspection && vite build && node scripts/check-budget.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "check": "tsc --noEmit",
     "test": "node --experimental-strip-types scripts/test-journey.mjs",
     "test:movement-lab": "node --test experiments/movement/movement-model.test.mjs experiments/movement/terrain.test.mjs",
     "test:first-person": "node --test experiments/first-person/world-logic.test.mjs",
     "test:score": "node --test experiments/first-person/score.test.mjs",
-    "test:controls": "node --test experiments/first-person/control-math.test.mjs"
+    "test:controls": "node --test experiments/first-person/control-math.test.mjs",
+    "test:encounter": "node --test experiments/first-person/encounter-art.test.mjs",
+    "test:inspection": "node --test experiments/first-person/inspection-motion.test.mjs"
   },
   "dependencies": {
     "phaser": "3.90.0",
