@@ -8,6 +8,7 @@ export function stickVector(dx,dy,radius=39,deadZone=.16){
  const ux=dx/length,uy=dy/length;
  const magnitude=visualRadius/radius;
  const activity=clamp((magnitude-deadZone)/(1-deadZone),0,1);
+ if(activity===0)return {right:0,forward:0,visualX:ux*visualRadius,visualY:uy*visualRadius};
  return {right:ux*activity,forward:-uy*activity,visualX:ux*visualRadius,visualY:uy*visualRadius};
 }
 export function lookDelta(dx,dy,sensitivity=1,inverted=false){
