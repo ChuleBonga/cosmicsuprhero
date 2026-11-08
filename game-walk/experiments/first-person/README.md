@@ -55,3 +55,32 @@ The surrounding architecture borrows no layout from the user's unrelated game re
 
 ## Score-preview and publishing guardrails
 The user's music direction is explicit: Awaken Now is the game's background theme. The source file was already tracked in the repository, and the game project already served it before this commit. This branch changes the **isolated first-person route** to actually play that loop after an entry gesture. It does not expose a new master recording, introduce other tracks, or remove the root site's audio-exclusion safeguard. A future merge to production would require explicit review of the precise loop, availability, desired edits, and release timing.
+
+## Build 03: space, responsiveness, and architectural detail (November 7, 2026)
+
+### Authored implementation
+- Replaced placeholder cone silhouettes with three continuous, irregular, genuinely spatial mountain-ridge meshes.
+- Rebuilt two canyon-wall meshes with sedimentary striations, fractures, material variation and spatial geometry aligned to the traversable half-width.
+- Added an ancient, partly buried, twin-lane stone causeway with missing/chipped slabs (instanced geometry) and small debris (instanced geometry). The causeway's top surface remains close to the walkable terrain, preserving contact.
+- Rebuilt the monumental gateway's markings and repeating structural joints with `InstancedMesh` batching. Environmental glyphs and light subtly respond to the first artifact inspection; no new track or chapter was added.
+- Eliminated repeated `Vector3` allocations while preparing normal-map canvas pixels, avoided per-vertex Color cloning across the terrain, and isolated terrain texture repeats from hero object maps.
+- Camera positions interpolate between fixed 60 Hz physics steps; look sensitivity, invert-Y, and a steady-camera setting are exposed in pause UI. The mobile d-pad is replaced by a continuous left thumbstick with dead-zone and drag-look on the right.
+- Audio still uses the existing, artist-provided `score_awaken_now_loop.m4a` in the separate game preview, only after the Enter gesture. Main site audio exclusion remains in place.
+- Added independent, deterministic analog-input regression tests with deadzone, cardinal directions, diagonal bounds, invalid inputs, sensitivity and invert-Y behavior.
+
+### Quality gates and unresolved risks
+- **Do not mark visual quality passed.** The artwork now contains richer real geometry but is still procedural production study material rather than hand-sculpted, photogrammetrically grounded final environment art.
+- **Do not mark mobile control comfort passed.** Tests cover transforms, not physical-thumb ergonomics on actual hardware.
+- **Do not claim 60 FPS.** Dynamic render scaling and an in-app `?perf` view exist, but GPU timings, representative desktop/mobile p95 frame times and actual-device footage remain unverified.
+- Browser graphical QA attempt was unsuccessful due to a remote browser service timeout. Preview HTTP checks and passing Vercel build are not a substitute.
+- The path remains a short, incomplete study rather than the approved full five-minute experience. No merged production game or altered public website.
+- A final website launch still requires confirmation of the audio excerpt / loop rights and timing.
+
+### Regression verification
+```bash
+cd game-walk
+npm run test:first-person
+npm run test:score
+npm run test:controls
+npm run build
+```
