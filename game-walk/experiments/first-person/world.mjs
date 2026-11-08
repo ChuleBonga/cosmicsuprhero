@@ -3,6 +3,7 @@ import {WORLD,groundHeight,initialState,stepMovement,canInspect,narrativeBeat,at
 import {createWorldArt} from './world-art.mjs';
 import {AwakenNowScore} from './score.mjs';
 import {stickVector,lookDelta} from './control-math.mjs';
+import {InspectionMotion} from './inspection-motion.mjs';
 
 const $=id=>document.getElementById(id);
 const canvas=$('world'),intro=$('intro'),hud=$('hud'),hint=$('hint'),inspectButton=$('inspect');
@@ -39,6 +40,7 @@ let yaw=0,pitch=-.04,motion=initialState(),priorMotion={...initialState()},walkP
 let inspecting=false,hasInspected=false,finished=false,pointerLockWasActive=false;
 let previous=0,accumulator=0,lookPointer=null,lookX=0,lookY=0;
 let inspectingPointer=null,inspectX=0,inspectY=0;
+const inspectionRig=new InspectionMotion();
 
 const scene=new THREE.Scene();
 scene.fog=new THREE.FogExp2(0x314362,.0045);
@@ -78,9 +80,9 @@ const baseSunIntensity=sun.intensity;
 let revealLevel=0,revealTarget=0;
 const inspectedObject=art.artifact.core.clone(true);
 inspectedObject.name='Inspection duplicate: same physical geometry and materials';
-inspectedObject.position.set(0,-.31,-2.1);
-inspectedObject.rotation.set(.12,-.38,0);
-inspectedObject.scale.setScalar(.83);
+inspectedObject.position.set(0,-.98,-3.55);
+inspectedObject.rotation.set(.14,-.27,0);
+inspectedObject.scale.setScalar(.48);
 inspectedObject.visible=false;camera.add(inspectedObject);
 const inspectionLight=new THREE.PointLight(0xffd3ae,2.1,6,1.6);
 inspectionLight.position.set(1.4,1.1,-.65);inspectionLight.visible=false;camera.add(inspectionLight);
@@ -139,7 +141,7 @@ function begin(){
 }
 function closeInspection(){
  if(!inspecting)return;
- inspecting=false;panel.hidden=true;inspectedObject.visible=false;inspectionLight.visible=false;
+ inspecting=false;inspectionRig.close();panel.hidden=true;inspectedObject.visible=false;inspectionLight.visible=false;
  score.setSceneLevel(1);
  revealTarget=1;
  paused=false;previous=performance.now();
@@ -149,7 +151,7 @@ function closeInspection(){
 }
 function inspect(){
  if(!started||paused||finished||inspecting||!canInspect(motion,yaw))return;
- clearKeys();inspecting=true;paused=true;hasInspected=true;
+ clearKeys();inspecting=true;inspectionRig.open();paused=true;hasInspected=true;
  $('reticle').hidden=true;hint.hidden=true;inspectButton.hidden=true;
  panel.hidden=false;inspectedObject.visible=true;inspectionLight.visible=true;
  score.setSceneLevel(.33);
@@ -183,7 +185,11 @@ $('restart').addEventListener('click',()=>{
  previous=performance.now();canvas.focus();
 });
 document.addEventListener('keydown',e=>{
- if(inspecting){if(e.code==='Escape'){e.preventDefault();closeInspection();}return;}
+ if(inspecting){
+  if(e.code==='Escape'){e.preventDefault();closeInspection();return;}
+  if(inspectionRig.key(e.code)){e.preventDefault();return;}
+  return;
+ }
  if(e.code==='Escape'){e.preventDefault();if(started&&!finished)setPaused(!paused);return;}
  if(e.target instanceof HTMLElement&&e.target.closest('a,button,input,textarea'))return;
  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();
@@ -241,13 +247,17 @@ for(const kind of ['pointerup','pointercancel','lostpointercapture'])
   stickThumb.style.transform='translate(-50%,-50%)';
  });
 const area=$('inspect-interaction');
+area.addEventListener('wheel',e=>{
+ if(!inspecting)return;
+ e.preventDefault();inspectionRig.wheel(e.deltaY);
+},{passive:false});
 area.addEventListener('pointerdown',e=>{
  if(!inspecting)return;inspectingPointer=e.pointerId;inspectX=e.clientX;inspectY=e.clientY;area.setPointerCapture(e.pointerId);
 });
 area.addEventListener('pointermove',e=>{
  if(inspectingPointer!==e.pointerId||!inspecting)return;
  const dx=e.clientX-inspectX,dy=e.clientY-inspectY;inspectX=e.clientX;inspectY=e.clientY;
- inspectedObject.rotation.y+=dx*.008;inspectedObject.rotation.x=clamp(inspectedObject.rotation.x+dy*.005,-.8,.8);
+ inspectionRig.drag(dx,dy);
 });
 for(const name of ['pointerup','pointercancel','lostpointercapture'])
  area.addEventListener(name,e=>{if(e.pointerId===inspectingPointer)inspectingPointer=null;});
@@ -267,6 +277,12 @@ function tick(timestamp){
  const delta=previous?clamp((timestamp-previous)/1000,0,.05):0;
  previous=timestamp;
  score.tick(delta);
+ if(inspecting){
+  const frame=inspectionRig.tick(delta);
+  inspectedObject.position.set(frame.x,frame.y,frame.z);
+  inspectedObject.rotation.set(frame.pitch,frame.yaw,0);
+  inspectedObject.scale.setScalar(frame.scale);
+ }
  if(revealLevel!==revealTarget){
   revealLevel+= (revealTarget-revealLevel)*Math.min(1,delta*.88);
   if(Math.abs(revealLevel-revealTarget)<.0001)revealLevel=revealTarget;
@@ -293,7 +309,7 @@ function tick(timestamp){
  art.sky.sphere.position.copy(camera.position);
  if(started&&!reducedMotion&&!paused){
   art.artifact.core.rotation.y+=delta*.075;
-  art.artifact.light.intensity=1.25+Math.sin(timestamp*.0015)*.17;
+  art.artifact.light.intensity=.8+Math.sin(timestamp*.0015)*.12;
  }
  renderer.render(scene,camera);
  if(!started||paused||delta<=0)return;
