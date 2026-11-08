@@ -20,7 +20,7 @@
   <p class="intro-copy">Enter a place that existed before the words. Cross the weathered causeway. Find what was left behind.</p>
   <p class="study-label">This is a working art-and-movement study, not the finished five-minute game. The existing <em>Awaken Now</em> preview loop begins when you enter this development build. The complete five-minute story and final audio mix are still being authored.</p>
   <div class="entry-actions"><button id="begin" class="button-primary" type="button">Enter the world <span aria-hidden="true">→</span></button><a href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" rel="noopener noreferrer" target="_blank">Pre-save without playing</a></div>
-  <p class="controls-note">Desktop: WASD to walk · mouse or drag to look · E to inspect · M to mute · Esc to pause. Mobile: movement pad and drag to look.</p>
+  <p class="controls-note">Desktop: WASD to walk · mouse or drag to look · E to inspect · M to mute · Esc to pause. Mobile: left thumbstick to walk, drag the right side to look. Pause to adjust sensitivity and camera comfort.</p>
  </div>
  <span class="entry-index">A JOURNEY, NOT AN ESCAPE · ORIGINAL DEVELOPMENT STUDY</span>
 </section>
@@ -39,11 +39,9 @@
 <p id="hint" class="hint" hidden role="status" aria-live="polite">E / INSPECT THE OBJECT</p>
 <button id="inspect" class="inspect" hidden type="button">Examine the object</button>
 <div class="touch-controls" id="touch-controls" hidden>
- <div class="dpad" aria-label="Movement controls">
-  <button data-dir="left" aria-label="Move left" type="button">←</button>
-  <button data-dir="forward" aria-label="Move forward" type="button">↑</button>
-  <button data-dir="backward" aria-label="Move backward" type="button">↓</button>
-  <button data-dir="right" aria-label="Move right" type="button">→</button>
+ <div class="touch-stick" id="touch-stick" role="group" aria-label="Touch joystick: drag to move in any direction">
+  <div class="touch-stick__ring"><div id="touch-stick-thumb" class="touch-stick__thumb"></div></div>
+  <span>MOVE</span>
  </div>
  <span>DRAG TO LOOK</span>
 </div>
@@ -65,7 +63,17 @@
  <a class="button-primary" href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" target="_blank" rel="noopener noreferrer">Pre-save Arcturian Awakening <span aria-hidden="true">→</span></a>
  <button id="restart" class="text-button" type="button">Walk the causeway again</button>
 </section>
-<div class="pause-overlay" id="pause-overlay" hidden><p>THE WORLD HOLDS ITS BREATH</p><button id="resume" class="button-primary" type="button">Resume journey <span aria-hidden="true">→</span></button><a href="/">Return to the album</a></div>
+<div class="pause-overlay" id="pause-overlay" hidden>
+ <p>THE WORLD HOLDS ITS BREATH</p>
+ <div class="control-settings" role="group" aria-label="First-person comfort and movement settings">
+  <label for="look-sensitivity">Look sensitivity <output id="sensitivity-value" for="look-sensitivity">1.0×</output></label>
+  <input id="look-sensitivity" type="range" min="0.5" max="1.7" step="0.1" value="1">
+  <label class="option"><input id="invert-look" type="checkbox"> Invert vertical look</label>
+  <label class="option"><input id="steady-camera" type="checkbox"> Steady camera (no walking bob)</label>
+ </div>
+ <button id="resume" class="button-primary" type="button">Resume journey <span aria-hidden="true">→</span></button>
+ <a href="/">Return to the album</a>
+</div>
 <div id="perf" class="perf" hidden aria-live="off"></div>
 <a class="presave-rail" href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" target="_blank" rel="noopener noreferrer">PRE-SAVE THE ALBUM <span aria-hidden="true">↗</span></a>
 <div id="status" class="sr-only" role="status" aria-live="polite"></div>

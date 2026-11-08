@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import {WORLD,groundHeight,initialState,stepMovement,canInspect,narrativeBeat,atEnd} from './world-logic.mjs';
 import {createWorldArt} from './world-art.mjs';
 import {AwakenNowScore} from './score.mjs';
+import {stickVector,lookDelta} from './control-math.mjs';
 
 const $=id=>document.getElementById(id);
 const canvas=$('world'),intro=$('intro'),hud=$('hud'),hint=$('hint'),inspectButton=$('inspect');
@@ -27,9 +28,14 @@ const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const showPerf=new URLSearchParams(location.search).has('perf');
 const mobile=coarse||innerWidth<720;
 const activeKeys=new Set();
+const touchAxes={forward:0,right:0};
+const stick=$('touch-stick'),stickThumb=$('touch-stick-thumb');
+const sensitivity=$('look-sensitivity'),invertLook=$('invert-look'),steadyCamera=$('steady-camera');
+sensitivity.addEventListener('input',()=>{$('sensitivity-value').textContent=Number(sensitivity.value).toFixed(1)+'×';});
+steadyCamera.checked=reducedMotion;
 const FDT=1/WORLD.hz;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-let yaw=0,pitch=-.04,motion=initialState(),walkPhase=0,started=false,paused=true;
+let yaw=0,pitch=-.04,motion=initialState(),priorMotion={...initialState()},walkPhase=0,started=false,paused=true;
 let inspecting=false,hasInspected=false,finished=false,pointerLockWasActive=false;
 let previous=0,accumulator=0,lookPointer=null,lookX=0,lookY=0;
 let inspectingPointer=null,inspectX=0,inspectY=0;
@@ -67,6 +73,9 @@ Object.assign(sun.shadow.camera,{left:-40,right:40,top:35,bottom:-35,near:1,far:
 sun.shadow.bias=-.0008;
 const bounce=new THREE.DirectionalLight(0x4666b8,.95);bounce.position.set(40,15,10);scene.add(bounce);
 const art=createWorldArt(scene);
+const lightBefore=scene.fog.color.clone(),lightAfter=new THREE.Color(0x596179);
+const baseSunIntensity=sun.intensity;
+let revealLevel=0,revealTarget=0;
 const inspectedObject=art.artifact.core.clone(true);
 inspectedObject.name='Inspection duplicate: same physical geometry and materials';
 inspectedObject.position.set(0,-.31,-2.1);
@@ -85,10 +94,17 @@ window.addEventListener('resize',resize);
 window.visualViewport?.addEventListener('resize',resize);
 resize();
 function syncCamera(){
+ // Render between fixed 60 Hz physics samples, eliminating positional stutter
+ // when the monitor refreshes at 90/120 Hz. Physics collision still uses
+ // authoritative fixed-step positions.
+ const alpha=started&&!paused?clamp(accumulator/FDT,0,1):1;
+ const x=priorMotion.x+(motion.x-priorMotion.x)*alpha;
+ const y=priorMotion.y+(motion.y-priorMotion.y)*alpha;
+ const z=priorMotion.z+(motion.z-priorMotion.z)*alpha;
  const speed=Math.hypot(motion.vx,motion.vz);
- const bob=reducedMotion||inspecting?0:Math.min(.013,speed*.004)*Math.sin(walkPhase*2.1);
- camera.position.set(motion.x,motion.y+WORLD.eyeHeight+bob,motion.z);
- // The controller uses positive yaw = look right. Three.js's rotation Y is opposite for -Z forward.
+ const bob=steadyCamera.checked||inspecting?0:Math.min(.012,speed*.004)*Math.sin(walkPhase*2.1);
+ camera.position.set(x,y+WORLD.eyeHeight+bob,z);
+ // Positive yaw looks to the player's right.
  camera.rotation.set(pitch,-yaw,0,'YXZ');
 }
 function readInput(){
@@ -97,10 +113,11 @@ function readInput(){
  if(activeKeys.has('KeyS')||activeKeys.has('ArrowDown')||activeKeys.has('backward'))f--;
  if(activeKeys.has('KeyA')||activeKeys.has('ArrowLeft')||activeKeys.has('left'))r--;
  if(activeKeys.has('KeyD')||activeKeys.has('ArrowRight')||activeKeys.has('right'))r++;
- return [f,r];
+ return [clamp(f+touchAxes.forward,-1,1),clamp(r+touchAxes.right,-1,1)];
 }
 function clearKeys(){
- activeKeys.clear();for(const b of touch.querySelectorAll('button'))b.classList.remove('pressed');
+ activeKeys.clear();touchAxes.forward=0;touchAxes.right=0;
+ stickThumb.style.transform='translate(-50%,-50%)';
 }
 function setPaused(value){
  if(!started||finished||inspecting)return;
@@ -124,6 +141,7 @@ function closeInspection(){
  if(!inspecting)return;
  inspecting=false;panel.hidden=true;inspectedObject.visible=false;inspectionLight.visible=false;
  score.setSceneLevel(1);
+ revealTarget=1;
  paused=false;previous=performance.now();
  $('reticle').hidden=false;
  if(!coarse)canvas.requestPointerLock?.().catch(()=>{});
@@ -135,6 +153,7 @@ function inspect(){
  $('reticle').hidden=true;hint.hidden=true;inspectButton.hidden=true;
  panel.hidden=false;inspectedObject.visible=true;inspectionLight.visible=true;
  score.setSceneLevel(.33);
+ revealTarget=Math.max(revealTarget,.54);
  if(document.pointerLockElement===canvas)document.exitPointerLock?.();
  art.sky.material.uniforms.warm.value=.26;
  $('leave-inspect').focus();$('status').textContent='First Contact examined. Drag the model to rotate, then return to the world.';
@@ -143,6 +162,7 @@ function finish(){
  if(finished)return;
  clearKeys();finished=true;paused=true;end.hidden=false;hud.hidden=true;
  score.setSceneLevel(.47); // Keep the theme beneath the final pre-save invitation.
+ revealTarget=1;
  hint.hidden=true;inspectButton.hidden=true;touch.hidden=true;$('reticle').hidden=true;
  if(document.pointerLockElement===canvas)document.exitPointerLock?.();
  if(hasInspected)$('end-caption').textContent='You paused to look more closely. This is still the first part of a world being built; the rest of the journey continues in the album.';
@@ -154,9 +174,11 @@ $('resume').addEventListener('click',()=>setPaused(false));
 $('inspect').addEventListener('click',inspect);
 $('leave-inspect').addEventListener('click',closeInspection);
 $('restart').addEventListener('click',()=>{
- end.hidden=true;hud.hidden=false;motion=initialState();yaw=0;pitch=-.04;
+ end.hidden=true;hud.hidden=false;motion=initialState();priorMotion={...motion};yaw=0;pitch=-.04;
  finished=false;started=true;inspecting=false;paused=false;hasInspected=false;
- score.setSceneLevel(1);if(score.audio.paused)void score.play();
+ score.setSceneLevel(1);revealLevel=0;revealTarget=0;art.reveal(0);
+ scene.fog.color.copy(lightBefore);
+ if(score.audio.paused)void score.play();
  touch.hidden=!coarse;$('reticle').hidden=false;art.sky.material.uniforms.warm.value=0;
  previous=performance.now();canvas.focus();
 });
@@ -172,8 +194,9 @@ document.addEventListener('keydown',e=>{
 document.addEventListener('keyup',e=>activeKeys.delete(e.code));
 function look(dx,dy){
  if(!started||paused||inspecting||finished)return;
- yaw+=dx*.00215;
- pitch=clamp(pitch-dy*.0017,-1.05,.93);
+ const delta=lookDelta(dx,dy,Number(sensitivity.value),invertLook.checked);
+ yaw+=delta.yaw;
+ pitch=clamp(pitch+delta.pitch,-1.05,.93);
 }
 document.addEventListener('mousemove',e=>{if(document.pointerLockElement===canvas)look(e.movementX,e.movementY);});
 document.addEventListener('pointerlockchange',()=>{
@@ -195,12 +218,28 @@ canvas.addEventListener('pointermove',e=>{
 });
 for(const name of ['pointerup','pointercancel','lostpointercapture'])
  canvas.addEventListener(name,e=>{if(e.pointerId===lookPointer)lookPointer=null;});
-for(const b of touch.querySelectorAll('button[data-dir]')){
- const key=b.dataset.dir;
- b.addEventListener('pointerdown',e=>{e.preventDefault();b.setPointerCapture(e.pointerId);activeKeys.add(key);b.classList.add('pressed');});
- for(const evt of ['pointerup','pointercancel','lostpointercapture'])
-  b.addEventListener(evt,()=>{activeKeys.delete(key);b.classList.remove('pressed')});
+// Continuous left-thumb analog stick. A single pointer owns the joystick;
+ // releasing it, pausing or losing focus always resets all movement.
+let stickPointer=null;
+function moveStick(e){
+ const rect=stick.getBoundingClientRect();
+ const cx=rect.left+rect.width*.5,cy=rect.top+rect.height*.44;
+ const v=stickVector(e.clientX-cx,e.clientY-cy);
+ touchAxes.right=v.right;touchAxes.forward=v.forward;
+ stickThumb.style.transform=`translate(calc(-50% + ${v.visualX}px),calc(-50% + ${v.visualY}px))`;
 }
+stick.addEventListener('pointerdown',e=>{
+ if(!started||paused||finished||inspecting)return;
+ e.preventDefault();stickPointer=e.pointerId;
+ stick.setPointerCapture(e.pointerId);moveStick(e);
+});
+stick.addEventListener('pointermove',e=>{if(stickPointer===e.pointerId)moveStick(e);});
+for(const kind of ['pointerup','pointercancel','lostpointercapture'])
+ stick.addEventListener(kind,e=>{
+  if(stickPointer!==e.pointerId)return;
+  stickPointer=null;touchAxes.forward=0;touchAxes.right=0;
+  stickThumb.style.transform='translate(-50%,-50%)';
+ });
 const area=$('inspect-interaction');
 area.addEventListener('pointerdown',e=>{
  if(!inspecting)return;inspectingPointer=e.pointerId;inspectX=e.clientX;inspectY=e.clientY;area.setPointerCapture(e.pointerId);
@@ -228,10 +267,19 @@ function tick(timestamp){
  const delta=previous?clamp((timestamp-previous)/1000,0,.05):0;
  previous=timestamp;
  score.tick(delta);
+ if(revealLevel!==revealTarget){
+  revealLevel+= (revealTarget-revealLevel)*Math.min(1,delta*.88);
+  if(Math.abs(revealLevel-revealTarget)<.0001)revealLevel=revealTarget;
+  art.reveal(revealLevel);
+  scene.fog.color.copy(lightBefore).lerp(lightAfter,revealLevel*.24);
+  sun.intensity=baseSunIntensity+revealLevel*.28;
+ }
  if(started&&!paused&&!finished){
   accumulator+=delta;let steps=0;
   while(accumulator>=FDT&&steps<4){
-   const [f,r]=readInput();motion=stepMovement(motion,f,r,yaw);
+   const [f,r]=readInput();
+   priorMotion={...motion};
+   motion=stepMovement(motion,f,r,yaw);
    walkPhase+=Math.hypot(motion.vx,motion.vz)*FDT;
    accumulator-=FDT;steps++;
   }
@@ -278,6 +326,6 @@ Main-thread cadence; GPU timings not measured`;
 syncCamera();renderer.render(scene,camera);requestAnimationFrame(tick);
 window.__AA_DEV__={getState:()=>({...motion,yaw,pitch,paused,inspecting,finished}),goToArtifact:()=>{
  motion={...motion,x:1.95,z:WORLD.artifact.z+1.7};motion.y=groundHeight(motion.x,motion.z);
- yaw=-.85;
-},goToEnd:()=>{motion={...motion,x:0,z:WORLD.endZ+.95};motion.y=groundHeight(motion.x,motion.z);}};
+ priorMotion={...motion};yaw=-.85;
+},goToEnd:()=>{motion={...motion,x:0,z:WORLD.endZ+.95};motion.y=groundHeight(motion.x,motion.z);priorMotion={...motion};}};
 window.addEventListener('pagehide',()=>{clearKeys();score.destroy();art.dispose();renderer.dispose()});
