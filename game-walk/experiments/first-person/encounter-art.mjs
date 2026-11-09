@@ -8,6 +8,7 @@
  * No downloaded scans, third-party models, or unrelated game iconography.
  */
 import * as THREE from 'three';
+import {createCassetteArt,CASSETTE_SCALE} from './cassette-art.mjs';
 
 export const CONTACT_SPEC=Object.freeze({
   plinthRadius:2.36, plinthTopY:.37, vesselHeight:2.65,
@@ -198,9 +199,16 @@ export function createFirstContactEncounter(parent,opts){
  const ornaments=innerInlay(root,stone,oxide);
  outerPaving(root,stone,warm,groundHeight,x,ground,z);
  structuralWings(root,stone,oxide,groundHeight,x,z,ground,halfWidth);
- const core=new THREE.Group();core.name='First Contact / inspectable original artifact';
+ const core=new THREE.Group();core.name='First Contact / inspectable music cassette';
  core.position.set(0,2.39,0);root.add(core);
- buildVessel(core,opts);
+ // Actual analog media is held in a shallow tray. The source is ~15cm wide,
+ // and is magnified only for inspection, not in the physical environment.
+ const tray=mesh(root,new THREE.BoxGeometry(.35,.028,.20),oxide,0,2.37,0);
+ tray.name='Cassette resting tray';
+ const tape=createCassetteArt();
+ tape.scale.setScalar(CASSETTE_SCALE);
+ tape.rotation.x=-.17;
+ core.add(tape);
  // Small light bounce. No bloom or neon. Architectural silhouette remains primary.
  const light=new THREE.PointLight(0xe8a676,.8,7,2);
  light.position.set(0,3.17,.1);root.add(light);
