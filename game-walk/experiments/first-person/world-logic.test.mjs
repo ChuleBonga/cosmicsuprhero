@@ -77,3 +77,41 @@ test('strafe and forward contacts preserve finite grounded velocity',()=>{
   assert.equal(s.grounded,true);
  }
 });
+
+test('corridor walls taper smoothly, with no teleport-width discontinuity',()=>{
+ let last=halfWidth(26);
+ for(let z=25.95;z>=WORLD.endZ;z-=.05){
+  const width=halfWidth(z);
+  assert.ok(width>=6.1-1e-6&&width<=8.1+1e-6);
+  assert.ok(Math.abs(width-last)<.025,'abrupt path width near '+z.toFixed(2));
+  last=width;
+ }
+});
+test('walking along the bank through transitions never produces a lateral jump',()=>{
+ let s={...initialState(),x:halfWidth(WORLD.start.z)-WORLD.radius-.03,
+     y:groundHeight(halfWidth(WORLD.start.z)-WORLD.radius-.03,WORLD.start.z)};
+ let lastX=s.x;
+ for(let i=0;i<3200;i++){
+  s=stepMovement(s,1,0,.001);
+  assert.ok(Math.abs(s.x-lastX)<.09,'wall projection snapped player at '+s.z);
+  assert.ok(Math.abs(s.x)<=halfWidth(s.z)-WORLD.radius+.002);
+  lastX=s.x;
+  if(s.z<WORLD.endZ+5)break;
+ }
+});
+test('mobile contact range supports a forgiving tap without long-distance interaction',()=>{
+ const s={...initialState(),x:WORLD.artifact.x+3.7,z:WORLD.artifact.z};
+ assert.equal(canInspect(s,Math.PI),false,'desktop still requires facing');
+ assert.equal(canInspect(s,Math.PI,4.65,-1.1),true,'touch may inspect from nearby without precise aiming');
+ const distant={...s,x:WORLD.artifact.x+5};
+ assert.equal(canInspect(distant,Math.PI,4.65,-1.1),false);
+});
+test('full route remains reachable with no required artifact pickup',()=>{
+ let s=initialState(),minZ=s.z;
+ for(let i=0;i<5200&&!atEnd(s);i++){
+  s=stepMovement(s,1,0,0);
+  minZ=Math.min(minZ,s.z);
+ }
+ assert.equal(atEnd(s),true,'player should reach the endpoint by moving forward without mandatory inventory');
+ assert.ok(minZ< -100);
+});
