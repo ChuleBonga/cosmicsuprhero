@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 0.0.0.0",
-    "build": "npm run check && npm test && npm run test:movement-lab && npm run test:first-person && npm run test:score && npm run test:controls && npm run test:encounter && npm run test:inspection && npm run bake:materials && npm run test:materials && npm run test:mobile-ui && npm run test:journey-actions && vite build && node scripts/check-budget.mjs",
+    "build": "npm run check && npm test && npm run test:movement-lab && npm run test:first-person && npm run test:score && npm run test:controls && npm run test:encounter && npm run test:inspection && npm run bake:materials && npm run test:materials && npm run test:mobile-ui && npm run test:journey-actions && npm run test:cassette && vite build && node scripts/check-budget.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "check": "tsc --noEmit",
     "test": "node --experimental-strip-types scripts/test-journey.mjs",
@@ -18,7 +18,8 @@
     "bake:materials": "node scripts/bake-first-person-materials.mjs",
     "test:materials": "node --test scripts/bake-first-person-materials.test.mjs",
     "test:mobile-ui": "node --test experiments/first-person/mobile-ui-contract.test.mjs",
-    "test:journey-actions": "node --test experiments/first-person/journey-actions.test.mjs"
+    "test:journey-actions": "node --test experiments/first-person/journey-actions.test.mjs",
+    "test:cassette": "node --test experiments/first-person/cassette-art.test.mjs"
   },
   "dependencies": {
     "phaser": "3.90.0",
