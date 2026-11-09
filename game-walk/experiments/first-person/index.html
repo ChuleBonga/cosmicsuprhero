@@ -10,15 +10,15 @@
 </head>
 <body>
 <main class="experience" aria-label="Arcturian Awakening first-person art and interaction study">
-<canvas id="world" tabindex="0" aria-label="Navigable first-person 3D landscape; use WASD to move, mouse to look, E to inspect"></canvas>
+<canvas id="world" tabindex="0" aria-label="First-person 3D world. Desktop: WASD movement and mouse look. Touch: left thumbstick movement and swipe to look."></canvas>
 <div class="static-grain" aria-hidden="true"></div>
 <section class="intro" id="intro" aria-labelledby="main-title">
  <div class="intro-inner">
   <p class="eyebrow">COSMICSUPRHERO <span aria-hidden="true">/</span> ARCTURIAN AWAKENING</p>
-  <p class="eyebrow muted">FIRST-PERSON WORLD STUDY · BUILD 05</p>
+  <p class="eyebrow muted">FIRST-PERSON WORLD STUDY · MOBILE / PHYSICS CHECK</p>
   <h1 id="main-title">The sun remembers<br><em>the way.</em></h1>
   <p class="intro-copy">Enter a place that existed before the words. Cross the weathered causeway. Find what was left behind.</p>
-  <p class="study-label">This is a working art-and-movement study, not the finished five-minute game. The existing <em>Awaken Now</em> preview loop begins when you enter this development build. The complete five-minute story and final audio mix are still being authored.</p>
+  <p class="study-label">An early playable study. <em>Awaken Now</em> begins when you enter. The complete five-minute journey is still being built.</p>
   <div class="entry-actions"><button id="begin" class="button-primary" type="button" disabled>Preparing the world…</button><a href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" rel="noopener noreferrer" target="_blank">Pre-save without playing</a></div>
   <p id="preparation" class="study-label" role="status" aria-live="polite">Loading authored material surfaces for your journey.</p>
   <p class="controls-note">Desktop: WASD to walk · mouse or drag to look · E to inspect · M to mute · Esc to pause. Mobile: left thumbstick to walk, drag the right side to look. Pause to adjust sensitivity and camera comfort.</p>
@@ -27,10 +27,10 @@
 </section>
 <header class="hud" id="hud" hidden>
  <div class="identity"><span>COSMICSUPRHERO / 2026</span><strong>ARCTURIAN AWAKENING</strong><small id="stage" aria-live="polite">THE ARRIVAL</small></div>
- <div class="toolbar"><button type="button" id="pause" aria-label="Pause first-person movement">Pause</button><a href="/">Exit world</a></div>
+ <div class="toolbar"><button type="button" id="pause" aria-label="Pause first-person movement">Pause</button><a href="https://cosmicsuprhero.vercel.app/">Exit world</a></div>
 </header>
 <section class="soundbar" id="soundbar" hidden aria-label="Awaken Now theme music controls">
- <button id="score-toggle" type="button" aria-pressed="false">Music on</button>
+ <button id="score-toggle" type="button" aria-pressed="true">Music on</button>
  <label for="score-volume">Volume</label>
  <input id="score-volume" type="range" min="0" max="100" step="5" value="68" aria-label="Awaken Now volume">
  <button id="score-retry" type="button" hidden>Enable music</button>
@@ -44,7 +44,7 @@
   <div class="touch-stick__ring"><div id="touch-stick-thumb" class="touch-stick__thumb"></div></div>
   <span>MOVE</span>
  </div>
- <span>DRAG TO LOOK</span>
+ <span>SWIPE TO LOOK</span>
 </div>
 <section class="inspect-panel" id="inspect-panel" role="dialog" aria-modal="true" aria-labelledby="artifact-title" hidden>
  <div class="inspect-description">
@@ -55,7 +55,8 @@
   <button id="leave-inspect" class="button-primary" type="button">Return to the world <span aria-hidden="true">→</span></button>
  </div>
  <div class="inspect-interaction" id="inspect-interaction" role="group" aria-label="Artifact examination: drag to rotate, scroll to zoom; arrow keys also rotate"></div>
- <span class="inspect-tip">DRAG OR USE ARROW KEYS TO ROTATE · SCROLL OR +/− TO ZOOM</span>
+ <div class="inspect-zoom" role="group" aria-label="Artifact zoom controls"><button id="zoom-out" type="button" aria-label="Zoom out of artifact">−</button><span>ZOOM</span><button id="zoom-in" type="button" aria-label="Zoom into artifact">+</button></div>
+ <span class="inspect-tip">DRAG TO ROTATE · USE + / − TO ZOOM</span>
 </section>
 <section class="end" id="end" aria-labelledby="end-title" hidden>
  <p class="eyebrow">THE JOURNEY CONTINUES IN THE MUSIC</p>
@@ -69,14 +70,17 @@
  <div class="control-settings" role="group" aria-label="First-person comfort and movement settings">
   <label for="look-sensitivity">Look sensitivity <output id="sensitivity-value" for="look-sensitivity">1.0×</output></label>
   <input id="look-sensitivity" type="range" min="0.5" max="1.7" step="0.1" value="1">
+  <label for="pause-score-volume">Awaken Now volume <output id="pause-volume-value" for="pause-score-volume">68%</output></label>
+  <input id="pause-score-volume" type="range" min="0" max="100" step="5" value="68" aria-label="Awaken Now volume while paused">
   <label class="option"><input id="invert-look" type="checkbox"> Invert vertical look</label>
   <label class="option"><input id="steady-camera" type="checkbox"> Steady camera (no walking bob)</label>
  </div>
  <button id="resume" class="button-primary" type="button">Resume journey <span aria-hidden="true">→</span></button>
- <a href="/">Return to the album</a>
+ <a href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" target="_blank" rel="noopener noreferrer">Pre-save the album</a>
+ <a href="https://cosmicsuprhero.vercel.app/">Return to the artist site</a>
 </div>
 <div id="perf" class="perf" hidden aria-live="off"></div>
-<a class="presave-rail" href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" target="_blank" rel="noopener noreferrer">PRE-SAVE THE ALBUM <span aria-hidden="true">↗</span></a>
+<a class="presave-rail" id="presave-rail" hidden href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" target="_blank" rel="noopener noreferrer">PRE-SAVE THE ALBUM <span aria-hidden="true">↗</span></a>
 <div id="status" class="sr-only" role="status" aria-live="polite"></div>
 </main>
 <script type="module" src="./world.mjs"></script>

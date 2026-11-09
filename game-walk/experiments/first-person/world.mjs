@@ -9,6 +9,7 @@ const $=id=>document.getElementById(id);
 const canvas=$('world'),intro=$('intro'),hud=$('hud'),hint=$('hint'),inspectButton=$('inspect');
 const touch=$('touch-controls'),panel=$('inspect-panel'),end=$('end'),perf=$('perf'),pauseOverlay=$('pause-overlay');
 const soundbar=$('soundbar'),scoreState=$('score-state'),scoreToggle=$('score-toggle'),scoreVolume=$('score-volume'),scoreRetry=$('score-retry');
+const presaveRail=$('presave-rail'),pauseScoreVolume=$('pause-score-volume'),pauseVolumeValue=$('pause-volume-value');
 const score=new AwakenNowScore(message=>{
  scoreState.textContent=message;
  $('status').textContent=message;
@@ -17,12 +18,20 @@ const score=new AwakenNowScore(message=>{
 });
 function toggleMusic(){
  score.setMuted(!score.muted);scoreToggle.textContent=score.muted?'Music off':'Music on';
- scoreToggle.setAttribute('aria-pressed',String(score.muted));
+ scoreToggle.setAttribute('aria-pressed',String(!score.muted));
  if(!score.muted&&score.failed)void score.play();
  $('status').textContent=score.muted?'Awaken Now muted':'Awaken Now unmuted';
 }
 scoreToggle.addEventListener('click',toggleMusic);
-scoreVolume.addEventListener('input',()=>{score.setVolume(Number(scoreVolume.value)/100);});
+function changeScoreVolume(raw){
+ const number=Math.max(0,Math.min(100,Number(raw)||0));
+ score.setVolume(number/100);
+ scoreVolume.value=String(number);
+ pauseScoreVolume.value=String(number);
+ pauseVolumeValue.textContent=number+'%';
+}
+scoreVolume.addEventListener('input',()=>changeScoreVolume(scoreVolume.value));
+pauseScoreVolume.addEventListener('input',()=>changeScoreVolume(pauseScoreVolume.value));
 scoreRetry.addEventListener('click',()=>{void score.play();});
 const coarse=matchMedia('(pointer:coarse)').matches;
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -147,16 +156,21 @@ function clearKeys(){
 }
 function setPaused(value){
  if(!started||finished||inspecting)return;
- paused=value;clearKeys();pauseOverlay.hidden=!value;
+ paused=value;clearKeys();pauseOverlay.hidden=!value;presaveRail.hidden=value;
  if(value)score.pause();else void score.play();
  $('pause').textContent=value?'Resume':'Pause';
  hint.hidden=value;inspectButton.hidden=value;
  if(value){if(document.pointerLockElement===canvas)document.exitPointerLock?.();}
- else previous=performance.now();
+ else{
+  previous=performance.now();
+  // Resume was activated by a real click/tap; restore pointer lock on desktop
+  // rather than leaving the camera unresponsive until a second click.
+  if(!coarse&&document.pointerLockElement!==canvas)canvas.requestPointerLock?.().catch(()=>{});
+ }
  $('status').textContent=value?'Experience paused':'Experience resumed';
 }
 function begin(){
- intro.hidden=true;hud.hidden=false;touch.hidden=!coarse;soundbar.hidden=false;
+ intro.hidden=true;hud.hidden=false;touch.hidden=!coarse;soundbar.hidden=false;presaveRail.hidden=false;
  // play() executes synchronously under the player's explicit enter gesture.
  void score.play();
  $('reticle').hidden=false;paused=false;started=true;finished=false;previous=performance.now();
@@ -165,7 +179,7 @@ function begin(){
 }
 function closeInspection(){
  if(!inspecting)return;
- inspecting=false;inspectionRig.close();panel.hidden=true;inspectedObject.visible=false;inspectionLight.visible=false;
+ inspecting=false;inspectionRig.close();panel.hidden=true;inspectedObject.visible=false;inspectionLight.visible=false;presaveRail.hidden=false;
  score.setSceneLevel(1);
  revealTarget=1;
  paused=false;previous=performance.now();
@@ -173,11 +187,14 @@ function closeInspection(){
  if(!coarse)canvas.requestPointerLock?.().catch(()=>{});
  canvas.focus();$('status').textContent='Returned to the world.';
 }
+function canInspectHere(){
+ return canInspect(motion,yaw,coarse?4.65:WORLD.inspectDistance,coarse?-1.1:.24);
+}
 function inspect(){
- if(!started||paused||finished||inspecting||!canInspect(motion,yaw))return;
+ if(!started||paused||finished||inspecting||!canInspectHere())return;
  clearKeys();inspecting=true;inspectionRig.open();paused=true;hasInspected=true;
  $('reticle').hidden=true;hint.hidden=true;inspectButton.hidden=true;
- panel.hidden=false;inspectedObject.visible=true;inspectionLight.visible=true;
+ panel.hidden=false;inspectedObject.visible=true;inspectionLight.visible=true;presaveRail.hidden=true;
  score.setSceneLevel(.33);
  revealTarget=Math.max(revealTarget,.54);
  if(document.pointerLockElement===canvas)document.exitPointerLock?.();
@@ -186,7 +203,7 @@ function inspect(){
 }
 function finish(){
  if(finished)return;
- clearKeys();finished=true;paused=true;end.hidden=false;hud.hidden=true;
+ clearKeys();finished=true;paused=true;end.hidden=false;hud.hidden=true;presaveRail.hidden=true;
  score.setSceneLevel(.47); // Keep the theme beneath the final pre-save invitation.
  revealTarget=1;
  hint.hidden=true;inspectButton.hidden=true;touch.hidden=true;$('reticle').hidden=true;
@@ -199,9 +216,11 @@ $('pause').addEventListener('click',()=>setPaused(!paused));
 $('resume').addEventListener('click',()=>setPaused(false));
 $('inspect').addEventListener('click',inspect);
 $('leave-inspect').addEventListener('click',closeInspection);
+$('zoom-in').addEventListener('click',()=>inspectionRig.setZoom(inspectionRig.zoomTarget+.18));
+$('zoom-out').addEventListener('click',()=>inspectionRig.setZoom(inspectionRig.zoomTarget-.18));
 $('restart').addEventListener('click',()=>{
  end.hidden=true;hud.hidden=false;motion=initialState();priorMotion={...motion};yaw=0;pitch=-.04;
- finished=false;started=true;inspecting=false;paused=false;hasInspected=false;
+ finished=false;started=true;inspecting=false;paused=false;hasInspected=false;presaveRail.hidden=false;
  score.setSceneLevel(1);revealLevel=0;revealTarget=0;art.reveal(0);
  scene.fog.color.copy(lightBefore);
  if(score.audio.paused)void score.play();
@@ -211,7 +230,13 @@ $('restart').addEventListener('click',()=>{
 document.addEventListener('keydown',e=>{
  if(inspecting){
   if(e.code==='Escape'){e.preventDefault();closeInspection();return;}
-  if(e.code==='Tab'){e.preventDefault();$('leave-inspect').focus();return;}
+  if(e.code==='Tab'){
+   e.preventDefault();
+   const order=[$('leave-inspect'),$('zoom-out'),$('zoom-in')];
+   const current=order.indexOf(document.activeElement);
+   order[(current+(e.shiftKey?-1:1)+order.length)%order.length].focus();
+   return;
+  }
   if(inspectionRig.key(e.code)){e.preventDefault();return;}
   return;
  }
@@ -325,7 +350,7 @@ function tick(timestamp){
    accumulator-=FDT;steps++;
   }
   if(steps===4)accumulator=0;
-  const nearby=canInspect(motion,yaw);hint.hidden=!nearby;inspectButton.hidden=!nearby;
+  const nearby=canInspectHere();hint.hidden=!nearby;inspectButton.hidden=!nearby;
   if(nearby)hint.textContent=coarse?'AN OBJECT HAS BEEN FOUND':'E / EXAMINE THE FRAGMENT';
   $('stage').textContent=narrativeBeat(motion.z);
   if(atEnd(motion))finish();
