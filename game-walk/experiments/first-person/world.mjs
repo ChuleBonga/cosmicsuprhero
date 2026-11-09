@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import {WORLD,groundHeight,initialState,stepMovement,canInspect,narrativeBeat,atEnd} from './world-logic.mjs';
+import {WORLD,groundHeight,initialState,stepMovement,narrativeBeat,atEnd} from './world-logic.mjs';
 import {createWorldArt,whenMaterialsPrepared} from './world-art.mjs';
 import {AwakenNowScore} from './score.mjs';
 import {stickVector,lookDelta} from './control-math.mjs';
@@ -53,6 +53,17 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 let yaw=0,pitch=-.04,motion=initialState(),priorMotion={...initialState()},walkPhase=0,started=false,paused=true;
 let inspecting=false,hasInspected=false,finished=false,pointerLockWasActive=false;
 let journey=newJourney(),inspectFromReview=false;
+let shownStageLabel=null,priorityStage=null,priorityStageUntil=0;
+let shownActionId=null;
+const stageElement=$('stage');
+function setStage(label){if(label===shownStageLabel)return;shownStageLabel=label;stageElement.textContent=label;}
+function announceStage(label,now=performance.now()){
+ priorityStage=label;priorityStageUntil=now+3400;setStage(label);
+}
+function updateStage(now){
+ if(priorityStage&&now>=priorityStageUntil)priorityStage=null;
+ setStage(priorityStage||narrativeBeat(motion.z));
+}
 let previous=0,accumulator=0,lookPointer=null,lookX=0,lookY=0;
 let inspectingPointer=null,inspectX=0,inspectY=0;
 const inspectionRig=new InspectionMotion();
@@ -167,6 +178,9 @@ function readInput(){
 function clearKeys(){
  activeKeys.clear();touchAxes.forward=0;touchAxes.right=0;
  lookAxes.right=0;lookAxes.up=0;
+ if(stickPointer!==null){if(stick.hasPointerCapture?.(stickPointer))stick.releasePointerCapture(stickPointer);stickPointer=null;}
+ if(lookStickPointer!==null){if(lookStick.hasPointerCapture?.(lookStickPointer))lookStick.releasePointerCapture(lookStickPointer);lookStickPointer=null;}
+ if(lookPointer!==null){if(canvas.hasPointerCapture?.(lookPointer))canvas.releasePointerCapture(lookPointer);lookPointer=null;}
  stickThumb.style.transform='translate(-50%,-50%)';
  lookThumb.style.transform='translate(-50%,-50%)';
 }
@@ -214,9 +228,13 @@ function syncJourneyVisuals(){
  refreshActionUI();
 }
 function refreshActionUI(){
- const action=started&&!paused&&!finished&&!inspecting?availableAction(motion,journey,coarse):null;
+ const action=started&&!paused&&!finished&&!inspecting?availableAction(motion,journey,coarse,yaw):null;
+ const id=action?.id||null;
+ // Avoid needless DOM mutation and live-region chatter every render frame.
+ if(id===shownActionId)return action;
+ shownActionId=id;
  rAction.disabled=!action;
- rActionLabel.textContent=action?.id==='install'?'INSERT':action?.id==='examine'?'EXAMINE':'USE';
+ rActionLabel.textContent=id==='install'?'INSERT':id==='examine'?'EXAMINE':'USE';
  hint.hidden=!action;inspectButton.hidden=!action;
  if(action){
   hint.textContent=coarse?action.detail:'E / '+action.label;
@@ -227,7 +245,7 @@ function refreshActionUI(){
 function openCassetteInspection(review=false){
  if(!started||paused||finished||inspecting)return;
  if(review&&!journey.collected)return;
- if(!review&&availableAction(motion,journey,coarse)?.id!=='examine')return;
+ if(!review&&availableAction(motion,journey,coarse,yaw)?.id!=='examine')return;
  inspectFromReview=review;
  if(!review)journey=doJourneyAction(journey,'inspect').state;
  clearKeys();inspecting=true;inspectionRig.open();paused=true;hasInspected=true;
@@ -248,20 +266,20 @@ function collectCassette(){
  if(!next.changed)return;
  journey=next.state;
  closeInspection();syncJourneyVisuals();
- $('stage').textContent='CASSETTE RECOVERED';
+ announceStage('CASSETTE RECOVERED');
  $('status').textContent='First Contact cassette recovered. L1 or Q reviews it. Follow the causeway to the listening relay.';
  notifyAction('FIRST CONTACT · CASSETTE RECOVERED  /  L1 TO REVIEW');
 }
 function performAction(){
  if(!started||paused||inspecting||finished)return;
- const action=availableAction(motion,journey,coarse);
+ const action=availableAction(motion,journey,coarse,yaw);
  if(action?.id==='examine'){openCassetteInspection(false);return;}
  if(action?.id==='install'){
   const next=doJourneyAction(journey,'install');
   if(!next.changed)return;
   journey=next.state;syncJourneyVisuals();
   revealTarget=1;art.sky.material.uniforms.warm.value=.36;
-  $('stage').textContent='THE SIGNAL RETURNS';
+  announceStage('THE SIGNAL RETURNS');
   $('status').textContent='First Contact cassette inserted into the Sunward relay. The ancient lights are responding.';
   notifyAction('FIRST CONTACT · SIGNAL RESTORED');
  }
@@ -294,7 +312,9 @@ $('zoom-out').addEventListener('click',()=>inspectionRig.setZoom(inspectionRig.z
 $('restart').addEventListener('click',()=>{
  end.hidden=true;hud.hidden=false;motion=initialState();priorMotion={...motion};yaw=0;pitch=-.04;
  finished=false;started=true;inspecting=false;paused=false;hasInspected=false;presaveRail.hidden=false;
- journey=newJourney();inspectFromReview=false;syncJourneyVisuals();
+ journey=newJourney();inspectFromReview=false;
+ priorityStage=null;priorityStageUntil=0;shownStageLabel=null;shownActionId=null;syncJourneyVisuals();
+ updateStage(performance.now());
  if(feedbackTimeout!==null){clearTimeout(feedbackTimeout);feedbackTimeout=null;}
  $('action-feedback').hidden=true;
  score.setSceneLevel(1);revealLevel=0;revealTarget=0;art.reveal(0);
@@ -340,7 +360,7 @@ canvas.addEventListener('click',()=>{
  if(started&&!paused&&!coarse&&document.pointerLockElement!==canvas)canvas.requestPointerLock?.().catch(()=>{});
 });
 canvas.addEventListener('pointerdown',e=>{
- if(!started||paused||inspecting)return;
+ if(!started||paused||finished||inspecting||lookPointer!==null)return;
  if(e.pointerType==='touch'&&e.clientX<innerWidth*.38)return;
  if(document.pointerLockElement===canvas)return;
  lookPointer=e.pointerId;lookX=e.clientX;lookY=e.clientY;canvas.setPointerCapture(e.pointerId);
@@ -362,7 +382,7 @@ function moveStick(e){
  stickThumb.style.transform=`translate(calc(-50% + ${v.visualX}px),calc(-50% + ${v.visualY}px))`;
 }
 stick.addEventListener('pointerdown',e=>{
- if(!started||paused||finished||inspecting)return;
+ if(!started||paused||finished||inspecting||stickPointer!==null)return;
  e.preventDefault();stickPointer=e.pointerId;
  stick.setPointerCapture(e.pointerId);moveStick(e);
 });
@@ -453,7 +473,7 @@ function tick(timestamp){
   }
   if(steps===4)accumulator=0;
   refreshActionUI();
-  $('stage').textContent=narrativeBeat(motion.z);
+  updateStage(timestamp);
   if(atEnd(motion))finish();
  }
  syncCamera();
