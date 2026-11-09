@@ -15,6 +15,7 @@ button,a{font:inherit}button{cursor:pointer}a{color:inherit}.experience{position
 .study-label{color:#b9c0c7;font-size:.8rem;line-height:1.7;max-width:520px}
 .entry-actions{display:flex;gap:1.3rem;align-items:center;flex-wrap:wrap;margin:1.7rem 0 1.2rem}
 .entry-actions>a{font-size:.8rem;text-underline-offset:4px;color:#e3c4a3}
+.entry-actions .text-button{min-height:48px;display:inline-flex;align-items:center;text-align:left;padding:.45rem .65rem;color:#e3c4a3}
 .button-primary{display:inline-flex;justify-content:space-between;align-items:center;gap:2rem;min-height:3.3rem;padding:1rem 1.2rem;background:#e6c096;color:#17213a;border:1px solid #e6c096;text-decoration:none;font-size:.83rem;font-weight:700}
 .button-primary:hover{background:#f7dfbb}.button-primary:disabled{opacity:.55;cursor:not-allowed}
 .controls-note{max-width:510px;color:#b9c0c7;font-size:.72rem;line-height:1.7}
