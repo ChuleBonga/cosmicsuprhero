@@ -415,7 +415,7 @@ export function createWorldArt(scene){
  spatialObstacles(root,stone,oxide,warm);
  horizonArray(root,stone,oxide,warm);
  const relic=createFirstContactEncounter(root,{x:WORLD.artifact.x,z:WORLD.artifact.z,groundHeight,halfWidth,stone,oxide,warm,mineralSurface:mineral,oxideSurface:oxide});
- const relay=createRelayArt(root,0,-82,groundHeight(0,-82));
+ const relay=createRelayArt(root,2.15,-82,groundHeight(2.15,-82));
  const skies=sky(scene);
  const exitStone=mesh(root,new THREE.CylinderGeometry(5.6,6.1,.32,20),warm,0,groundHeight(0,-110)+.11,-110);exitStone.castShadow=false;
  // Shared iconography becomes a material language across the route.
