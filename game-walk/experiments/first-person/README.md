@@ -13,10 +13,10 @@
 
 ## What has been built here
 - Native, browser-executed Three.js 3D scene (no remote GPU or video impostor).
-- Procedural actual terrain mesh, coherent canyon boundaries, layered geological faces, distant peak geometry, shared PBR-style procedural material maps, instanced stones, two original monumental gateway configurations, red-orange sun sky shader and distance fog.
+- Procedural actual terrain mesh, coherent canyon boundaries, layered geological faces, distant peak geometry, original offline-baked PBR texture maps, instanced stones, two original monumental gateway configurations, red-orange sun sky shader and distance fog.
 - First-person walking with fixed 60 Hz simulation, terrain normals/slope threshold, acceleration/braking normalized for diagonals, hard path boundaries and visible-space collision proxies for the plinth, leaning spire and two waystones. These are custom kinematic contacts, not full rigid-body physics.
 - Real 3D artifact geometry plus physically continuous object inspection: when near and facing the relic, press E or tap Inspect; the inspected model is a clone of the world model, rotated by mouse/touch.
-- Desktop WASD and mouse look; coarse-pointer mobile directional pad and drag look; accessible text and focusable controls; pause/restart, safe direct pre-save link, graceful WebGL error copy.
+- Desktop WASD and mouse look; analog mobile left thumbstick and right-side drag look; accessible text and focusable controls; pause/restart, safe direct pre-save link, graceful WebGL error copy.
 - Awaken Now preview music control with visitor-initiated autoplay unlock, looping, volume adjustment, M mute shortcut, pause/resume, and cue ducking. Dedicated transport tests guard audio source and state changes. Only the **separate game project** has the audio; main site embedding still omits all audio.
 - A fractured horizon-scale architectural landmark beyond the path, close-up stone sculptures, and corridor walls aligned to the physical walking bounds.
 - Optional `?perf` frame-time overlay showing observed mean/p95, draw calls, triangle count, render scale, and world position. The overlay is **not GPU profiling**. Render scale may reduce if measured frame pacing is poor.
@@ -30,9 +30,9 @@ No homepage link and no merge to `main` without visual and control acceptance.
 1. **Visual quality not passed.** The geometry is procedurally authored and still lacks photogrammetric source quality, unique sculpted ornament, optimized cinematic textures, detailed surfacing, realistic object transitions, compositional camera review and lighting calibration. A successful build is not a believable AAA-quality frame.
 2. **Five-minute journey not built.** This is a shorter exploratory route with one inspectable object and draft prose; the narrative sequence, real emotional reveal, physical artifact semantics, pacing and music score need artist direction and completion.
 3. **60 FPS not measured.** Vercel build success, motion tests, and HTTP 200 checks say nothing about steady GPU performance. The browser preview is not visually tested on desktop or physical mobile hardware.
-4. **Controller is custom kinematic movement**, not Rapier. In-world base collision uses a circular exclusion zone, so true architectural collision, step and slope penetration, player-ground contact events and ground material responses remain future work.
+4. **Controller is custom kinematic movement**, not Rapier. Multiple original sculptural landmarks are now represented by circle-based collision proxies, but full architectural mesh collision, contact events, stair response and ground material responses remain future work.
 5. **No authored audio in this build.** Awaken Now is reserved as the score but no approved audio master, public excerpt, cue transitions or spatial sound files have been added.
-6. Current texture generation uses 256² CPU canvas maps in the browser. Replace with authored/baked materials and compressed exports after visual acceptance.
+6. The previous 256² in-browser CanvasTexture generation was replaced in Build 05 with 512² original build-time PBR image maps (basecolor/normal/ORM, four families). These remain synthetic artwork, not photogrammetry; compressed KTX2 and authored sculpt bakes are future work.
 7. Procedural 3D may be too expensive in shadowed views on low-end hardware; optimize with merged geometry, instancing, selective light baking, LOD/culling and KTX2/mesh compression where profiling indicates value.
 
 ## Build and validation
@@ -84,3 +84,15 @@ npm run test:score
 npm run test:controls
 npm run build
 ```
+
+## Build 05: original texture bake, material streaming and network gate (November 8, 2026)
+
+- `scripts/bake-first-person-materials.mjs` now generates four distinct original material families (basalt, ochre, oxide, mineral) as **512×512 basecolor, tangent normal and packed ORM PNG** maps. It runs at build time; visitors no longer generate thousands of procedural pixels and allocate CanvasTextures on initial load.
+- The world loads these original assets from a static `/play/first-person-materials/` path. Blue mineral and oxidized-metal maps extend through the First Contact encounter.
+- Terrain and object UV repeat scales are independent. Duplicate images are served through browser caching; the final GPU memory footprint must still be measured.
+- Enter remains disabled during material preparation, with an understandable loading message and a **12-second fail-open** so slow networks never lock visitors out of the pre-save or scene.
+- A standalone non-WebGL material QA board at `/play/experiments/first-person/materials.html` shows all twelve maps plus repeating tile surfaces.
+- A manifest with SHA-256 hashes, dimensional checks, deterministic seams, normal/roughness/metalness channel tests, and a hard **5 MB PNG pack budget** now run in the Vercel preview build.
+- This asset pack does **not** constitute photogrammetric AAA quality, KTX2 GPU compression, actual device-verified 60 FPS or a finished five-minute story. No main-site production change and no new music publication.
+
+See `MATERIALS_PIPELINE.md` for reproduction commands, channel conventions and explicit asset quality gates.
