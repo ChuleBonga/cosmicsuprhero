@@ -53,8 +53,9 @@ export function createCassetteArt(){
  // Transparent dark tape window, real circular spool apertures and spokes.
  const window=new THREE.Mesh(new THREE.BoxGeometry(1.11,.31,.016),
   new THREE.MeshPhysicalMaterial({color:0x314156,metalness:.12,roughness:.18,
-    transparent:true,opacity:.82,depthWrite:false,clearcoat:.46}));
- window.position.set(0,-.147,.10);window.name='Spool viewing window';
+    transparent:true,opacity:.48,depthWrite:false,clearcoat:.46}));
+ // The protective window is in front of (not behind) the recessed reels.
+ window.position.set(0,-.147,.16);window.name='Spool viewing window';
  root.add(window);
  // Spools and spokes are real geometry, with 1 draw call per component.
  // Instancing avoids ~20 small draw calls on a mobile GPU.
