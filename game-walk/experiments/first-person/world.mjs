@@ -128,7 +128,16 @@ function setPaused(value){
  $('pause').textContent=value?'Resume':'Pause';
  hint.hidden=value;inspectButton.hidden=value;
  if(value){if(document.pointerLockElement===canvas)document.exitPointerLock?.();}
- else previous=performance.now();
+ else {
+  previous=performance.now();
+  // Desktop controls need mouse look immediately after pressing Resume.
+  // Without a new lock, the character can walk but camera look is inert.
+  if(!coarse&&document.pointerLockElement!==canvas){
+   const pending=canvas.requestPointerLock?.();
+   pending?.catch?.(()=>{$('status').textContent='Click the world to restore mouse look.';});
+  }
+  canvas.focus();
+ }
  $('status').textContent=value?'Experience paused':'Experience resumed';
 }
 function begin(){
