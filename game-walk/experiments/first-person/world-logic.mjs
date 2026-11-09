@@ -8,7 +8,7 @@ export const WORLD = Object.freeze({
   acceleration:10.5, brake:14.5, maxSlopeDegrees:35,
   start:Object.freeze({x:0,z:23.5}), endZ:-110,
   artifact:Object.freeze({x:-0.9,z:-35}),
-  inspectDistance:3.25
+  inspectDistance:4.1
 });
 // All obstacle colliders share coordinates with the authored 3D meshes.
  // Radius excludes the player's own horizontal capsule footprint.
@@ -40,7 +40,16 @@ export function groundNormal(x,z){
         dz=(groundHeight(x,z+e)-groundHeight(x,z-e))/(2*e),len=Math.hypot(dx,1,dz);
   return {x:-dx/len,y:1/len,z:-dz/len};
 }
-export function halfWidth(z){return z>-12?7.5:z>-64?6.1:8.1}
+const smoothStep01=v=>{const t=clamp(v,0,1);return t*t*(3-2*t)};
+export function halfWidth(z){
+  // A tapered rock corridor, not a sudden invisible wall. The walking
+  // envelope narrows gently into the encounter then widens for the return.
+  if(z>=-6)return 7.5;
+  if(z>-20)return mix(6.1,7.5,smoothStep01((z+20)/14));
+  if(z>=-58)return 6.1;
+  if(z>-73)return mix(8.1,6.1,smoothStep01((z+73)/15));
+  return 8.1;
+}
 export function initialState(){
   const {x,z}=WORLD.start;
   return {x,z,y:groundHeight(x,z),vx:0,vz:0,distance:0,groundNormal:groundNormal(x,z),grounded:true};
@@ -98,11 +107,13 @@ export function stepMovement(state,forward=0,right=0,yaw=0,dt=1/WORLD.hz){
   return s;
 }
 export function inspectDistance(s){return Math.hypot(s.x-WORLD.artifact.x,s.z-WORLD.artifact.z)}
-export function canInspect(s,yaw=0){
-  if(inspectDistance(s)>WORLD.inspectDistance)return false;
+export function canInspect(s,yaw=0,range=WORLD.inspectDistance,facingThreshold=.24){
+  // Wider proximity detection is available on touch input, where precise
+  // pointer-locked camera aiming is impractical.
+  if(inspectDistance(s)>range)return false;
   const dx=WORLD.artifact.x-s.x,dz=WORLD.artifact.z-s.z;
   const dir=(Math.sin(yaw)*dx-Math.cos(yaw)*dz)/Math.max(.001,Math.hypot(dx,dz));
-  return dir>.24;
+  return dir>facingThreshold;
 }
 export function narrativeBeat(z){
   return z>3?'THE ARRIVAL':z>-31?'THE PASSAGE':z>-71?'THE ENCOUNTER':'THE RETURN';
