@@ -12,7 +12,8 @@ import {createCassetteArt,CASSETTE_SCALE} from './cassette-art.mjs';
 
 export const CONTACT_SPEC=Object.freeze({
   plinthRadius:2.36, plinthTopY:.37, vesselHeight:2.65,
-  innerPavingRadius:2.28, outerPavingRadius:4.8
+  innerPavingRadius:2.28, outerPavingRadius:4.8,
+  cassetteShelfZ:2.28,cassetteShelfY:1.36
 });
 const TAU=Math.PI*2;
 const stoneNoise=n=>Math.sin(n*12.9898)*43758.5453-Math.floor(Math.sin(n*12.9898)*43758.5453);
@@ -147,7 +148,7 @@ export function createFirstContactEncounter(parent,opts){
  // Place the 15cm cassette at an accessible, front-facing archival shelf,
  // not at the inaccessible top of a monumental plinth. Approaching from +Z
  // brings the object within arm's reach of the player's collision capsule.
- const shelfZ=2.28,shelfY=1.36;
+ const shelfZ=CONTACT_SPEC.cassetteShelfZ,shelfY=CONTACT_SPEC.cassetteShelfY;
  const support=mesh(root,new THREE.BoxGeometry(.5,.22,.84),stone,0,shelfY-.20,1.91,true);
  support.name='Cantilevered stone cassette shelf support';
  const tray=mesh(root,new THREE.BoxGeometry(.43,.055,.33),oxide,0,shelfY-.048,shelfZ,true);
