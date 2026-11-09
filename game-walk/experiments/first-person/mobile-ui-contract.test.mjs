@@ -19,7 +19,7 @@ test('exit and album links never trap visitors on isolated game-host root',()=>{
 test('mobile input and inspection affordances are real touch targets',()=>{
  for(const id of ['touch-stick','touch-stick-thumb','look-stick','look-stick-thumb','r-action','l-action','take-tape','inspect','zoom-in','zoom-out','pause-score-volume','pause','resume'])
   assert.match(html,new RegExp('id="'+id+'"'),id);
- assert.match(world,/availableAction\(motion,journey,coarse\)/);
+ assert.match(world,/availableAction\(motion,journey,coarse,yaw\)/);
  assert.match(world,/inspectionRig\.setZoom/);
  assert.match(world,/pauseScoreVolume\.addEventListener/);
  assert.match(css,/min-width:48px;min-height:48px/);
@@ -37,4 +37,17 @@ test('portrait, short-screen and landscape layouts include safe-area offsets and
 test('music controls do not permanently cover mobile gameplay',()=>{
  assert.match(css,/@media\(pointer:coarse\)\{[\s\S]*?\.soundbar label,\.soundbar input,\.soundbar #score-state\{display:none\}/);
  assert.match(css,/\.presave-rail\{top:calc\(env\(safe-area-inset-top\)/);
+});
+
+test('interaction priorities remain visible and touch capture is cleared on pause',()=>{
+ assert.match(world,/priorityStageUntil/);
+ assert.match(world,/announceStage\('CASSETTE RECOVERED'\)/);
+ assert.match(world,/updateStage\(timestamp\)/);
+ assert.doesNotMatch(world,/\$\('stage'\)\.textContent=narrativeBeat\(motion\.z\)/);
+ assert.match(world,/stickPointer=null/);
+ assert.match(world,/lookStickPointer=null/);
+ assert.match(world,/releasePointerCapture/);
+});
+test('preview conserves rendering work when idle',()=>{
+ assert.match(world,/if\(started&&\(!paused\|\|inspecting\|\|pickupElapsed>=0\|\|relayElapsed>=0/);
 });
