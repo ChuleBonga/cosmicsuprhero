@@ -61,7 +61,7 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 let yaw=0,pitch=-.04,motion=initialState(),priorMotion={...initialState()},walkPhase=0,started=false,paused=true;
 let inspecting=false,hasInspected=false,finished=false,pointerLockWasActive=false;
 let journey=newJourney(),inspectFromReview=false;
-let pickupElapsed=-1,relayElapsed=-1;
+let pickupElapsed=-1,relayElapsed=-1,contextLost=false;
 let shownStageLabel=null,priorityStage=null,priorityStageUntil=0;
 let shownActionId=null;
 const stageElement=$('stage');
@@ -135,6 +135,9 @@ const preparationTimeout=setTimeout(()=>{
 },12000);
 void whenMaterialsPrepared().then(({total,loaded,failed})=>{
  clearTimeout(preparationTimeout);
+ // Warm source textures on the GPU while the intro is visible. Do this once,
+ // rather than rendering sixty idle frames a second on a phone.
+ if(!contextLost&&!started)renderer.render(scene,camera);
  unlockEntry(failed?
   'Some surface detail could not load ('+loaded+'/'+total+' maps). Exploration and the album are still available.':
   'World prepared. '+loaded+' surface maps are ready.');
@@ -195,7 +198,7 @@ function clearKeys(){
  lookThumb.style.transform='translate(-50%,-50%)';
 }
 function setPaused(value){
- if(!started||finished||inspecting||pickupElapsed>=0||relayElapsed>=0)return;
+ if(!started||finished||inspecting||contextLost||pickupElapsed>=0||relayElapsed>=0)return;
  paused=value;clearKeys();pauseOverlay.hidden=!value;presaveRail.hidden=value;
  if(value)score.pause();else void score.play();
  $('pause').textContent=value?'Resume':'Pause';
@@ -467,7 +470,8 @@ for(const name of ['pointerup','pointercancel','lostpointercapture'])
 window.addEventListener('blur',()=>{clearKeys();if(started&&!inspecting&&!finished)setPaused(true)});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){clearKeys();if(started&&!inspecting&&!finished)setPaused(true);}});
 canvas.addEventListener('webglcontextlost',e=>{
- e.preventDefault();setPaused(true);pauseOverlay.hidden=false;
+ e.preventDefault();contextLost=true;paused=true;
+ clearKeys();score.pause();pauseOverlay.hidden=false;
  pauseOverlay.querySelector('p').textContent='THE GRAPHICS CONTEXT WAS LOST';
  $('resume').textContent='Reload experience';
  $('resume').onclick=()=>location.reload();
@@ -538,7 +542,7 @@ function tick(timestamp){
  if(relayElapsed<0)art.relay.light.intensity=journey.installed?1.4+revealLevel*.4:0;
  // The intro, idle pause and stationary end screens do not require
  // continuous expensive GPU rendering. Inspect/transition frames still draw.
- if(started&&(!paused||inspecting||pickupElapsed>=0||relayElapsed>=0||
+ if(!contextLost&&started&&(!paused||inspecting||pickupElapsed>=0||relayElapsed>=0||
    (finished&&revealLevel!==revealTarget)))renderer.render(scene,camera);
  if(!started||paused||delta<=0)return;
  const ms=delta*1000;samples.push(ms);if(samples.length>180)samples.shift();
