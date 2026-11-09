@@ -56,30 +56,45 @@ export function createCassetteArt(){
     transparent:true,opacity:.82,depthWrite:false,clearcoat:.46}));
  window.position.set(0,-.147,.10);window.name='Spool viewing window';
  root.add(window);
- for(const side of [-1,1]){
-  const x=side*.32;
-  const dark=new THREE.Mesh(new THREE.CircleGeometry(.164,36),tapeMaterial);
-  dark.position.set(x,-.15,.121);root.add(dark);
-  const spool=new THREE.Mesh(new THREE.TorusGeometry(.112,.022,9,32),oxide);
-  spool.position.set(x,-.15,.132);root.add(spool);
-  const hub=new THREE.Mesh(new THREE.CylinderGeometry(.042,.042,.016,10),reelMaterial);
-  hub.rotation.x=Math.PI/2;hub.position.set(x,-.15,.144);root.add(hub);
+ // Spools and spokes are real geometry, with 1 draw call per component.
+ // Instancing avoids ~20 small draw calls on a mobile GPU.
+ const helper=new THREE.Object3D();
+ const instanced=(geometry,material,count,name)=>{
+  const m=new THREE.InstancedMesh(geometry,material,count);
+  m.name=name;m.castShadow=false;m.receiveShadow=true;root.add(m);return m;
+ };
+ const tapeDiscs=instanced(new THREE.CircleGeometry(.164,36),tapeMaterial,2,'Dark magnetic tape reels');
+ const spools=instanced(new THREE.TorusGeometry(.112,.022,9,32),oxide,2,'Metal spool rings');
+ const hubs=instanced(new THREE.CylinderGeometry(.042,.042,.016,10),reelMaterial,2,'Reel hubs');
+ const spokes=instanced(new THREE.BoxGeometry(.081,.016,.012),oxide,12,'Twelve reel spokes');
+ let spokeIndex=0;
+ for(let r=0;r<2;r++){
+  const x=r===0?-.32:.32;
+  helper.rotation.set(0,0,0);helper.scale.set(1,1,1);
+  helper.position.set(x,-.15,.121);helper.updateMatrix();tapeDiscs.setMatrixAt(r,helper.matrix);
+  helper.position.z=.132;helper.updateMatrix();spools.setMatrixAt(r,helper.matrix);
+  helper.rotation.x=Math.PI/2;helper.position.z=.144;helper.updateMatrix();hubs.setMatrixAt(r,helper.matrix);
+  helper.rotation.x=0;
   for(let i=0;i<6;i++){
-   const spoke=new THREE.Mesh(new THREE.BoxGeometry(.081,.016,.012),oxide);
-   spoke.position.set(x+Math.cos(i*Math.PI/3)*.059,-.15+Math.sin(i*Math.PI/3)*.059,.149);
-   spoke.rotation.z=i*Math.PI/3;root.add(spoke);
+   const angle=i*Math.PI/3;
+   helper.position.set(x+Math.cos(angle)*.059,-.15+Math.sin(angle)*.059,.149);
+   helper.rotation.z=angle;helper.updateMatrix();spokes.setMatrixAt(spokeIndex++,helper.matrix);
   }
  }
+ for(const m of [tapeDiscs,spools,hubs,spokes])m.instanceMatrix.needsUpdate=true;
  // Label sits above the window and must remain legible during close inspection.
  const label=new THREE.Mesh(new THREE.PlaneGeometry(1.34,.43),makeLabel());
  label.position.set(0,.212,.112);label.name='FIRST CONTACT / COSMICSUPRHERO label';
  root.add(label);
  const lower=new THREE.Mesh(new THREE.BoxGeometry(.74,.06,.016),amber);
  lower.position.set(0,-.355,.11);root.add(lower);
+ const fasteners=instanced(new THREE.CylinderGeometry(.024,.024,.009,8),oxide,4,'Shell screws');
+ let j=0;
  for(const x of [-.665,.665])for(const y of [-.365,.365]){
-  const fastener=new THREE.Mesh(new THREE.CylinderGeometry(.024,.024,.009,8),oxide);
-  fastener.rotation.x=Math.PI/2;fastener.position.set(x,y,.105);root.add(fastener);
+  helper.position.set(x,y,.105);helper.rotation.set(Math.PI/2,0,0);
+  helper.scale.set(1,1,1);helper.updateMatrix();fasteners.setMatrixAt(j++,helper.matrix);
  }
+ fasteners.instanceMatrix.needsUpdate=true;
  root.userData={media:'cassette',track:'First Contact',album:'Arcturian Awakening',
   playsAudio:false,physicalWidthMeters:1.56*CASSETTE_SCALE};
  return root;
