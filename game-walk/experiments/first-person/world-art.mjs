@@ -6,6 +6,7 @@
 import * as THREE from 'three';
 import {WORLD,WORLD_OBSTACLES,groundHeight,halfWidth} from './world-logic.mjs';
 import {createFirstContactEncounter} from './encounter-art.mjs';
+import {createRelayArt} from './cassette-art.mjs';
 const seedRand=(initial)=>{let s=initial>>>0;return()=>((s=Math.imul(s,1664525)+1013904223>>>0)/4294967296)};
 const rng=seedRand(20261106);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -401,11 +402,10 @@ export function createWorldArt(scene){
  const root=new THREE.Group();root.name='The Sunward Causeway / original art study';scene.add(root);
  const basalt=materialFamily('basalt'),ochre=materialFamily('ochre');
  const terrainSurface=materialFamily('ochre',36,64);
- const oxideFamily=materialFamily('oxide'),mineralFamily=materialFamily('mineral');
+ const oxideFamily=materialFamily('oxide');
  const stone=mat(0xffffff,.94,{map:basalt.albedo,normalMap:basalt.normal,roughnessMap:basalt.roughness});
  const warm=mat(0xffffff,.96,{map:ochre.albedo,normalMap:ochre.normal,roughnessMap:ochre.roughness});
  const oxide=mat(0xffffff,.77,{metalness:1,map:oxideFamily.albedo,normalMap:oxideFamily.normal,roughnessMap:oxideFamily.roughness,metalnessMap:oxideFamily.metalness});
- const mineral=mat(0xffffff,.44,{metalness:.3,map:mineralFamily.albedo,normalMap:mineralFamily.normal,roughnessMap:mineralFamily.roughness});
  const terrainData=terrain(root,basalt,terrainSurface);
  causeway(root,stone,warm);groundDebris(root,stone,warm);
  cliffWall(root,1,40,-190,basalt);cliffWall(root,-1,40,-190,basalt);
@@ -413,7 +413,8 @@ export function createWorldArt(scene){
  const gateways=[gateway(root,-13,stone,oxide,1),gateway(root,-78,stone,oxide,.78)];
  spatialObstacles(root,stone,oxide,warm);
  horizonArray(root,stone,oxide,warm);
- const relic=createFirstContactEncounter(root,{x:WORLD.artifact.x,z:WORLD.artifact.z,groundHeight,halfWidth,stone,oxide,warm,mineralSurface:mineral,oxideSurface:oxide});
+ const relic=createFirstContactEncounter(root,{x:WORLD.artifact.x,z:WORLD.artifact.z,groundHeight,halfWidth,stone,oxide,warm});
+ const relay=createRelayArt(root,2.15,-82,groundHeight(2.15,-82));
  const skies=sky(scene);
  const exitStone=mesh(root,new THREE.CylinderGeometry(5.6,6.1,.32,20),warm,0,groundHeight(0,-110)+.11,-110);exitStone.castShadow=false;
  // Shared iconography becomes a material language across the route.
@@ -425,9 +426,9 @@ export function createWorldArt(scene){
   dummy.updateMatrix();shards.setMatrixAt(i,dummy.matrix);
  }
  shards.instanceMatrix.needsUpdate=true;shards.frustumCulled=false;shards.castShadow=false;root.add(shards);
- const families=[basalt,ochre,terrainSurface,oxideFamily,mineralFamily];
+ const families=[basalt,ochre,terrainSurface,oxideFamily];
  const maps=[...new Set(families.flatMap(f=>[f.albedo,f.normal,f.roughness]))];
- return {root,sky:skies,artifact:relic,
+ return {root,sky:skies,artifact:relic,relay,
   reveal(progress){
    const t=clamp(progress,0,1);
    for(const g of gateways)g.glyph.emissiveIntensity=.07+t*.62;

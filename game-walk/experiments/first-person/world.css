@@ -163,3 +163,58 @@ button,a{font:inherit}button{cursor:pointer}a{color:inherit}.experience{position
   .inspect-tip{font-size:.5rem}
   .inspect-zoom{bottom:calc(env(safe-area-inset-bottom) + 1.9rem)}
 }
+
+
+/* Build 07 — mobile gamepad layout: left move, right look, L1/R1 shoulders.
+   Two fingers can move/look simultaneously; no invisible look rectangle. */
+.touch-controls{align-items:flex-end;justify-content:space-between;gap:clamp(1rem,4vw,3rem);left:max(.7rem,env(safe-area-inset-left));right:max(.7rem,env(safe-area-inset-right));bottom:calc(.75rem + env(safe-area-inset-bottom))}
+.pad-side{min-width:0;width:clamp(118px,32vw,152px);display:flex;flex-direction:column;align-items:center;gap:.3rem;pointer-events:none}
+.pad-left{align-items:flex-start}.pad-right{align-items:flex-end}
+.shoulder-button{position:relative;pointer-events:auto;min-width:clamp(108px,27vw,142px);min-height:48px;display:flex;justify-content:center;align-items:center;gap:.48rem;background:rgba(8,25,48,.89);border:1px solid rgba(231,190,141,.72);color:#f6e8d4;border-radius:8px 8px 13px 13px;font-size:.86rem;font-weight:700;letter-spacing:.04em;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.shoulder-button span{font-size:.68rem;font-weight:600;letter-spacing:.06em}
+.shoulder-button:disabled{opacity:.46}
+.shoulder-button:not(:disabled):active{background:#a77f6b;color:#101e36;transform:translateY(2px)}
+.touch-controls .touch-stick{width:116px;height:119px;display:flex;flex-direction:column;justify-content:center;gap:.24rem}
+.touch-controls .touch-stick__ring{width:99px;height:99px;flex-shrink:0}
+.touch-controls .touch-stick__thumb{width:47px;height:47px}
+.touch-controls .touch-stick>span{font-size:.64rem;letter-spacing:.11em;white-space:nowrap}
+.touch-stick__ring--look{border-color:rgba(176,203,234,.78);background:rgba(17,37,62,.74)}
+.touch-stick__ring--look .touch-stick__thumb{background:radial-gradient(circle at 38% 29%,#7d9ab9,#253c5a);border-color:#bbd2e6}
+.media-status{color:#edc99b!important;letter-spacing:.1em}
+.inspect-actions{display:flex;flex-wrap:wrap;align-items:center;gap:.45rem}
+.inspect-actions .button-primary,.inspect-actions .text-button{min-height:46px}
+@media(pointer:coarse){
+ .touch-controls>span{display:none}
+ .inspect,.hint{display:none!important}
+ .touch-controls .touch-stick{pointer-events:auto}
+}
+@media(max-width:760px){
+ .touch-controls{left:calc(.55rem + env(safe-area-inset-left));right:calc(.55rem + env(safe-area-inset-right));bottom:calc(.45rem + env(safe-area-inset-bottom));gap:.6rem}
+ .pad-side{width:clamp(110px,32vw,142px)}
+ .touch-controls .touch-stick{width:108px;height:110px}
+ .touch-controls .touch-stick__ring{width:94px;height:94px}
+ .touch-controls .touch-stick__thumb{width:45px;height:45px}
+ .shoulder-button{min-width:104px;min-height:48px;padding:.35rem .45rem}
+ .inspect-actions{flex-direction:column;align-items:stretch}
+ .inspect-actions .button-primary,.inspect-actions .text-button{min-height:44px}
+ .inspect-description{max-height:48%}
+}
+@media(max-width:390px){
+ .pad-side{width:111px}.shoulder-button{min-width:100px}
+ .touch-controls .touch-stick{width:100px}
+}
+@media (max-width:760px) and (orientation:landscape){
+ .touch-controls{bottom:calc(.15rem + env(safe-area-inset-bottom))}
+ .pad-side{flex-direction:column;gap:.15rem;width:102px}
+ .shoulder-button{min-width:94px;min-height:42px;font-size:.73rem;padding:.22rem}
+ .touch-controls .touch-stick{width:94px;height:80px;gap:0}
+ .touch-controls .touch-stick__ring{width:69px;height:69px}
+ .touch-controls .touch-stick__thumb{width:38px;height:38px}
+ .touch-controls .touch-stick>span{font-size:.52rem}
+ .inspect-description{max-height:100%}
+ .inspect-actions{flex-direction:row}
+ .inspect-actions .button-primary,.inspect-actions .text-button{min-height:42px;padding:.45rem}
+}
+
+.action-feedback{position:absolute;z-index:9;top:23%;left:50%;transform:translateX(-50%);pointer-events:none;max-width:min(420px,calc(100vw - 2rem));margin:0;border-top:1px solid rgba(241,195,145,.76);border-bottom:1px solid rgba(241,195,145,.5);background:rgba(5,18,38,.88);padding:.9rem 1.5rem;color:#f6e8d4;font:.82rem/1.5 Georgia,serif;letter-spacing:.06em;text-align:center;box-shadow:0 6px 30px rgba(0,0,0,.19)}
+@media(max-width:760px){.action-feedback{top:27%;font-size:.78rem;padding:.7rem 1rem}}
