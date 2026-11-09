@@ -1,14 +1,21 @@
 import * as THREE from 'three';
-import {WORLD,groundHeight,initialState,stepMovement,narrativeBeat,atEnd} from './world-logic.mjs';
+import {WORLD,groundHeight,groundNormal,initialState,stepMovement,narrativeBeat,atEnd} from './world-logic.mjs';
 import {createWorldArt,whenMaterialsPrepared} from './world-art.mjs';
 import {AwakenNowScore} from './score.mjs';
 import {stickVector,lookDelta} from './control-math.mjs';
 import {InspectionMotion} from './inspection-motion.mjs';
 import {pickupPose,insertionPose,PICKUP_SECONDS,INSERT_SECONDS} from './interaction-motion.mjs';
 import {newJourney,availableAction,doJourneyAction,journeyStatus} from './journey-actions.mjs';
+import {makeCheckpoint,readCheckpoint,writeCheckpoint,eraseCheckpoint} from './checkpoint.mjs';
 
 const $=id=>document.getElementById(id);
 const canvas=$('world'),intro=$('intro'),hud=$('hud'),hint=$('hint'),inspectButton=$('inspect');
+const checkpointStore=(()=>{try{return window.sessionStorage;}catch{return null;}})();
+let pendingResume=readCheckpoint(checkpointStore);
+let lastCheckpointAt=0;
+function saveProgress(){
+ if(started&&!finished)writeCheckpoint(checkpointStore,makeCheckpoint(motion,yaw,pitch,journey));
+}
 const touch=$('touch-controls'),panel=$('inspect-panel'),end=$('end'),perf=$('perf'),pauseOverlay=$('pause-overlay');
 const soundbar=$('soundbar'),scoreState=$('score-state'),scoreToggle=$('score-toggle'),scoreVolume=$('score-volume'),scoreRetry=$('score-retry');
 const presaveRail=$('presave-rail'),pauseScoreVolume=$('pause-score-volume'),pauseVolumeValue=$('pause-volume-value');
@@ -119,7 +126,8 @@ function unlockEntry(message){
  worldReady=true;
  const entry=$('begin');
  entry.disabled=false;
- entry.innerHTML='Enter the world <span aria-hidden="true">→</span>';
+ entry.innerHTML=(pendingResume?'Continue journey':'Enter the world')+' <span aria-hidden="true">→</span>';
+ $('start-fresh').hidden=!pendingResume;
  $('preparation').textContent=message;
 }
 const preparationTimeout=setTimeout(()=>{
@@ -202,8 +210,19 @@ function setPaused(value){
  $('status').textContent=value?'Experience paused':'Experience resumed';
 }
 function begin(){
+ if(pendingResume){
+  const snap=pendingResume;pendingResume=null;
+  motion={...initialState(),x:snap.x,z:snap.z,y:groundHeight(snap.x,snap.z),
+   groundNormal:groundNormal(snap.x,snap.z),vx:0,vz:0};
+  priorMotion={...motion};yaw=snap.yaw;pitch=snap.pitch;
+  journey={...snap.journey};
+  revealLevel=journey.installed?1:0;revealTarget=revealLevel;
+  art.reveal(revealLevel);
+  scene.fog.color.copy(lightBefore).lerp(lightAfter,revealLevel*.24);
+  art.sky.material.uniforms.warm.value=journey.installed?.36:0;
+ }
  intro.hidden=true;hud.hidden=false;touch.hidden=!coarse;soundbar.hidden=false;presaveRail.hidden=false;
- syncJourneyVisuals();
+ syncJourneyVisuals();updateStage(performance.now());
  // play() executes synchronously under the player's explicit enter gesture.
  void score.play();
  $('reticle').hidden=false;paused=false;started=true;finished=false;previous=performance.now();
@@ -268,6 +287,7 @@ function collectCassette(){
  if(!next.changed)return;
  journey=next.state;
  closeInspection();syncJourneyVisuals();
+ saveProgress();
  // The recovered model visibly transfers toward the player's near-camera
  // viewpoint rather than disappearing on button press.
  pickupElapsed=0;paused=true;inspectedObject.visible=true;
@@ -283,7 +303,7 @@ function performAction(){
  if(action?.id==='install'){
   const next=doJourneyAction(journey,'install');
   if(!next.changed)return;
-  journey=next.state;syncJourneyVisuals();
+  journey=next.state;syncJourneyVisuals();saveProgress();
   relayElapsed=0;paused=true;clearKeys();
   art.relay.inserted.visible=true;
   revealTarget=1;art.sky.material.uniforms.warm.value=.36;
@@ -298,6 +318,7 @@ function reviewCassette(){
 function finish(){
  if(finished)return;
  clearKeys();finished=true;paused=true;end.hidden=false;hud.hidden=true;presaveRail.hidden=true;
+ eraseCheckpoint(checkpointStore);
  score.setSceneLevel(.47); // Keep the theme beneath the final pre-save invitation.
  revealTarget=1;
  hint.hidden=true;inspectButton.hidden=true;touch.hidden=true;$('reticle').hidden=true;
@@ -308,6 +329,9 @@ function finish(){
  $('status').textContent='You reached the return. Pre-save the album or walk again.';
 }
 $('begin').addEventListener('click',begin);
+$('start-fresh').addEventListener('click',()=>{
+ pendingResume=null;eraseCheckpoint(checkpointStore);begin();
+});
 $('pause').addEventListener('click',()=>setPaused(!paused));
 $('resume').addEventListener('click',()=>setPaused(false));
 $('inspect').addEventListener('click',performAction);
@@ -322,7 +346,7 @@ $('restart').addEventListener('click',()=>{
  finished=false;started=true;inspecting=false;paused=false;hasInspected=false;presaveRail.hidden=false;
  pickupElapsed=-1;relayElapsed=-1;inspectedObject.visible=false;
  art.relay.inserted.position.y=.78;art.relay.inserted.rotation.x=-.18;
- journey=newJourney();inspectFromReview=false;
+ journey=newJourney();inspectFromReview=false;eraseCheckpoint(checkpointStore);
  priorityStage=null;priorityStageUntil=0;shownStageLabel=null;shownActionId=null;syncJourneyVisuals();
  updateStage(performance.now());
  if(feedbackTimeout!==null){clearTimeout(feedbackTimeout);feedbackTimeout=null;}
@@ -502,6 +526,7 @@ function tick(timestamp){
   if(steps===4)accumulator=0;
   refreshActionUI();
   updateStage(timestamp);
+  if(timestamp-lastCheckpointAt>6000){saveProgress();lastCheckpointAt=timestamp;}
   if(atEnd(motion))finish();
  }
  syncCamera();
@@ -547,4 +572,4 @@ window.__AA_DEV__={getState:()=>({...motion,yaw,pitch,paused,inspecting,finished
  motion={...motion,x:1.95,z:WORLD.artifact.z+1.7};motion.y=groundHeight(motion.x,motion.z);
  priorMotion={...motion};yaw=-.85;
 },goToEnd:()=>{motion={...motion,x:0,z:WORLD.endZ+.95};motion.y=groundHeight(motion.x,motion.z);priorMotion={...motion};}};
-window.addEventListener('pagehide',()=>{clearKeys();score.destroy();art.dispose();renderer.dispose()});
+window.addEventListener('pagehide',()=>{saveProgress();clearKeys();score.destroy();art.dispose();renderer.dispose()});
