@@ -11,6 +11,7 @@ export default defineConfig({
       main: 'index.html',
       movementLab: 'experiments/movement/lab.html',
       firstPersonStudy: 'experiments/first-person/index.html',
+      firstPersonMaterials: 'experiments/first-person/materials.html',
     }},
   },
   server: { host: '0.0.0.0' },

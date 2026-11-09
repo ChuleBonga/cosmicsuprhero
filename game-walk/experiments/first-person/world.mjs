@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import {WORLD,groundHeight,initialState,stepMovement,canInspect,narrativeBeat,atEnd} from './world-logic.mjs';
-import {createWorldArt} from './world-art.mjs';
+import {createWorldArt,whenMaterialsPrepared} from './world-art.mjs';
 import {AwakenNowScore} from './score.mjs';
 import {stickVector,lookDelta} from './control-math.mjs';
 import {InspectionMotion} from './inspection-motion.mjs';
@@ -75,6 +75,30 @@ Object.assign(sun.shadow.camera,{left:-40,right:40,top:35,bottom:-35,near:1,far:
 sun.shadow.bias=-.0008;
 const bounce=new THREE.DirectionalLight(0x4666b8,.95);bounce.position.set(40,15,10);scene.add(bounce);
 const art=createWorldArt(scene);
+// Only accept the Enter gesture after the primary material maps have loaded.
+// A bounded fallback prevents slow networks from trapping visitors at a gate.
+// The pre-save link remains usable throughout preparation.
+let worldReady=false;
+function unlockEntry(message){
+ if(worldReady)return;
+ worldReady=true;
+ const entry=$('begin');
+ entry.disabled=false;
+ entry.innerHTML='Enter the world <span aria-hidden="true">→</span>';
+ $('preparation').textContent=message;
+}
+const preparationTimeout=setTimeout(()=>{
+ unlockEntry('Material loading is taking longer than expected. You can enter with reduced surface detail.');
+},12000);
+void whenMaterialsPrepared().then(({total,loaded,failed})=>{
+ clearTimeout(preparationTimeout);
+ unlockEntry(failed?
+  'Some surface detail could not load ('+loaded+'/'+total+' maps). Exploration and the album are still available.':
+  'World prepared. '+loaded+' surface maps are ready.');
+}).catch(()=>{
+ clearTimeout(preparationTimeout);
+ unlockEntry('Some materials are unavailable. You can still enter the world.');
+});
 const lightBefore=scene.fog.color.clone(),lightAfter=new THREE.Color(0x596179);
 const baseSunIntensity=sun.intensity;
 let revealLevel=0,revealTarget=0;

@@ -119,11 +119,11 @@ function structuralWings(root,stone,oxide,groundHeight,x,z,originY,halfWidth){
  }
  return group;
 }
-function buildVessel(core){
- const cobalt=new THREE.MeshStandardMaterial({name:'Cobalt mineral shell',color:0x253d61,metalness:.09,roughness:.78});
+function buildVessel(core,surfaces={}){
+ const cobalt=surfaces.mineralSurface||new THREE.MeshStandardMaterial({name:'Cobalt mineral shell',color:0x253d61,metalness:.09,roughness:.78});
  const mineral=new THREE.MeshPhysicalMaterial({name:'Deep blue crystalline memory',color:0x53779c,metalness:.14,roughness:.24,clearcoat:.48,clearcoatRoughness:.31});
  const agedGold=new THREE.MeshStandardMaterial({name:'Oxidized warm metal',color:0x8f6b54,metalness:.48,roughness:.53});
- const blackIron=new THREE.MeshStandardMaterial({name:'Buried iron ligatures',color:0x293347,metalness:.48,roughness:.66});
+ const blackIron=surfaces.oxideSurface||new THREE.MeshStandardMaterial({name:'Buried iron ligatures',color:0x293347,metalness:.48,roughness:.66});
  // Relic body: fractured mineral, not a generic glowing collectible.
  const body=mesh(core,irregularStone(.74,3,14),cobalt,0,.41,0,true);
  body.name='Fractured cobalt carapace';
@@ -200,7 +200,7 @@ export function createFirstContactEncounter(parent,opts){
  structuralWings(root,stone,oxide,groundHeight,x,z,ground,halfWidth);
  const core=new THREE.Group();core.name='First Contact / inspectable original artifact';
  core.position.set(0,2.39,0);root.add(core);
- buildVessel(core);
+ buildVessel(core,opts);
  // Small light bounce. No bloom or neon. Architectural silhouette remains primary.
  const light=new THREE.PointLight(0xe8a676,.8,7,2);
  light.position.set(0,3.17,.1);root.add(light);

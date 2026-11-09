@@ -15,52 +15,38 @@ const mat=(color,roughness=1,extra={})=>new THREE.MeshStandardMaterial({color,ro
 const mesh=(parent,geometry,material,x=0,y=0,z=0)=>{
  const m=new THREE.Mesh(geometry,material);m.position.set(x,y,z);m.castShadow=false;m.receiveShadow=true;parent.add(m);return m;
 };
-function valueNoise(values,size,x,y){
- const fx=x-Math.floor(x),fy=y-Math.floor(y),u=fx*fx*(3-2*fx),v=fy*fy*(3-2*fy);
- const ix=Math.floor(x),iy=Math.floor(y),read=(a,b)=>values[((b%size+size)%size)*size+(a%size+size)%size];
- return mix(mix(read(ix,iy),read(ix+1,iy),u),mix(read(ix,iy+1),read(ix+1,iy+1),u),v);
+/**
+ * Offline baked 512px original PBR texture families. Browser now only decodes
+ * and uploads static images: no procedural 256px canvas computation at startup.
+ * If a map fails to load, the base material color is still present.
+ * KTX2 compression is a later measured optimization, not falsely claimed.
+ */
+const textureLoader=new THREE.TextureLoader();
+const loadingTextures=[];
+export async function whenMaterialsPrepared(){
+ const results=await Promise.all(loadingTextures);
+ return {total:results.length,loaded:results.filter(Boolean).length,failed:results.filter(x=>!x).length};
 }
-function materialFamily(kind){
- const size=256,r=seedRand(kind==='basalt'?55403:38071),random=new Float32Array(size*size);
- for(let i=0;i<random.length;i++)random[i]=r();
- const height=new Float32Array(random.length);
- const base=kind==='basalt'?[51,70,98]:[130,93,70];
- for(let y=0;y<size;y++)for(let x=0;x<size;x++){
-   const n1=valueNoise(random,size,x*.085,y*.085);
-   const n2=valueNoise(random,size,x*.022,y*.022);
-   const n3=random[y*size+x];
-   const bedding=Math.sin(y*.14+Math.sin(x*.027)*3)*.075;
-   const fault=(Math.sin(x*.022+y*.055+Math.sin(y*.09)*.28)>.995)?-.13:0;
-   height[y*size+x]=clamp(n1*.42+n2*.43+n3*.15+bedding+fault,0,1);
- }
- function mapFromPixels(type){
-  const cnv=document.createElement('canvas');cnv.width=cnv.height=size;
-  const ctx=cnv.getContext('2d',{willReadFrequently:true}),id=ctx.createImageData(size,size);
-  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
-   const i=y*size+x,k=4*i,v=height[i],dx=height[y*size+(x+1)%size]-height[y*size+(x+size-1)%size],dy=height[((y+1)%size)*size+x]-height[((y+size-1)%size)*size+x];
-   if(type==='albedo'){
-    const variation=(v-.5)*112+(Math.sin(y*.07)*9);
-    for(let j=0;j<3;j++)id.data[k+j]=clamp(base[j]+variation+(j===2?10:0),1,255);
-   }else if(type==='normal'){
-    // Avoid allocating a Vector3 per texture pixel (131,072 allocations on
-    // initial load across two material families).
-    const nx=-dx*6,ny=-dy*6,inv=1/Math.hypot(nx,ny,1);
-    id.data[k]=(nx*inv*.5+.5)*255;
-    id.data[k+1]=(ny*inv*.5+.5)*255;
-    id.data[k+2]=(inv*.5+.5)*255;
-   }else{
-    const rough=clamp((kind==='basalt'?.81:.9)+(v-.5)*.27,.53,.99);
-    id.data[k]=id.data[k+1]=id.data[k+2]=rough*255;
-   }
-   id.data[k+3]=255;
-  }
-  ctx.putImageData(id,0,0);
-  const tex=new THREE.CanvasTexture(cnv);
-  tex.wrapS=tex.wrapT=THREE.RepeatWrapping;tex.anisotropy=4;
-  if(type==='albedo')tex.colorSpace=THREE.SRGBColorSpace;
-  return tex;
- }
- return {albedo:mapFromPixels('albedo'),normal:mapFromPixels('normal'),roughness:mapFromPixels('roughness')};
+function materialFamily(kind,repeatX=1,repeatY=1){
+ const load=(name,srgb=false)=>{
+  const url='/play/first-person-materials/'+kind+'_'+name+'.png';
+  // Resolve loading failures as a recoverable quality warning. Do not turn
+  // one missing source image into an unusable music / pre-save experience.
+  let settle;
+  const ready=new Promise(resolve=>{settle=resolve;});
+  loadingTextures.push(ready);
+  const t=textureLoader.load(url,()=>settle(true),undefined,()=>{
+    console.warn('Arcturian Awakening: material image could not load',url);
+    settle(false);
+  });
+  t.wrapS=t.wrapT=THREE.RepeatWrapping;
+  t.repeat.set(repeatX,repeatY);
+  t.anisotropy=4;
+  if(srgb)t.colorSpace=THREE.SRGBColorSpace;
+  return t;
+ };
+ const orm=load('orm');
+ return {albedo:load('basecolor',true),normal:load('normal'),roughness:orm,metalness:orm};
 }
 function terrain(scene,stone,clay){
  const g=new THREE.PlaneGeometry(205,350,140,220);g.rotateX(-Math.PI/2);g.translate(0,0,-112);
@@ -75,9 +61,8 @@ function terrain(scene,stone,clay){
  g.setAttribute('color',new THREE.BufferAttribute(colors,3));g.computeVertexNormals();
  // Dedicated textures for terrain preserve 1x1 repeat UVs on architectural
  // and collectible materials. Prior builds accidentally tiled all ochre props.
- const terrainMaps=[clay.albedo.clone(),clay.normal.clone(),clay.roughness.clone()];
+ const terrainMaps=[clay.albedo,clay.normal,clay.roughness];
  const base=mat(0xffffff,.92,{vertexColors:true,map:terrainMaps[0],normalMap:terrainMaps[1],roughnessMap:terrainMaps[2]});
- for(const m of terrainMaps){m.repeat.set(36,64);m.needsUpdate=true;}
  const ground=mesh(scene,g,base);ground.castShadow=false;
  return {ground,textures:terrainMaps};
 }
@@ -415,17 +400,20 @@ function sky(scene){
 export function createWorldArt(scene){
  const root=new THREE.Group();root.name='The Sunward Causeway / original art study';scene.add(root);
  const basalt=materialFamily('basalt'),ochre=materialFamily('ochre');
- const stone=mat(0xa3b0c4,.94,{map:basalt.albedo,normalMap:basalt.normal,roughnessMap:basalt.roughness});
- const warm=mat(0xdfb39a,.96,{map:ochre.albedo,normalMap:ochre.normal,roughnessMap:ochre.roughness});
- const oxide=mat(0x3c4b60,.76,{metalness:.18});
- const terrainData=terrain(root,basalt,ochre);
+ const terrainSurface=materialFamily('ochre',36,64);
+ const oxideFamily=materialFamily('oxide'),mineralFamily=materialFamily('mineral');
+ const stone=mat(0xffffff,.94,{map:basalt.albedo,normalMap:basalt.normal,roughnessMap:basalt.roughness});
+ const warm=mat(0xffffff,.96,{map:ochre.albedo,normalMap:ochre.normal,roughnessMap:ochre.roughness});
+ const oxide=mat(0xffffff,.77,{metalness:1,map:oxideFamily.albedo,normalMap:oxideFamily.normal,roughnessMap:oxideFamily.roughness,metalnessMap:oxideFamily.metalness});
+ const mineral=mat(0xffffff,.44,{metalness:.3,map:mineralFamily.albedo,normalMap:mineralFamily.normal,roughnessMap:mineralFamily.roughness});
+ const terrainData=terrain(root,basalt,terrainSurface);
  causeway(root,stone,warm);groundDebris(root,stone,warm);
  cliffWall(root,1,40,-190,basalt);cliffWall(root,-1,40,-190,basalt);
  rockScatter(root,stone,warm);mountainMass(root);
  const gateways=[gateway(root,-13,stone,oxide,1),gateway(root,-78,stone,oxide,.78)];
  spatialObstacles(root,stone,oxide,warm);
  horizonArray(root,stone,oxide,warm);
- const relic=createFirstContactEncounter(root,{x:WORLD.artifact.x,z:WORLD.artifact.z,groundHeight,halfWidth,stone,oxide,warm});
+ const relic=createFirstContactEncounter(root,{x:WORLD.artifact.x,z:WORLD.artifact.z,groundHeight,halfWidth,stone,oxide,warm,mineralSurface:mineral,oxideSurface:oxide});
  const skies=sky(scene);
  const exitStone=mesh(root,new THREE.CylinderGeometry(5.6,6.1,.32,20),warm,0,groundHeight(0,-110)+.11,-110);exitStone.castShadow=false;
  // Shared iconography becomes a material language across the route.
@@ -437,7 +425,8 @@ export function createWorldArt(scene){
   dummy.updateMatrix();shards.setMatrixAt(i,dummy.matrix);
  }
  shards.instanceMatrix.needsUpdate=true;shards.frustumCulled=false;shards.castShadow=false;root.add(shards);
- const maps=[basalt.albedo,basalt.normal,basalt.roughness,ochre.albedo,ochre.normal,ochre.roughness,...terrainData.textures];
+ const families=[basalt,ochre,terrainSurface,oxideFamily,mineralFamily];
+ const maps=[...new Set(families.flatMap(f=>[f.albedo,f.normal,f.roughness]))];
  return {root,sky:skies,artifact:relic,
   reveal(progress){
    const t=clamp(progress,0,1);
