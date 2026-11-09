@@ -161,7 +161,12 @@ function setPaused(value){
  $('pause').textContent=value?'Resume':'Pause';
  hint.hidden=value;inspectButton.hidden=value;
  if(value){if(document.pointerLockElement===canvas)document.exitPointerLock?.();}
- else previous=performance.now();
+ else{
+  previous=performance.now();
+  // Resume was activated by a real click/tap; restore pointer lock on desktop
+  // rather than leaving the camera unresponsive until a second click.
+  if(!coarse&&document.pointerLockElement!==canvas)canvas.requestPointerLock?.().catch(()=>{});
+ }
  $('status').textContent=value?'Experience paused':'Experience resumed';
 }
 function begin(){
