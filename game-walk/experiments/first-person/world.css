@@ -215,3 +215,6 @@ button,a{font:inherit}button{cursor:pointer}a{color:inherit}.experience{position
  .inspect-actions{flex-direction:row}
  .inspect-actions .button-primary,.inspect-actions .text-button{min-height:42px;padding:.45rem}
 }
+
+.action-feedback{position:absolute;z-index:9;top:23%;left:50%;transform:translateX(-50%);pointer-events:none;max-width:min(420px,calc(100vw - 2rem));margin:0;border-top:1px solid rgba(241,195,145,.76);border-bottom:1px solid rgba(241,195,145,.5);background:rgba(5,18,38,.88);padding:.9rem 1.5rem;color:#f6e8d4;font:.82rem/1.5 Georgia,serif;letter-spacing:.06em;text-align:center;box-shadow:0 6px 30px rgba(0,0,0,.19)}
+@media(max-width:760px){.action-feedback{top:27%;font-size:.78rem;padding:.7rem 1rem}}
