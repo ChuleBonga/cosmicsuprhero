@@ -231,7 +231,7 @@ function refreshActionUI(){
  const action=started&&!paused&&!finished&&!inspecting?availableAction(motion,journey,coarse,yaw):null;
  const id=action?.id||null;
  // Avoid needless DOM mutation and live-region chatter every render frame.
- if(id===shownActionId)return action;
+ if(id===shownActionId&&hint.hidden===!action&&inspectButton.hidden===!action&&rAction.disabled===!action)return action;
  shownActionId=id;
  rAction.disabled=!action;
  rActionLabel.textContent=id==='install'?'INSERT':id==='examine'?'EXAMINE':'USE';
