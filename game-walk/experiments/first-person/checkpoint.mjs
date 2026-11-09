@@ -15,7 +15,7 @@ export function makeCheckpoint(state,yaw,pitch,journey,now=Date.now()){
 }
 export function validateCheckpoint(data,now=Date.now()){
  if(!data||data.version!==1||
-   !validNumber(data.savedAt,0,now+60_000)||now-data.savedAt>CHECKPOINT_TTL||
+   !validNumber(data.savedAt,1,now+60_000)||now-data.savedAt>CHECKPOINT_TTL||
    !validNumber(data.x,-8,8)||!validNumber(data.z,-112,26)||
    !validNumber(data.yaw,-1e6,1e6)||!validNumber(data.pitch,-1.05,.93)||
    typeof data.inspected!=='boolean'||typeof data.collected!=='boolean'||
