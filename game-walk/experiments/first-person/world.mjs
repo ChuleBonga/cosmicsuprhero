@@ -56,6 +56,13 @@ let journey=newJourney(),inspectFromReview=false;
 let previous=0,accumulator=0,lookPointer=null,lookX=0,lookY=0;
 let inspectingPointer=null,inspectX=0,inspectY=0;
 const inspectionRig=new InspectionMotion();
+let feedbackTimeout=null;
+function notifyAction(message){
+ const el=$('action-feedback');
+ el.textContent=message;el.hidden=false;
+ if(feedbackTimeout!==null)clearTimeout(feedbackTimeout);
+ feedbackTimeout=setTimeout(()=>{el.hidden=true;feedbackTimeout=null;},2800);
+}
 
 const scene=new THREE.Scene();
 scene.fog=new THREE.FogExp2(0x314362,.0045);
@@ -243,6 +250,7 @@ function collectCassette(){
  closeInspection();syncJourneyVisuals();
  $('stage').textContent='CASSETTE RECOVERED';
  $('status').textContent='First Contact cassette recovered. L1 or Q reviews it. Follow the causeway to the listening relay.';
+ notifyAction('FIRST CONTACT · CASSETTE RECOVERED  /  L1 TO REVIEW');
 }
 function performAction(){
  if(!started||paused||inspecting||finished)return;
@@ -255,6 +263,7 @@ function performAction(){
   revealTarget=1;art.sky.material.uniforms.warm.value=.36;
   $('stage').textContent='THE SIGNAL RETURNS';
   $('status').textContent='First Contact cassette inserted into the Sunward relay. The ancient lights are responding.';
+  notifyAction('FIRST CONTACT · SIGNAL RESTORED');
  }
 }
 function reviewCassette(){
@@ -286,6 +295,8 @@ $('restart').addEventListener('click',()=>{
  end.hidden=true;hud.hidden=false;motion=initialState();priorMotion={...motion};yaw=0;pitch=-.04;
  finished=false;started=true;inspecting=false;paused=false;hasInspected=false;presaveRail.hidden=false;
  journey=newJourney();inspectFromReview=false;syncJourneyVisuals();
+ if(feedbackTimeout!==null){clearTimeout(feedbackTimeout);feedbackTimeout=null;}
+ $('action-feedback').hidden=true;
  score.setSceneLevel(1);revealLevel=0;revealTarget=0;art.reveal(0);
  scene.fog.color.copy(lightBefore);
  if(score.audio.paused)void score.play();
