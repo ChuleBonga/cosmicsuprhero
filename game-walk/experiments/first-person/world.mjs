@@ -4,6 +4,7 @@ import {createWorldArt,whenMaterialsPrepared} from './world-art.mjs';
 import {AwakenNowScore} from './score.mjs';
 import {stickVector,lookDelta} from './control-math.mjs';
 import {InspectionMotion} from './inspection-motion.mjs';
+import {newJourney,availableAction,doJourneyAction,journeyStatus} from './journey-actions.mjs';
 
 const $=id=>document.getElementById(id);
 const canvas=$('world'),intro=$('intro'),hud=$('hud'),hint=$('hint'),inspectButton=$('inspect');
@@ -40,6 +41,10 @@ const mobile=coarse||innerWidth<720;
 const activeKeys=new Set();
 const touchAxes={forward:0,right:0};
 const stick=$('touch-stick'),stickThumb=$('touch-stick-thumb');
+const lookStick=$('look-stick'),lookThumb=$('look-stick-thumb');
+const rAction=$('r-action'),rActionLabel=$('r-action-label'),lAction=$('l-action');
+const mediaStatus=$('media-status'),takeTape=$('take-tape');
+const lookAxes={right:0,up:0};
 const sensitivity=$('look-sensitivity'),invertLook=$('invert-look'),steadyCamera=$('steady-camera');
 sensitivity.addEventListener('input',()=>{$('sensitivity-value').textContent=Number(sensitivity.value).toFixed(1)+'×';});
 steadyCamera.checked=reducedMotion;
@@ -47,6 +52,7 @@ const FDT=1/WORLD.hz;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 let yaw=0,pitch=-.04,motion=initialState(),priorMotion={...initialState()},walkPhase=0,started=false,paused=true;
 let inspecting=false,hasInspected=false,finished=false,pointerLockWasActive=false;
+let journey=newJourney(),inspectFromReview=false;
 let previous=0,accumulator=0,lookPointer=null,lookX=0,lookY=0;
 let inspectingPointer=null,inspectX=0,inspectY=0;
 const inspectionRig=new InspectionMotion();
@@ -115,7 +121,8 @@ const inspectedObject=art.artifact.core.clone(true);
 inspectedObject.name='Inspection duplicate: same physical geometry and materials';
 inspectedObject.position.set(0,-.98,-3.55);
 inspectedObject.rotation.set(.14,-.27,0);
-inspectedObject.scale.setScalar(.48);
+// The physical tape is ~15cm wide. Magnify only in the inspection camera.
+inspectedObject.scale.setScalar(.48*8);
 inspectedObject.visible=false;camera.add(inspectedObject);
 const inspectionLight=new THREE.PointLight(0xffd3ae,2.1,6,1.6);
 inspectionLight.position.set(1.4,1.1,-.65);inspectionLight.visible=false;camera.add(inspectionLight);
@@ -152,7 +159,9 @@ function readInput(){
 }
 function clearKeys(){
  activeKeys.clear();touchAxes.forward=0;touchAxes.right=0;
+ lookAxes.right=0;lookAxes.up=0;
  stickThumb.style.transform='translate(-50%,-50%)';
+ lookThumb.style.transform='translate(-50%,-50%)';
 }
 function setPaused(value){
  if(!started||finished||inspecting)return;
@@ -171,6 +180,7 @@ function setPaused(value){
 }
 function begin(){
  intro.hidden=true;hud.hidden=false;touch.hidden=!coarse;soundbar.hidden=false;presaveRail.hidden=false;
+ syncJourneyVisuals();
  // play() executes synchronously under the player's explicit enter gesture.
  void score.play();
  $('reticle').hidden=false;paused=false;started=true;finished=false;previous=performance.now();
@@ -181,25 +191,74 @@ function closeInspection(){
  if(!inspecting)return;
  inspecting=false;inspectionRig.close();panel.hidden=true;inspectedObject.visible=false;inspectionLight.visible=false;presaveRail.hidden=false;
  score.setSceneLevel(1);
- revealTarget=1;
+ revealTarget=journey.installed?1:(journey.collected?.18:0);
  paused=false;previous=performance.now();
  $('reticle').hidden=false;
  if(!coarse)canvas.requestPointerLock?.().catch(()=>{});
  canvas.focus();$('status').textContent='Returned to the world.';
 }
-function canInspectHere(){
- return canInspect(motion,yaw,coarse?4.65:WORLD.inspectDistance,coarse?-1.1:.24);
+function syncJourneyVisuals(){
+ art.artifact.core.visible=!journey.collected;
+ art.relay.inserted.visible=journey.installed;
+ mediaStatus.hidden=!journey.collected;
+ mediaStatus.textContent=journeyStatus(journey);
+ lAction.disabled=!journey.collected;
+ lAction.querySelector('span').textContent=journey.installed?'LOG':'TAPE';
+ refreshActionUI();
 }
-function inspect(){
- if(!started||paused||finished||inspecting||!canInspectHere())return;
+function refreshActionUI(){
+ const action=started&&!paused&&!finished&&!inspecting?availableAction(motion,journey,coarse):null;
+ rAction.disabled=!action;
+ rActionLabel.textContent=action?.id==='install'?'INSERT':action?.id==='examine'?'EXAMINE':'USE';
+ hint.hidden=!action;inspectButton.hidden=!action;
+ if(action){
+  hint.textContent=coarse?action.detail:'E / '+action.label;
+  inspectButton.textContent=action.label;
+ }
+ return action;
+}
+function openCassetteInspection(review=false){
+ if(!started||paused||finished||inspecting)return;
+ if(review&&!journey.collected)return;
+ if(!review&&availableAction(motion,journey,coarse)?.id!=='examine')return;
+ inspectFromReview=review;
+ if(!review)journey=doJourneyAction(journey,'inspect').state;
  clearKeys();inspecting=true;inspectionRig.open();paused=true;hasInspected=true;
  $('reticle').hidden=true;hint.hidden=true;inspectButton.hidden=true;
  panel.hidden=false;inspectedObject.visible=true;inspectionLight.visible=true;presaveRail.hidden=true;
+ takeTape.hidden=review||journey.collected;
  score.setSceneLevel(.33);
- revealTarget=Math.max(revealTarget,.54);
+ revealTarget=Math.max(revealTarget,.2);
  if(document.pointerLockElement===canvas)document.exitPointerLock?.();
- art.sky.material.uniforms.warm.value=.26;
- $('leave-inspect').focus();$('status').textContent='First Contact examined. Drag the model to rotate, then return to the world.';
+ $('artifact-title').textContent='First Contact';
+ art.sky.material.uniforms.warm.value=.1;
+ (takeTape.hidden?$('leave-inspect'):takeTape).focus();
+ $('status').textContent=review?'Reviewing First Contact cassette.':'First Contact cassette examined. Take it or return.';
+}
+function collectCassette(){
+ if(!inspecting||inspectFromReview||journey.collected)return;
+ const next=doJourneyAction(journey,'collect');
+ if(!next.changed)return;
+ journey=next.state;
+ closeInspection();syncJourneyVisuals();
+ $('stage').textContent='CASSETTE RECOVERED';
+ $('status').textContent='First Contact cassette recovered. L1 or Q reviews it. Follow the causeway to the listening relay.';
+}
+function performAction(){
+ if(!started||paused||inspecting||finished)return;
+ const action=availableAction(motion,journey,coarse);
+ if(action?.id==='examine'){openCassetteInspection(false);return;}
+ if(action?.id==='install'){
+  const next=doJourneyAction(journey,'install');
+  if(!next.changed)return;
+  journey=next.state;syncJourneyVisuals();
+  revealTarget=1;art.sky.material.uniforms.warm.value=.36;
+  $('stage').textContent='THE SIGNAL RETURNS';
+  $('status').textContent='First Contact cassette inserted into the Sunward relay. The ancient lights are responding.';
+ }
+}
+function reviewCassette(){
+ if(journey.collected)openCassetteInspection(true);
 }
 function finish(){
  if(finished)return;
@@ -208,19 +267,25 @@ function finish(){
  revealTarget=1;
  hint.hidden=true;inspectButton.hidden=true;touch.hidden=true;$('reticle').hidden=true;
  if(document.pointerLockElement===canvas)document.exitPointerLock?.();
- if(hasInspected)$('end-caption').textContent='You paused to look more closely. This is still the first part of a world being built; the rest of the journey continues in the album.';
+ if(journey.installed)$('end-caption').textContent='You returned a lost cassette to the listening relay. Its signal belongs to the music. The complete five-minute journey is still being authored.';
+ else if(journey.collected)$('end-caption').textContent='You recovered First Contact, a physical trace of the album. The rest of this story continues in the music.';
+ else $('end-caption').textContent='You crossed the causeway. You can return to explore the cassette, or continue to the album.';
  $('status').textContent='You reached the return. Pre-save the album or walk again.';
 }
 $('begin').addEventListener('click',begin);
 $('pause').addEventListener('click',()=>setPaused(!paused));
 $('resume').addEventListener('click',()=>setPaused(false));
-$('inspect').addEventListener('click',inspect);
+$('inspect').addEventListener('click',performAction);
+rAction.addEventListener('click',performAction);
+lAction.addEventListener('click',reviewCassette);
+takeTape.addEventListener('click',collectCassette);
 $('leave-inspect').addEventListener('click',closeInspection);
 $('zoom-in').addEventListener('click',()=>inspectionRig.setZoom(inspectionRig.zoomTarget+.18));
 $('zoom-out').addEventListener('click',()=>inspectionRig.setZoom(inspectionRig.zoomTarget-.18));
 $('restart').addEventListener('click',()=>{
  end.hidden=true;hud.hidden=false;motion=initialState();priorMotion={...motion};yaw=0;pitch=-.04;
  finished=false;started=true;inspecting=false;paused=false;hasInspected=false;presaveRail.hidden=false;
+ journey=newJourney();inspectFromReview=false;syncJourneyVisuals();
  score.setSceneLevel(1);revealLevel=0;revealTarget=0;art.reveal(0);
  scene.fog.color.copy(lightBefore);
  if(score.audio.paused)void score.play();
@@ -232,7 +297,7 @@ document.addEventListener('keydown',e=>{
   if(e.code==='Escape'){e.preventDefault();closeInspection();return;}
   if(e.code==='Tab'){
    e.preventDefault();
-   const order=[$('leave-inspect'),$('zoom-out'),$('zoom-in')];
+   const order=[takeTape,$('leave-inspect'),$('zoom-out'),$('zoom-in')].filter(el=>!el.hidden);
    const current=order.indexOf(document.activeElement);
    order[(current+(e.shiftKey?-1:1)+order.length)%order.length].focus();
    return;
@@ -244,7 +309,8 @@ document.addEventListener('keydown',e=>{
  if(e.target instanceof HTMLElement&&e.target.closest('a,button,input,textarea'))return;
  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();
  if(e.code==='KeyM'&&started){toggleMusic();return;}
- if(e.code==='KeyE'){inspect();return;}
+ if(e.code==='KeyE'){performAction();return;}
+ if(e.code==='KeyQ'){reviewCassette();return;}
  if(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))activeKeys.add(e.code);
 });
 document.addEventListener('keyup',e=>activeKeys.delete(e.code));
@@ -296,6 +362,28 @@ for(const kind of ['pointerup','pointercancel','lostpointercapture'])
   stickPointer=null;touchAxes.forward=0;touchAxes.right=0;
   stickThumb.style.transform='translate(-50%,-50%)';
  });
+// The right analog camera stick is independent of the left movement pointer.
+let lookStickPointer=null;
+function moveRightStick(e){
+ const rect=lookStick.getBoundingClientRect();
+ const dx=e.clientX-(rect.left+rect.width*.5);
+ const dy=e.clientY-(rect.top+rect.height*.44);
+ const v=stickVector(dx,dy,39,.12);
+ lookAxes.right=v.right;lookAxes.up=v.forward;
+ lookThumb.style.transform=`translate(calc(-50% + ${v.visualX}px),calc(-50% + ${v.visualY}px))`;
+}
+lookStick.addEventListener('pointerdown',e=>{
+ if(!started||paused||finished||inspecting||lookStickPointer!==null)return;
+ e.preventDefault();lookStickPointer=e.pointerId;
+ lookStick.setPointerCapture(e.pointerId);moveRightStick(e);
+});
+lookStick.addEventListener('pointermove',e=>{if(lookStickPointer===e.pointerId)moveRightStick(e);});
+for(const kind of ['pointerup','pointercancel','lostpointercapture'])
+ lookStick.addEventListener(kind,e=>{
+  if(lookStickPointer!==e.pointerId)return;
+  lookStickPointer=null;lookAxes.right=0;lookAxes.up=0;
+  lookThumb.style.transform='translate(-50%,-50%)';
+ });
 const area=$('inspect-interaction');
 area.addEventListener('wheel',e=>{
  if(!inspecting)return;
@@ -331,7 +419,7 @@ function tick(timestamp){
   const frame=inspectionRig.tick(delta);
   inspectedObject.position.set(frame.x,frame.y,frame.z);
   inspectedObject.rotation.set(frame.pitch,frame.yaw,0);
-  inspectedObject.scale.setScalar(frame.scale);
+  inspectedObject.scale.setScalar(frame.scale*8);
  }
  if(revealLevel!==revealTarget){
   revealLevel+= (revealTarget-revealLevel)*Math.min(1,delta*.88);
@@ -341,6 +429,9 @@ function tick(timestamp){
   sun.intensity=baseSunIntensity+revealLevel*.28;
  }
  if(started&&!paused&&!finished){
+  // Right thumbstick drives camera angular velocity, independent of render FPS.
+  if(Math.abs(lookAxes.right)+Math.abs(lookAxes.up)>.001)
+   look(lookAxes.right*700*delta,-lookAxes.up*700*delta);
   accumulator+=delta;let steps=0;
   while(accumulator>=FDT&&steps<4){
    const [f,r]=readInput();
@@ -350,8 +441,7 @@ function tick(timestamp){
    accumulator-=FDT;steps++;
   }
   if(steps===4)accumulator=0;
-  const nearby=canInspectHere();hint.hidden=!nearby;inspectButton.hidden=!nearby;
-  if(nearby)hint.textContent=coarse?'AN OBJECT HAS BEEN FOUND':'E / EXAMINE THE FRAGMENT';
+  refreshActionUI();
   $('stage').textContent=narrativeBeat(motion.z);
   if(atEnd(motion))finish();
  }
@@ -361,6 +451,7 @@ function tick(timestamp){
  // not float or rotate as a generic collectible. Inspection is the player's
  // deliberate action; atmospheric light responds only to that discovery.
  art.artifact.light.intensity=.8+revealLevel*.22;
+ art.relay.light.intensity=journey.installed?1.4+revealLevel*.4:0;
  renderer.render(scene,camera);
  if(!started||paused||delta<=0)return;
  const ms=delta*1000;samples.push(ms);if(samples.length>180)samples.shift();
