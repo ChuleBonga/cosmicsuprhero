@@ -3,7 +3,7 @@
  * then optionally place it into an ancient listening relay. No quest locks.
  * First Contact is an album-associated *artifact*, not a second music track.
  */
-export const RELAY=Object.freeze({x:0,z:-82,radius:2.9});
+export const RELAY=Object.freeze({x:2.15,z:-82,radius:2.9});
 export const TAPE=Object.freeze({x:-.9,z:-35,radius:4.65});
 export function newJourney(){return {collected:false,installed:false,inspected:false};}
 const distance=(a,b)=>Math.hypot(a.x-b.x,a.z-b.z);
