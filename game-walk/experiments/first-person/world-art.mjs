@@ -22,11 +22,22 @@ const mesh=(parent,geometry,material,x=0,y=0,z=0)=>{
  * KTX2 compression is a later measured optimization, not falsely claimed.
  */
 const textureLoader=new THREE.TextureLoader();
+const loadingTextures=[];
+export async function whenMaterialsPrepared(){
+ const results=await Promise.all(loadingTextures);
+ return {total:results.length,loaded:results.filter(Boolean).length,failed:results.filter(x=>!x).length};
+}
 function materialFamily(kind,repeatX=1,repeatY=1){
  const load=(name,srgb=false)=>{
   const url='/play/first-person-materials/'+kind+'_'+name+'.png';
-  const t=textureLoader.load(url,undefined,undefined,()=>{
+  // Resolve loading failures as a recoverable quality warning. Do not turn
+  // one missing source image into an unusable music / pre-save experience.
+  let settle;
+  const ready=new Promise(resolve=>{settle=resolve;});
+  loadingTextures.push(ready);
+  const t=textureLoader.load(url,()=>settle(true),undefined,()=>{
     console.warn('Arcturian Awakening: material image could not load',url);
+    settle(false);
   });
   t.wrapS=t.wrapT=THREE.RepeatWrapping;
   t.repeat.set(repeatX,repeatY);
