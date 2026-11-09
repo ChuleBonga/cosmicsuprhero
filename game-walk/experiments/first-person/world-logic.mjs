@@ -3,12 +3,13 @@
  * Deterministic kinematic controller. Units: metres, +Y up, -Z forward.
  * Design contract: one continuous story-to-presave path, not 16 chapters.
  */
+import {TAPE} from './journey-actions.mjs';
 export const WORLD = Object.freeze({
   hz:60, eyeHeight:1.7, radius:0.34, walkSpeed:2.85,
   acceleration:10.5, brake:14.5, maxSlopeDegrees:35,
   start:Object.freeze({x:0,z:23.5}), endZ:-110,
   artifact:Object.freeze({x:-0.9,z:-35}),
-  inspectDistance:4.1
+  inspectDistance:TAPE.radius
 });
 // All obstacle colliders share coordinates with the authored 3D meshes.
  // Radius excludes the player's own horizontal capsule footprint.
@@ -107,12 +108,12 @@ export function stepMovement(state,forward=0,right=0,yaw=0,dt=1/WORLD.hz){
   if(Math.abs(deltaZ-(intendedZ-state.z))>.02)s.vz=0;
   return s;
 }
-export function inspectDistance(s){return Math.hypot(s.x-WORLD.artifact.x,s.z-WORLD.artifact.z)}
+export function inspectDistance(s){return Math.hypot(s.x-TAPE.x,s.z-TAPE.z)}
 export function canInspect(s,yaw=0,range=WORLD.inspectDistance,facingThreshold=.24){
   // Wider proximity detection is available on touch input, where precise
   // pointer-locked camera aiming is impractical.
   if(inspectDistance(s)>range)return false;
-  const dx=WORLD.artifact.x-s.x,dz=WORLD.artifact.z-s.z;
+  const dx=TAPE.x-s.x,dz=TAPE.z-s.z;
   const dir=(Math.sin(yaw)*dx-Math.cos(yaw)*dz)/Math.max(.001,Math.hypot(dx,dz));
   return dir>facingThreshold;
 }

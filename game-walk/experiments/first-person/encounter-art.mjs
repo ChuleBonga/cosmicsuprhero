@@ -12,7 +12,8 @@ import {createCassetteArt,CASSETTE_SCALE} from './cassette-art.mjs';
 
 export const CONTACT_SPEC=Object.freeze({
   plinthRadius:2.36, plinthTopY:.37, vesselHeight:2.65,
-  innerPavingRadius:2.28, outerPavingRadius:4.8
+  innerPavingRadius:2.28, outerPavingRadius:4.8,
+  cassetteShelfZ:2.28,cassetteShelfY:1.36
 });
 const TAU=Math.PI*2;
 const stoneNoise=n=>Math.sin(n*12.9898)*43758.5453-Math.floor(Math.sin(n*12.9898)*43758.5453);
@@ -144,18 +145,24 @@ export function createFirstContactEncounter(parent,opts){
  const ornaments=innerInlay(root,stone,oxide);
  outerPaving(root,stone,warm,groundHeight,x,ground,z);
  structuralWings(root,stone,oxide,groundHeight,x,z,ground,halfWidth);
+ // Place the 15cm cassette at an accessible, front-facing archival shelf,
+ // not at the inaccessible top of a monumental plinth. Approaching from +Z
+ // brings the object within arm's reach of the player's collision capsule.
+ const shelfZ=CONTACT_SPEC.cassetteShelfZ,shelfY=CONTACT_SPEC.cassetteShelfY;
+ const support=mesh(root,new THREE.BoxGeometry(.5,.22,.84),stone,0,shelfY-.20,1.91,true);
+ support.name='Cantilevered stone cassette shelf support';
+ const tray=mesh(root,new THREE.BoxGeometry(.43,.055,.33),oxide,0,shelfY-.048,shelfZ,true);
+ tray.name='Cassette resting tray / accessible front shelf';
+ const lip=mesh(root,new THREE.BoxGeometry(.43,.06,.025),oxide,0,shelfY-.05,shelfZ+.18);
+ lip.name='Cassette shelf retaining lip';
  const core=new THREE.Group();core.name='First Contact / inspectable music cassette';
- core.position.set(0,2.39,0);root.add(core);
- // Actual analog media is held in a shallow tray. The source is ~15cm wide,
- // and is magnified only for inspection, not in the physical environment.
- const tray=mesh(root,new THREE.BoxGeometry(.35,.028,.20),oxide,0,2.37,0);
- tray.name='Cassette resting tray';
+ core.position.set(0,shelfY,shelfZ);root.add(core);
  const tape=createCassetteArt();
  tape.scale.setScalar(CASSETTE_SCALE);
- tape.rotation.x=-.17;
+ tape.rotation.x=-.11;
  core.add(tape);
- // Small light bounce. No bloom or neon. Architectural silhouette remains primary.
- const light=new THREE.PointLight(0xe8a676,.8,7,2);
- light.position.set(0,3.17,.1);root.add(light);
+ // Restrained localized reflection: helps discover the object, not neon loot.
+ const light=new THREE.PointLight(0xe8a676,.68,4.5,2);
+ light.position.set(0,shelfY+.65,shelfZ+.22);root.add(light);
  return {root,core,light,ornaments};
 }

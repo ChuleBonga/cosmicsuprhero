@@ -78,3 +78,14 @@ test('relic materials are solid physically based surfaces',()=>{
  assert.ok(materials.some(m=>m.transparent===true),'spool window has genuine translucency');
  assert.ok(materials.every(m=>m.roughness===undefined||(m.roughness>=0&&m.roughness<=1)));
 });
+
+test('tape is presented at an approachable human-height shelf, not the unreachable monument crown',()=>{
+ const {model}=makeEncounter();
+ const cassette=model.core;
+ assert.ok(model.root.getObjectByName('Cantilevered stone cassette shelf support'));
+ assert.ok(model.root.getObjectByName('Cassette resting tray / accessible front shelf'));
+ assert.equal(cassette.position.z,CONTACT_SPEC.cassetteShelfZ);
+ assert.equal(cassette.position.y,CONTACT_SPEC.cassetteShelfY);
+ assert.ok(cassette.position.y>=1.2&&cassette.position.y<1.7);
+ assert.ok(CONTACT_SPEC.cassetteShelfZ>CONTACT_SPEC.plinthRadius-.2);
+});

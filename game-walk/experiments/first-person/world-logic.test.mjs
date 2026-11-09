@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {WORLD,groundHeight,groundNormal,halfWidth,WORLD_OBSTACLES,initialState,stepMovement,canInspect,inspectDistance,narrativeBeat,atEnd} from './world-logic.mjs';
+import {TAPE} from './journey-actions.mjs';
 test('world and ground geometry are finite with normalized normals',()=>{
  for(let z=-117;z<=26;z+=3)for(let x=-10;x<=10;x+=2){
   assert.ok(Number.isFinite(groundHeight(x,z)));
@@ -32,7 +33,7 @@ test('path boundaries prevent walking through cliffs',()=>{
 });
 test('artifact requires physical closeness and facing',()=>{
  let s=initialState();assert.equal(canInspect(s),false);
- s={...s,x:1.3,z:WORLD.artifact.z+1.7};
+ s={...s,x:TAPE.x,z:TAPE.z+1.15};
  assert.ok(inspectDistance(s)<WORLD.inspectDistance);
  assert.equal(canInspect(s,0),true);assert.equal(canInspect(s,Math.PI),false);
 });
@@ -100,11 +101,11 @@ test('walking along the bank through transitions never produces a lateral jump',
  }
 });
 test('mobile contact range supports a forgiving tap without long-distance interaction',()=>{
- const s={...initialState(),x:WORLD.artifact.x+3.7,z:WORLD.artifact.z};
+ const s={...initialState(),x:TAPE.x,z:TAPE.z+1.65};
  assert.equal(canInspect(s,Math.PI),false,'desktop still requires facing');
- assert.equal(canInspect(s,Math.PI,4.65,-1.1),true,'touch may inspect from nearby without precise aiming');
- const distant={...s,x:WORLD.artifact.x+5};
- assert.equal(canInspect(distant,Math.PI,4.65,-1.1),false);
+ assert.equal(canInspect(s,Math.PI,TAPE.radius,-1.1),true,'relaxed touch facing is tested independently');
+ const distant={...s,x:TAPE.x+4};
+ assert.equal(canInspect(distant,Math.PI,TAPE.radius,-1.1),false);
 });
 test('full route remains reachable with no required artifact pickup',()=>{
  let s=initialState(),minZ=s.z;

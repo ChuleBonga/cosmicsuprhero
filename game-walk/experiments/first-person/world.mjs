@@ -1,13 +1,21 @@
 import * as THREE from 'three';
-import {WORLD,groundHeight,initialState,stepMovement,canInspect,narrativeBeat,atEnd} from './world-logic.mjs';
+import {WORLD,groundHeight,groundNormal,initialState,stepMovement,narrativeBeat,atEnd} from './world-logic.mjs';
 import {createWorldArt,whenMaterialsPrepared} from './world-art.mjs';
 import {AwakenNowScore} from './score.mjs';
 import {stickVector,lookDelta} from './control-math.mjs';
 import {InspectionMotion} from './inspection-motion.mjs';
+import {pickupPose,insertionPose,PICKUP_SECONDS,INSERT_SECONDS} from './interaction-motion.mjs';
 import {newJourney,availableAction,doJourneyAction,journeyStatus} from './journey-actions.mjs';
+import {makeCheckpoint,readCheckpoint,writeCheckpoint,eraseCheckpoint} from './checkpoint.mjs';
 
 const $=id=>document.getElementById(id);
 const canvas=$('world'),intro=$('intro'),hud=$('hud'),hint=$('hint'),inspectButton=$('inspect');
+const checkpointStore=(()=>{try{return window.sessionStorage;}catch{return null;}})();
+let pendingResume=readCheckpoint(checkpointStore);
+let lastCheckpointAt=0;
+function saveProgress(){
+ if(started&&!finished)writeCheckpoint(checkpointStore,makeCheckpoint(motion,yaw,pitch,journey));
+}
 const touch=$('touch-controls'),panel=$('inspect-panel'),end=$('end'),perf=$('perf'),pauseOverlay=$('pause-overlay');
 const soundbar=$('soundbar'),scoreState=$('score-state'),scoreToggle=$('score-toggle'),scoreVolume=$('score-volume'),scoreRetry=$('score-retry');
 const presaveRail=$('presave-rail'),pauseScoreVolume=$('pause-score-volume'),pauseVolumeValue=$('pause-volume-value');
@@ -53,6 +61,18 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 let yaw=0,pitch=-.04,motion=initialState(),priorMotion={...initialState()},walkPhase=0,started=false,paused=true;
 let inspecting=false,hasInspected=false,finished=false,pointerLockWasActive=false;
 let journey=newJourney(),inspectFromReview=false;
+let pickupElapsed=-1,relayElapsed=-1,contextLost=false;
+let shownStageLabel=null,priorityStage=null,priorityStageUntil=0;
+let shownActionId=null;
+const stageElement=$('stage');
+function setStage(label){if(label===shownStageLabel)return;shownStageLabel=label;stageElement.textContent=label;}
+function announceStage(label,now=performance.now()){
+ priorityStage=label;priorityStageUntil=now+3400;setStage(label);
+}
+function updateStage(now){
+ if(priorityStage&&now>=priorityStageUntil)priorityStage=null;
+ setStage(priorityStage||narrativeBeat(motion.z));
+}
 let previous=0,accumulator=0,lookPointer=null,lookX=0,lookY=0;
 let inspectingPointer=null,inspectX=0,inspectY=0;
 const inspectionRig=new InspectionMotion();
@@ -106,7 +126,8 @@ function unlockEntry(message){
  worldReady=true;
  const entry=$('begin');
  entry.disabled=false;
- entry.innerHTML='Enter the world <span aria-hidden="true">→</span>';
+ entry.innerHTML=(pendingResume?'Continue journey':'Enter the world')+' <span aria-hidden="true">→</span>';
+ $('start-fresh').hidden=!pendingResume;
  $('preparation').textContent=message;
 }
 const preparationTimeout=setTimeout(()=>{
@@ -114,6 +135,9 @@ const preparationTimeout=setTimeout(()=>{
 },12000);
 void whenMaterialsPrepared().then(({total,loaded,failed})=>{
  clearTimeout(preparationTimeout);
+ // Warm source textures on the GPU while the intro is visible. Do this once,
+ // rather than rendering sixty idle frames a second on a phone.
+ if(!contextLost&&!started)renderer.render(scene,camera);
  unlockEntry(failed?
   'Some surface detail could not load ('+loaded+'/'+total+' maps). Exploration and the album are still available.':
   'World prepared. '+loaded+' surface maps are ready.');
@@ -167,11 +191,14 @@ function readInput(){
 function clearKeys(){
  activeKeys.clear();touchAxes.forward=0;touchAxes.right=0;
  lookAxes.right=0;lookAxes.up=0;
+ if(stickPointer!==null){if(stick.hasPointerCapture?.(stickPointer))stick.releasePointerCapture(stickPointer);stickPointer=null;}
+ if(lookStickPointer!==null){if(lookStick.hasPointerCapture?.(lookStickPointer))lookStick.releasePointerCapture(lookStickPointer);lookStickPointer=null;}
+ if(lookPointer!==null){if(canvas.hasPointerCapture?.(lookPointer))canvas.releasePointerCapture(lookPointer);lookPointer=null;}
  stickThumb.style.transform='translate(-50%,-50%)';
  lookThumb.style.transform='translate(-50%,-50%)';
 }
 function setPaused(value){
- if(!started||finished||inspecting)return;
+ if(!started||finished||inspecting||contextLost||pickupElapsed>=0||relayElapsed>=0)return;
  paused=value;clearKeys();pauseOverlay.hidden=!value;presaveRail.hidden=value;
  if(value)score.pause();else void score.play();
  $('pause').textContent=value?'Resume':'Pause';
@@ -186,8 +213,19 @@ function setPaused(value){
  $('status').textContent=value?'Experience paused':'Experience resumed';
 }
 function begin(){
+ if(pendingResume){
+  const snap=pendingResume;pendingResume=null;
+  motion={...initialState(),x:snap.x,z:snap.z,y:groundHeight(snap.x,snap.z),
+   groundNormal:groundNormal(snap.x,snap.z),vx:0,vz:0};
+  priorMotion={...motion};yaw=snap.yaw;pitch=snap.pitch;
+  journey={...snap.journey};
+  revealLevel=journey.installed?1:0;revealTarget=revealLevel;
+  art.reveal(revealLevel);
+  scene.fog.color.copy(lightBefore).lerp(lightAfter,revealLevel*.24);
+  art.sky.material.uniforms.warm.value=journey.installed?.36:0;
+ }
  intro.hidden=true;hud.hidden=false;touch.hidden=!coarse;soundbar.hidden=false;presaveRail.hidden=false;
- syncJourneyVisuals();
+ syncJourneyVisuals();updateStage(performance.now());
  // play() executes synchronously under the player's explicit enter gesture.
  void score.play();
  $('reticle').hidden=false;paused=false;started=true;finished=false;previous=performance.now();
@@ -214,9 +252,13 @@ function syncJourneyVisuals(){
  refreshActionUI();
 }
 function refreshActionUI(){
- const action=started&&!paused&&!finished&&!inspecting?availableAction(motion,journey,coarse):null;
+ const action=started&&!paused&&!finished&&!inspecting?availableAction(motion,journey,coarse,yaw):null;
+ const id=action?.id||null;
+ // Avoid needless DOM mutation and live-region chatter every render frame.
+ if(id===shownActionId&&hint.hidden===!action&&inspectButton.hidden===!action&&rAction.disabled===!action)return action;
+ shownActionId=id;
  rAction.disabled=!action;
- rActionLabel.textContent=action?.id==='install'?'INSERT':action?.id==='examine'?'EXAMINE':'USE';
+ rActionLabel.textContent=id==='install'?'INSERT':id==='examine'?'EXAMINE':'USE';
  hint.hidden=!action;inspectButton.hidden=!action;
  if(action){
   hint.textContent=coarse?action.detail:'E / '+action.label;
@@ -227,7 +269,7 @@ function refreshActionUI(){
 function openCassetteInspection(review=false){
  if(!started||paused||finished||inspecting)return;
  if(review&&!journey.collected)return;
- if(!review&&availableAction(motion,journey,coarse)?.id!=='examine')return;
+ if(!review&&availableAction(motion,journey,coarse,yaw)?.id!=='examine')return;
  inspectFromReview=review;
  if(!review)journey=doJourneyAction(journey,'inspect').state;
  clearKeys();inspecting=true;inspectionRig.open();paused=true;hasInspected=true;
@@ -248,20 +290,27 @@ function collectCassette(){
  if(!next.changed)return;
  journey=next.state;
  closeInspection();syncJourneyVisuals();
- $('stage').textContent='CASSETTE RECOVERED';
+ saveProgress();
+ // The recovered model visibly transfers toward the player's near-camera
+ // viewpoint rather than disappearing on button press.
+ pickupElapsed=0;paused=true;inspectedObject.visible=true;
+ clearKeys();hint.hidden=true;inspectButton.hidden=true;rAction.disabled=true;
+ announceStage('CASSETTE RECOVERED');
  $('status').textContent='First Contact cassette recovered. L1 or Q reviews it. Follow the causeway to the listening relay.';
  notifyAction('FIRST CONTACT · CASSETTE RECOVERED  /  L1 TO REVIEW');
 }
 function performAction(){
  if(!started||paused||inspecting||finished)return;
- const action=availableAction(motion,journey,coarse);
+ const action=availableAction(motion,journey,coarse,yaw);
  if(action?.id==='examine'){openCassetteInspection(false);return;}
  if(action?.id==='install'){
   const next=doJourneyAction(journey,'install');
   if(!next.changed)return;
-  journey=next.state;syncJourneyVisuals();
+  journey=next.state;syncJourneyVisuals();saveProgress();
+  relayElapsed=0;paused=true;clearKeys();
+  art.relay.inserted.visible=true;
   revealTarget=1;art.sky.material.uniforms.warm.value=.36;
-  $('stage').textContent='THE SIGNAL RETURNS';
+  announceStage('THE SIGNAL RETURNS');
   $('status').textContent='First Contact cassette inserted into the Sunward relay. The ancient lights are responding.';
   notifyAction('FIRST CONTACT · SIGNAL RESTORED');
  }
@@ -272,6 +321,7 @@ function reviewCassette(){
 function finish(){
  if(finished)return;
  clearKeys();finished=true;paused=true;end.hidden=false;hud.hidden=true;presaveRail.hidden=true;
+ eraseCheckpoint(checkpointStore);
  score.setSceneLevel(.47); // Keep the theme beneath the final pre-save invitation.
  revealTarget=1;
  hint.hidden=true;inspectButton.hidden=true;touch.hidden=true;$('reticle').hidden=true;
@@ -282,6 +332,9 @@ function finish(){
  $('status').textContent='You reached the return. Pre-save the album or walk again.';
 }
 $('begin').addEventListener('click',begin);
+$('start-fresh').addEventListener('click',()=>{
+ pendingResume=null;eraseCheckpoint(checkpointStore);begin();
+});
 $('pause').addEventListener('click',()=>setPaused(!paused));
 $('resume').addEventListener('click',()=>setPaused(false));
 $('inspect').addEventListener('click',performAction);
@@ -294,7 +347,11 @@ $('zoom-out').addEventListener('click',()=>inspectionRig.setZoom(inspectionRig.z
 $('restart').addEventListener('click',()=>{
  end.hidden=true;hud.hidden=false;motion=initialState();priorMotion={...motion};yaw=0;pitch=-.04;
  finished=false;started=true;inspecting=false;paused=false;hasInspected=false;presaveRail.hidden=false;
- journey=newJourney();inspectFromReview=false;syncJourneyVisuals();
+ pickupElapsed=-1;relayElapsed=-1;inspectedObject.visible=false;
+ art.relay.inserted.position.y=.78;art.relay.inserted.rotation.x=-.18;
+ journey=newJourney();inspectFromReview=false;eraseCheckpoint(checkpointStore);
+ priorityStage=null;priorityStageUntil=0;shownStageLabel=null;shownActionId=null;syncJourneyVisuals();
+ updateStage(performance.now());
  if(feedbackTimeout!==null){clearTimeout(feedbackTimeout);feedbackTimeout=null;}
  $('action-feedback').hidden=true;
  score.setSceneLevel(1);revealLevel=0;revealTarget=0;art.reveal(0);
@@ -340,7 +397,7 @@ canvas.addEventListener('click',()=>{
  if(started&&!paused&&!coarse&&document.pointerLockElement!==canvas)canvas.requestPointerLock?.().catch(()=>{});
 });
 canvas.addEventListener('pointerdown',e=>{
- if(!started||paused||inspecting)return;
+ if(!started||paused||finished||inspecting||lookPointer!==null)return;
  if(e.pointerType==='touch'&&e.clientX<innerWidth*.38)return;
  if(document.pointerLockElement===canvas)return;
  lookPointer=e.pointerId;lookX=e.clientX;lookY=e.clientY;canvas.setPointerCapture(e.pointerId);
@@ -362,7 +419,7 @@ function moveStick(e){
  stickThumb.style.transform=`translate(calc(-50% + ${v.visualX}px),calc(-50% + ${v.visualY}px))`;
 }
 stick.addEventListener('pointerdown',e=>{
- if(!started||paused||finished||inspecting)return;
+ if(!started||paused||finished||inspecting||stickPointer!==null)return;
  e.preventDefault();stickPointer=e.pointerId;
  stick.setPointerCapture(e.pointerId);moveStick(e);
 });
@@ -413,7 +470,8 @@ for(const name of ['pointerup','pointercancel','lostpointercapture'])
 window.addEventListener('blur',()=>{clearKeys();if(started&&!inspecting&&!finished)setPaused(true)});
 document.addEventListener('visibilitychange',()=>{if(document.hidden){clearKeys();if(started&&!inspecting&&!finished)setPaused(true);}});
 canvas.addEventListener('webglcontextlost',e=>{
- e.preventDefault();setPaused(true);pauseOverlay.hidden=false;
+ e.preventDefault();contextLost=true;paused=true;
+ clearKeys();score.pause();pauseOverlay.hidden=false;
  pauseOverlay.querySelector('p').textContent='THE GRAPHICS CONTEXT WAS LOST';
  $('resume').textContent='Reload experience';
  $('resume').onclick=()=>location.reload();
@@ -431,6 +489,24 @@ function tick(timestamp){
   inspectedObject.position.set(frame.x,frame.y,frame.z);
   inspectedObject.rotation.set(frame.pitch,frame.yaw,0);
   inspectedObject.scale.setScalar(frame.scale*8);
+ }
+ if(pickupElapsed>=0){
+  pickupElapsed+=delta;
+  const progress=clamp(pickupElapsed/PICKUP_SECONDS,0,1);
+  const pose=pickupPose(progress);
+  inspectedObject.position.set(pose.x,pose.y,pose.z);
+  inspectedObject.rotation.set(pose.pitch,pose.yaw,0);
+  inspectedObject.scale.setScalar(pose.scale);
+  if(progress>=1){pickupElapsed=-1;inspectedObject.visible=false;paused=false;refreshActionUI();}
+ }
+ if(relayElapsed>=0){
+  relayElapsed+=delta;
+  const progress=clamp(relayElapsed/INSERT_SECONDS,0,1);
+  const pose=insertionPose(progress);
+  art.relay.inserted.position.y=pose.y;
+  art.relay.inserted.rotation.x=pose.pitch;
+  art.relay.light.intensity=.2+pose.glow*1.3;
+  if(progress>=1){relayElapsed=-1;paused=false;refreshActionUI();}
  }
  if(revealLevel!==revealTarget){
   revealLevel+= (revealTarget-revealLevel)*Math.min(1,delta*.88);
@@ -453,7 +529,8 @@ function tick(timestamp){
   }
   if(steps===4)accumulator=0;
   refreshActionUI();
-  $('stage').textContent=narrativeBeat(motion.z);
+  updateStage(timestamp);
+  if(timestamp-lastCheckpointAt>6000){saveProgress();lastCheckpointAt=timestamp;}
   if(atEnd(motion))finish();
  }
  syncCamera();
@@ -462,8 +539,11 @@ function tick(timestamp){
  // not float or rotate as a generic collectible. Inspection is the player's
  // deliberate action; atmospheric light responds only to that discovery.
  art.artifact.light.intensity=.8+revealLevel*.22;
- art.relay.light.intensity=journey.installed?1.4+revealLevel*.4:0;
- renderer.render(scene,camera);
+ if(relayElapsed<0)art.relay.light.intensity=journey.installed?1.4+revealLevel*.4:0;
+ // The intro, idle pause and stationary end screens do not require
+ // continuous expensive GPU rendering. Inspect/transition frames still draw.
+ if(!contextLost&&started&&(!paused||inspecting||pickupElapsed>=0||relayElapsed>=0||
+   (finished&&revealLevel!==revealTarget)))renderer.render(scene,camera);
  if(!started||paused||delta<=0)return;
  const ms=delta*1000;samples.push(ms);if(samples.length>180)samples.shift();
  metricsElapsed+=delta;adaptiveElapsed+=delta;
@@ -496,4 +576,4 @@ window.__AA_DEV__={getState:()=>({...motion,yaw,pitch,paused,inspecting,finished
  motion={...motion,x:1.95,z:WORLD.artifact.z+1.7};motion.y=groundHeight(motion.x,motion.z);
  priorMotion={...motion};yaw=-.85;
 },goToEnd:()=>{motion={...motion,x:0,z:WORLD.endZ+.95};motion.y=groundHeight(motion.x,motion.z);priorMotion={...motion};}};
-window.addEventListener('pagehide',()=>{clearKeys();score.destroy();art.dispose();renderer.dispose()});
+window.addEventListener('pagehide',()=>{saveProgress();clearKeys();score.destroy();art.dispose();renderer.dispose()});

@@ -6,10 +6,12 @@ test('journey begins without possessions and is not gate-locked',()=>{
  assert.equal(availableAction({x:0,z:23.5},newJourney()),null);
 });
 test('First Contact is a discoverable cassette in world space',()=>{
- const p={x:TAPE.x+3.8,z:TAPE.z};
- assert.equal(availableAction(p,newJourney(),true)?.id,'examine');
- assert.equal(availableAction(p,newJourney(),false)?.id,'examine');
- assert.equal(availableAction({x:TAPE.x+8,z:TAPE.z},newJourney(),true),null);
+ const p={x:TAPE.x,z:TAPE.z+1.1};
+ assert.equal(availableAction(p,newJourney(),true,0)?.id,'examine');
+ assert.equal(availableAction(p,newJourney(),false,0)?.id,'examine');
+ assert.equal(availableAction({x:TAPE.x,z:TAPE.z+4.1},newJourney(),true,0),null);
+ assert.equal(availableAction(p,newJourney(),false,Math.PI),null,'desktop should face the cassette');
+ assert.equal(availableAction(p,newJourney(),true,Math.PI),null,'touch should not pick objects behind the player');
 });
 test('cannot pocket tape before examining, or install before taking it',()=>{
  let s=newJourney();
@@ -41,4 +43,22 @@ test('actions are idempotent and do not mutate prior state',()=>{
 test('there are no forced audio tracks besides the theme',()=>{
  assert.equal(journeyStatus(newJourney()),'NO MEDIA RECOVERED');
  assert.equal('First Contact'!=='Awaken Now',true);
+});
+
+test('front shelf is physically reachable without penetrating monumental collider',()=>{
+ // The shelf is 2.28m toward +Z relative to the 2.36m-radius plinth;
+ // the player stands outside the plinth plus the .34m capsule radius.
+ const plinthZ=-35,plinthRadius=2.36,playerRadius=.34;
+ const p={x:TAPE.x,z:plinthZ+plinthRadius+playerRadius+.04};
+ assert.ok(p.z-plinthZ>plinthRadius+playerRadius);
+ assert.ok(Math.hypot(p.x-TAPE.x,p.z-TAPE.z)<1.5);
+ assert.equal(availableAction(p,newJourney(),false,0)?.id,'examine');
+});
+test('relay requires actual approach and facing, not activation from a distance',()=>{
+ let s=doJourneyAction(newJourney(),'inspect').state;
+ s=doJourneyAction(s,'collect').state;
+ const front={x:RELAY.x,z:RELAY.z+1.35};
+ assert.equal(availableAction(front,s,false,0)?.id,'install');
+ assert.equal(availableAction(front,s,false,Math.PI),null);
+ assert.equal(availableAction({x:RELAY.x,z:RELAY.z+2.6},s,true,0),null);
 });
