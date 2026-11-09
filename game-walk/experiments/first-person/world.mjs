@@ -4,6 +4,7 @@ import {createWorldArt,whenMaterialsPrepared} from './world-art.mjs';
 import {AwakenNowScore} from './score.mjs';
 import {stickVector,lookDelta} from './control-math.mjs';
 import {InspectionMotion} from './inspection-motion.mjs';
+import {pickupPose,insertionPose,PICKUP_SECONDS,INSERT_SECONDS} from './interaction-motion.mjs';
 import {newJourney,availableAction,doJourneyAction,journeyStatus} from './journey-actions.mjs';
 
 const $=id=>document.getElementById(id);
@@ -53,6 +54,7 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 let yaw=0,pitch=-.04,motion=initialState(),priorMotion={...initialState()},walkPhase=0,started=false,paused=true;
 let inspecting=false,hasInspected=false,finished=false,pointerLockWasActive=false;
 let journey=newJourney(),inspectFromReview=false;
+let pickupElapsed=-1,relayElapsed=-1;
 let shownStageLabel=null,priorityStage=null,priorityStageUntil=0;
 let shownActionId=null;
 const stageElement=$('stage');
@@ -185,7 +187,7 @@ function clearKeys(){
  lookThumb.style.transform='translate(-50%,-50%)';
 }
 function setPaused(value){
- if(!started||finished||inspecting)return;
+ if(!started||finished||inspecting||pickupElapsed>=0||relayElapsed>=0)return;
  paused=value;clearKeys();pauseOverlay.hidden=!value;presaveRail.hidden=value;
  if(value)score.pause();else void score.play();
  $('pause').textContent=value?'Resume':'Pause';
@@ -266,6 +268,10 @@ function collectCassette(){
  if(!next.changed)return;
  journey=next.state;
  closeInspection();syncJourneyVisuals();
+ // The recovered model visibly transfers toward the player's near-camera
+ // viewpoint rather than disappearing on button press.
+ pickupElapsed=0;paused=true;inspectedObject.visible=true;
+ clearKeys();hint.hidden=true;inspectButton.hidden=true;rAction.disabled=true;
  announceStage('CASSETTE RECOVERED');
  $('status').textContent='First Contact cassette recovered. L1 or Q reviews it. Follow the causeway to the listening relay.';
  notifyAction('FIRST CONTACT · CASSETTE RECOVERED  /  L1 TO REVIEW');
@@ -278,6 +284,8 @@ function performAction(){
   const next=doJourneyAction(journey,'install');
   if(!next.changed)return;
   journey=next.state;syncJourneyVisuals();
+  relayElapsed=0;paused=true;clearKeys();
+  art.relay.inserted.visible=true;
   revealTarget=1;art.sky.material.uniforms.warm.value=.36;
   announceStage('THE SIGNAL RETURNS');
   $('status').textContent='First Contact cassette inserted into the Sunward relay. The ancient lights are responding.';
@@ -312,6 +320,8 @@ $('zoom-out').addEventListener('click',()=>inspectionRig.setZoom(inspectionRig.z
 $('restart').addEventListener('click',()=>{
  end.hidden=true;hud.hidden=false;motion=initialState();priorMotion={...motion};yaw=0;pitch=-.04;
  finished=false;started=true;inspecting=false;paused=false;hasInspected=false;presaveRail.hidden=false;
+ pickupElapsed=-1;relayElapsed=-1;inspectedObject.visible=false;
+ art.relay.inserted.position.y=.78;art.relay.inserted.rotation.x=-.18;
  journey=newJourney();inspectFromReview=false;
  priorityStage=null;priorityStageUntil=0;shownStageLabel=null;shownActionId=null;syncJourneyVisuals();
  updateStage(performance.now());
@@ -452,6 +462,24 @@ function tick(timestamp){
   inspectedObject.rotation.set(frame.pitch,frame.yaw,0);
   inspectedObject.scale.setScalar(frame.scale*8);
  }
+ if(pickupElapsed>=0){
+  pickupElapsed+=delta;
+  const progress=clamp(pickupElapsed/PICKUP_SECONDS,0,1);
+  const pose=pickupPose(progress);
+  inspectedObject.position.set(pose.x,pose.y,pose.z);
+  inspectedObject.rotation.set(pose.pitch,pose.yaw,0);
+  inspectedObject.scale.setScalar(pose.scale);
+  if(progress>=1){pickupElapsed=-1;inspectedObject.visible=false;paused=false;refreshActionUI();}
+ }
+ if(relayElapsed>=0){
+  relayElapsed+=delta;
+  const progress=clamp(relayElapsed/INSERT_SECONDS,0,1);
+  const pose=insertionPose(progress);
+  art.relay.inserted.position.y=pose.y;
+  art.relay.inserted.rotation.x=pose.pitch;
+  art.relay.light.intensity=.2+pose.glow*1.3;
+  if(progress>=1){relayElapsed=-1;paused=false;refreshActionUI();}
+ }
  if(revealLevel!==revealTarget){
   revealLevel+= (revealTarget-revealLevel)*Math.min(1,delta*.88);
   if(Math.abs(revealLevel-revealTarget)<.0001)revealLevel=revealTarget;
@@ -482,8 +510,11 @@ function tick(timestamp){
  // not float or rotate as a generic collectible. Inspection is the player's
  // deliberate action; atmospheric light responds only to that discovery.
  art.artifact.light.intensity=.8+revealLevel*.22;
- art.relay.light.intensity=journey.installed?1.4+revealLevel*.4:0;
- renderer.render(scene,camera);
+ if(relayElapsed<0)art.relay.light.intensity=journey.installed?1.4+revealLevel*.4:0;
+ // The intro, idle pause and stationary end screens do not require
+ // continuous expensive GPU rendering. Inspect/transition frames still draw.
+ if(started&&(!paused||inspecting||pickupElapsed>=0||relayElapsed>=0||
+   (finished&&revealLevel!==revealTarget)))renderer.render(scene,camera);
  if(!started||paused||delta<=0)return;
  const ms=delta*1000;samples.push(ms);if(samples.length>180)samples.shift();
  metricsElapsed+=delta;adaptiveElapsed+=delta;
