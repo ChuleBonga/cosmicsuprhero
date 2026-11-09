@@ -51,3 +51,12 @@ test('interaction priorities remain visible and touch capture is cleared on paus
 test('preview conserves rendering work when idle',()=>{
  assert.match(world,/if\(started&&\(!paused\|\|inspecting\|\|pickupElapsed>=0\|\|relayElapsed>=0/);
 });
+
+test('mobile session continuation is explicit and does not autoplay music',()=>{
+ assert.match(html,/id="start-fresh"/);
+ assert.match(world,/readCheckpoint\(checkpointStore\)/);
+ assert.match(world,/saveProgress\(\)/);
+ assert.match(world,/eraseCheckpoint\(checkpointStore\)/);
+ assert.match(world,/pendingResume\?'Continue journey':'Enter the world'/);
+ assert.match(world,/score\.play\(\)/);
+});
