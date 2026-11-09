@@ -128,7 +128,16 @@ function setPaused(value){
  $('pause').textContent=value?'Resume':'Pause';
  hint.hidden=value;inspectButton.hidden=value;
  if(value){if(document.pointerLockElement===canvas)document.exitPointerLock?.();}
- else previous=performance.now();
+ else {
+  previous=performance.now();
+  // Desktop controls need mouse look immediately after pressing Resume.
+  // Without a new lock, the character can walk but camera look is inert.
+  if(!coarse&&document.pointerLockElement!==canvas){
+   const pending=canvas.requestPointerLock?.();
+   pending?.catch?.(()=>{$('status').textContent='Click the world to restore mouse look.';});
+  }
+  canvas.focus();
+ }
  $('status').textContent=value?'Experience paused':'Experience resumed';
 }
 function begin(){
@@ -145,6 +154,9 @@ function closeInspection(){
  score.setSceneLevel(1);
  revealTarget=1;
  paused=false;previous=performance.now();
+ // A return from inspection is a user gesture: retry music if the tab
+ // backgrounded during inspection and paused the audio transport.
+ if(score.paused)void score.play();
  $('reticle').hidden=false;
  if(!coarse)canvas.requestPointerLock?.().catch(()=>{});
  canvas.focus();$('status').textContent='Returned to the world.';
@@ -262,8 +274,18 @@ area.addEventListener('pointermove',e=>{
 });
 for(const name of ['pointerup','pointercancel','lostpointercapture'])
  area.addEventListener(name,e=>{if(e.pointerId===inspectingPointer)inspectingPointer=null;});
-window.addEventListener('blur',()=>{clearKeys();if(started&&!inspecting&&!finished)setPaused(true)});
-document.addEventListener('visibilitychange',()=>{if(document.hidden){clearKeys();if(started&&!inspecting&&!finished)setPaused(true);}});
+function interruptForBackground(){
+ clearKeys();
+ if(!started||finished)return;
+ // Inspection already pauses world movement. Stop its music explicitly
+ // until the player leaves the artifact using a fresh interaction.
+ if(inspecting){score.pause();return;}
+ setPaused(true);
+}
+window.addEventListener('blur',interruptForBackground);
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden)interruptForBackground();
+});
 canvas.addEventListener('webglcontextlost',e=>{
  e.preventDefault();setPaused(true);pauseOverlay.hidden=false;
  pauseOverlay.querySelector('p').textContent='THE GRAPHICS CONTEXT WAS LOST';

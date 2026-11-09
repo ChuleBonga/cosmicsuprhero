@@ -27,28 +27,41 @@ export class AwakenNowScore{
     this.playing=false;
     this.failed=false;
     this.paused=true;
+    this.playToken=0;
+    this.destroyed=false;
     this.audio.addEventListener?.('error',()=>{
+      if(this.destroyed)return;
       this.failed=true;this.playing=false;
       this.onStatus('Awaken Now preview audio is unavailable. The world remains playable.');
     });
   }
   async play(){
+    if(this.destroyed)return false;
+    const token=++this.playToken;
     this.started=true;this.paused=false;
     this.failed=false;
     try{
+      // Keep play() in the originating user gesture. Its promise may settle
+      // after a pause, background interruption, or a newer resume request.
       const pending=this.audio.play();
       if(pending && typeof pending.then==='function')await pending;
-      if(this.paused){this.audio.pause();return false;}
+      if(token!==this.playToken || this.paused || this.destroyed){
+        if(this.paused || this.destroyed)this.audio.pause();
+        return false;
+      }
       this.playing=true;
       this.onStatus('Now playing: Awaken Now, the Arcturian Awakening game theme.');
       return true;
     }catch{
+      // A superseded browser autoplay rejection must not overwrite a newer
+      // successful playback attempt or mark the current session as failed.
+      if(token!==this.playToken || this.paused || this.destroyed)return false;
       this.playing=false;this.failed=true;
       this.onStatus('Awaken Now could not start. Use Enable music to retry; the experience still works silently.');
       return false;
     }
   }
-  pause(){this.paused=true;this.audio.pause();this.playing=false;}
+  pause(){++this.playToken;this.paused=true;this.audio.pause();this.playing=false;}
   setVolume(value){this.userVolume=clampAudio(value);}
   setMuted(value){this.muted=Boolean(value);}
   setSceneLevel(value){this.sceneLevel=clampAudio(value);}
@@ -62,5 +75,5 @@ export class AwakenNowScore{
     this.audio.currentTime=0;
     this.gain=0;this.audio.volume=0;
   }
-  destroy(){this.pause();this.audio.removeAttribute?.('src');this.audio.load?.();}
+  destroy(){this.destroyed=true;this.pause();this.audio.removeAttribute?.('src');this.audio.load?.();}
 }
