@@ -49,3 +49,56 @@ test('a blocked playback promise fails without crashing game',async()=>{
  s.audio.play=()=>Promise.reject(new Error('NotAllowedError'));
  assert.equal(await s.play(),false);assert.equal(s.failed,true);
 });
+
+test('background interruption cancels an unresolved play request',async()=>{
+ const s=new AwakenNowScore(()=>{},src=>new FakeAudio(src));
+ let release;
+ s.audio.play=()=>{s.audio.paused=false;return new Promise(resolve=>{release=resolve;});};
+ const pending=s.play();
+ s.pause();
+ release();
+ assert.equal(await pending,false);
+ assert.equal(s.audio.paused,true);
+ assert.equal(s.playing,false);
+ assert.equal(s.failed,false);
+});
+test('older play resolution does not stop a newer successful resume',async()=>{
+ const s=new AwakenNowScore(()=>{},src=>new FakeAudio(src));
+ let release,attempts=0;
+ s.audio.play=()=>{
+  s.audio.paused=false;
+  return ++attempts===1?new Promise(resolve=>{release=resolve;}):Promise.resolve();
+ };
+ const first=s.play();
+ assert.equal(await s.play(),true);
+ release();
+ assert.equal(await first,false);
+ assert.equal(s.playing,true);
+ assert.equal(s.audio.paused,false);
+});
+test('late playback rejection cannot overwrite the newer playing state',async()=>{
+ const s=new AwakenNowScore(()=>{},src=>new FakeAudio(src));
+ let reject,attempts=0;
+ s.audio.play=()=>{
+  s.audio.paused=false;
+  return ++attempts===1?new Promise((_resolve,rej)=>{reject=rej;}):Promise.resolve();
+ };
+ const first=s.play();
+ assert.equal(await s.play(),true);
+ reject(new Error('Cancelled request'));
+ assert.equal(await first,false);
+ assert.equal(s.failed,false);
+ assert.equal(s.playing,true);
+});
+test('destroy invalidates pending playback without revival',async()=>{
+ const s=new AwakenNowScore(()=>{},src=>new FakeAudio(src));
+ let release;
+ s.audio.play=()=>new Promise(resolve=>{release=resolve;});
+ const pending=s.play();
+ s.destroy();
+ release();
+ assert.equal(await pending,false);
+ assert.equal(s.playing,false);
+ assert.equal(s.audio.paused,true);
+ assert.equal(await s.play(),false);
+});
