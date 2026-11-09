@@ -17,12 +17,13 @@ test('exit and album links never trap visitors on isolated game-host root',()=>{
  assert.match(html,/href="https:\/\/cosmicsuprhero\.vercel\.app\/"/);
 });
 test('mobile input and inspection affordances are real touch targets',()=>{
- for(const id of ['touch-stick','touch-stick-thumb','inspect','zoom-in','zoom-out','pause-score-volume','pause','resume'])
+ for(const id of ['touch-stick','touch-stick-thumb','look-stick','look-stick-thumb','r-action','l-action','take-tape','inspect','zoom-in','zoom-out','pause-score-volume','pause','resume'])
   assert.match(html,new RegExp('id="'+id+'"'),id);
- assert.match(world,/canInspectHere\(\)/);
+ assert.match(world,/availableAction\(motion,journey,coarse\)/);
  assert.match(world,/inspectionRig\.setZoom/);
  assert.match(world,/pauseScoreVolume\.addEventListener/);
  assert.match(css,/min-width:48px;min-height:48px/);
+ assert.match(css,/\.shoulder-button\{[^}]*min-height:48px/);
  assert.match(css,/\.toolbar button,\.toolbar a,\.soundbar button\{min-height:44px\}/);
 });
 test('portrait, short-screen and landscape layouts include safe-area offsets and scrolling',()=>{
