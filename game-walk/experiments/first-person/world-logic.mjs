@@ -17,7 +17,7 @@ export const WORLD_OBSTACLES = Object.freeze([
   Object.freeze({id:'fallen-spire',x:3.65,z:-54,radius:2.05}),
   Object.freeze({id:'west-waystone',x:-4.1,z:-73,radius:1.25}),
   Object.freeze({id:'east-waystone',x:4.1,z:-91,radius:1.25}),
-  Object.freeze({id:'cassette-relay',x:0,z:-82,radius:.82})
+  Object.freeze({id:'cassette-relay',x:2.15,z:-82,radius:.82})
 ]);
 const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
 const mix=(a,b,t)=>a+(b-a)*t;
