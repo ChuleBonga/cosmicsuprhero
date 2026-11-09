@@ -49,7 +49,7 @@ test('interaction priorities remain visible and touch capture is cleared on paus
  assert.match(world,/releasePointerCapture/);
 });
 test('preview conserves rendering work when idle',()=>{
- assert.match(world,/if\(started&&\(!paused\|\|inspecting\|\|pickupElapsed>=0\|\|relayElapsed>=0/);
+ assert.match(world,/if\(!contextLost&&started&&\(!paused\|\|inspecting\|\|pickupElapsed>=0\|\|relayElapsed>=0/);
 });
 
 test('mobile session continuation is explicit and does not autoplay music',()=>{
