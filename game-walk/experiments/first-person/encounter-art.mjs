@@ -120,61 +120,6 @@ function structuralWings(root,stone,oxide,groundHeight,x,z,originY,halfWidth){
  }
  return group;
 }
-function buildVessel(core,surfaces={}){
- const cobalt=surfaces.mineralSurface||new THREE.MeshStandardMaterial({name:'Cobalt mineral shell',color:0x253d61,metalness:.09,roughness:.78});
- const mineral=new THREE.MeshPhysicalMaterial({name:'Deep blue crystalline memory',color:0x53779c,metalness:.14,roughness:.24,clearcoat:.48,clearcoatRoughness:.31});
- const agedGold=new THREE.MeshStandardMaterial({name:'Oxidized warm metal',color:0x8f6b54,metalness:.48,roughness:.53});
- const blackIron=surfaces.oxideSurface||new THREE.MeshStandardMaterial({name:'Buried iron ligatures',color:0x293347,metalness:.48,roughness:.66});
- // Relic body: fractured mineral, not a generic glowing collectible.
- const body=mesh(core,irregularStone(.74,3,14),cobalt,0,.41,0,true);
- body.name='Fractured cobalt carapace';
- const memory=mesh(core,irregularStone(.46,2,81),mineral,0,.52,.38);
- memory.name='Exposed crystalline interior';
- // Twin interrupted metal bindings surround the blue stone.
- const ringGeom=new THREE.TorusGeometry(.845,.061,7,15,TAU/9*.77);
- ringGeom.rotateX(Math.PI/2);
- const ringSegments=new THREE.InstancedMesh(ringGeom,agedGold,16);
- const o=new THREE.Object3D();let nr=0;
- for(let layer=0;layer<2;layer++)for(let i=0;i<9;i++){
-  if((i===3&&layer===0)||(i===6&&layer===1))continue;
-  const a=i*TAU/9+layer*.14;
-  o.position.set(0,.19+layer*.57,0);
-  o.rotation.set(0,a,0);o.scale.set(layer?.92:1,1,layer?.92:1);o.updateMatrix();
-  ringSegments.setMatrixAt(nr++,o.matrix);
- }
- ringSegments.count=nr;ringSegments.instanceMatrix.needsUpdate=true;
- ringSegments.name='Two fractured hand-worked bindings';core.add(ringSegments);
- // Four non-symmetrical metal anchors establish an identifiable silhouette.
- const silhouette=new THREE.Shape();
- silhouette.moveTo(-.14,-.48);silhouette.lineTo(-.23,-.11);
- silhouette.lineTo(-.17,.18);silhouette.lineTo(-.26,.51);
- silhouette.lineTo(.03,.66);silhouette.lineTo(.18,.43);
- silhouette.lineTo(.13,-.04);silhouette.lineTo(.21,-.43);
- silhouette.lineTo(-.14,-.48);
- const plate=new THREE.ExtrudeGeometry(silhouette,{depth:.07,bevelEnabled:true,bevelThickness:.012,bevelSize:.012,bevelSegments:1});
- for(let i=0;i<4;i++){
-  const a=i*TAU/4+.16+(i%2)*.07;
-  const fin=mesh(core,plate,blackIron,Math.sin(a)*.73,.42,Math.cos(a)*.73,true);
-  fin.rotation.y=a;fin.rotation.z=(i%2?.05:-.07);fin.name='Original binding fin '+(i+1);
- }
- const studGeom=new THREE.IcosahedronGeometry(.047,0);
- const studs=new THREE.InstancedMesh(studGeom,agedGold,28);
- for(let i=0;i<28;i++){
-  const a=i*TAU/28;
-  o.position.set(Math.sin(a)*.785,.41+Math.sin(a*3)*.07,Math.cos(a)*.785);
-  o.rotation.set(0,a,0);o.scale.set(1,1,.5);o.updateMatrix();studs.setMatrixAt(i,o.matrix);
- }
- studs.instanceMatrix.needsUpdate=true;studs.name='Hand-worked metal pin heads';core.add(studs);
- const cuts=new THREE.InstancedMesh(new THREE.BoxGeometry(.028,.18,.018),agedGold,16);
- for(let i=0;i<16;i++){
-  const a=i*TAU/16;
-  o.position.set(Math.sin(a)*.63,.39+Math.sin(a*2)*.16,Math.cos(a)*.63);
-  o.rotation.set(0,a,Math.sin(a*3)*.19);o.scale.set(1,1,1);o.updateMatrix();
-  cuts.setMatrixAt(i,o.matrix);
- }
- cuts.instanceMatrix.needsUpdate=true;cuts.name='Gold repairs to fractured shell';core.add(cuts);
- return {body,memory};
-}
 /**
  * Build a complete, self-contained First Contact moment.
  * `opts.root` is a scene Group; opts.x,z specify collider center.
