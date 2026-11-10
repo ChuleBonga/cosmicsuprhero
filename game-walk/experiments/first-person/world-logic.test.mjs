@@ -36,10 +36,13 @@ test('artifact requires physical closeness and facing',()=>{
  assert.ok(inspectDistance(s)<WORLD.inspectDistance);
  assert.equal(canInspect(s,0),true);assert.equal(canInspect(s,Math.PI),false);
 });
-test('relic base is not walk-through',()=>{
+test('floor-level relic remains solid without a giant invisible plinth',()=>{
+ const relic=WORLD_OBSTACLES.find(o=>o.id==='first-contact-find');
+ assert.ok(relic);
  let s=initialState();for(let i=0;i<2100;i++)s=stepMovement(s,1,0,0);
  const dist=Math.hypot(s.x-WORLD.artifact.x,s.z-WORLD.artifact.z);
- assert.ok(dist>=1.82+WORLD.radius-.02);
+ assert.ok(dist>=relic.radius+WORLD.radius-.02);
+ assert.ok(relic.radius<1.2);
 });
 test('story beats are one uninterrupted spatial journey',()=>{
  assert.equal(narrativeBeat(15),'THE ARRIVAL');
