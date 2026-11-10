@@ -13,7 +13,7 @@ export const WORLD = Object.freeze({
 // All obstacle colliders share coordinates with the authored 3D meshes.
  // Radius excludes the player's own horizontal capsule footprint.
 export const WORLD_OBSTACLES = Object.freeze([
-  Object.freeze({id:'first-contact-plinth',x:WORLD.artifact.x,z:WORLD.artifact.z,radius:2.36}),
+  Object.freeze({id:'first-contact-find',x:WORLD.artifact.x,z:WORLD.artifact.z,radius:1.06}),
   Object.freeze({id:'fallen-spire',x:3.65,z:-54,radius:2.05}),
   Object.freeze({id:'west-waystone',x:-4.1,z:-73,radius:1.25}),
   Object.freeze({id:'east-waystone',x:4.1,z:-91,radius:1.25})
