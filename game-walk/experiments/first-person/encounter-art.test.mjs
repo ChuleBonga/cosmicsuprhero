@@ -14,11 +14,11 @@ function makeEncounter(){
  model.root.updateMatrixWorld(true);
  return {model,parent};
 }
-test('pedestal radius exactly matches navigation collision proxy',()=>{
- const collider=WORLD_OBSTACLES.find(x=>x.id==='first-contact-plinth');
+test('ground find footprint matches the navigation collider',()=>{
+ const collider=WORLD_OBSTACLES.find(x=>x.id==='first-contact-find');
  assert.ok(collider);
- assert.equal(CONTACT_SPEC.plinthRadius,collider.radius);
- assert.equal(CONTACT_SPEC.innerPavingRadius<=collider.radius,true);
+ assert.equal(CONTACT_SPEC.findRadius,collider.radius);
+ assert.ok(collider.radius<1.2,'avoid keeping the obsolete 2.36 m stage blocker');
 });
 test('encounter is built at defined world coordinates',()=>{
  const {model,parent}=makeEncounter();
@@ -52,7 +52,7 @@ test('all encounter positions and geometry vertices remain finite',()=>{
  assert.ok(meshes>12&&meshes<52,'reasonable authored mesh / draw count');
  assert.ok(vertices>900&&vertices<55000,'geometric detail within first-slice scope');
 });
-test('architectural wings remain beyond the physical walking corridor',()=>{
+test('fallen architectural remnants remain beyond the walking corridor',()=>{
  const {model}=makeEncounter();
  const wings=model.root.getObjectByName('Fractured supporting wings');
  assert.ok(wings);
@@ -60,15 +60,17 @@ test('architectural wings remain beyond the physical walking corridor',()=>{
  const fins=wings.children.filter(o=>o.geometry?.type==='ExtrudeGeometry');
  assert.equal(fins.length,2);
  for(const fin of fins)assert.ok(Math.abs(fin.position.x)>threshold);
+ assert.notEqual(fins[0].scale.x,fins[1].scale.x,'ruin fragments should not be mirror-image staging');
 });
 test('surrounding stones are real instanced objects, not image planes',()=>{
  const {model}=makeEncounter();
  const objects=[];
  model.root.traverse(o=>{if(o.isInstancedMesh)objects.push(o)});
  assert.ok(objects.length>=5);
- const paving=objects.filter(o=>o.name.includes('Buried ring paving'));
+ const paving=objects.filter(o=>o.name.includes('Partly buried roadway fragments'));
  assert.equal(paving.length,2);
  assert.ok(paving.every(p=>p.count>15));
+ assert.ok(objects.some(o=>o.name.includes('Low fragmented stone and dust')));
 });
 test('relic materials are solid physically based surfaces',()=>{
  const {model}=makeEncounter();
@@ -77,4 +79,17 @@ test('relic materials are solid physically based surfaces',()=>{
  assert.ok(materials.some(m=>m.isMeshPhysicalMaterial));
  assert.ok(materials.every(m=>m.transparent!==true));
  assert.ok(materials.every(m=>m.roughness>=0&&m.roughness<=1));
+});
+
+test('found object is near the terrain rather than on a display altar',()=>{
+ const {model}=makeEncounter();
+ const terrainY=groundHeight(WORLD.artifact.x,WORLD.artifact.z);
+ const bounds=new THREE.Box3().setFromObject(model.core);
+ assert.ok(bounds.min.y>terrainY-.35,'relic should not be buried implausibly deep');
+ assert.ok(bounds.min.y<terrainY+.16,'relic must not float above the ground');
+ assert.ok(bounds.max.y<terrainY+1.65,'relic remains at floor scale');
+ assert.ok(model.core.rotation.z>.6,'relic is fallen, not upright on display');
+ assert.equal(model.root.getObjectByName('Plinth collision match (radius 2.36 m)'),undefined);
+ assert.equal(model.root.getObjectByName('Weathered metal seat'),undefined);
+ assert.equal(model.root.getObjectByName('Faceted stone lower vessel'),undefined);
 });

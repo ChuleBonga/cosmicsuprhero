@@ -327,7 +327,7 @@ function gateway(scene,z,stone,oxide,scale=1){
 function spatialObstacles(scene,stone,oxide,warm){
  const group=new THREE.Group();group.name='Physical path landmarks';scene.add(group);
  for(const data of WORLD_OBSTACLES){
-  if(data.id==='first-contact-plinth')continue;
+  if(data.id==='first-contact-find')continue;
   const baseY=groundHeight(data.x,data.z);
   const tower=new THREE.Group();tower.name=data.id;
   tower.position.set(data.x,baseY,data.z);group.add(tower);

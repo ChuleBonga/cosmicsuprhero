@@ -324,7 +324,7 @@ function tick(timestamp){
   }
   if(steps===4)accumulator=0;
   const nearby=canInspect(motion,yaw);hint.hidden=!nearby;inspectButton.hidden=!nearby;
-  if(nearby)hint.textContent=coarse?'AN OBJECT HAS BEEN FOUND':'E / EXAMINE THE FRAGMENT';
+  if(nearby)hint.textContent=coarse?'AN OBJECT LIES IN THE DUST':'E / EXAMINE THE FOUND OBJECT';
   $('stage').textContent=narrativeBeat(motion.z);
   if(atEnd(motion))finish();
  }
@@ -333,7 +333,7 @@ function tick(timestamp){
  // The relic is a heavy material object anchored to its plinth. It does
  // not float or rotate as a generic collectible. Inspection is the player's
  // deliberate action; atmospheric light responds only to that discovery.
- art.artifact.light.intensity=.8+revealLevel*.22;
+ art.artifact.light.intensity=.18+revealLevel*.11;
  renderer.render(scene,camera);
  if(!started||paused||delta<=0)return;
  const ms=delta*1000;samples.push(ms);if(samples.length>180)samples.shift();

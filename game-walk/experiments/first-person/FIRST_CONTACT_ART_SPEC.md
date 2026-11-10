@@ -1,59 +1,43 @@
-# First Contact — Encounter Art Bible (Build 04)
+# First Contact — Grounded Discovery Art Specification (Build 06)
 
-## Creative intention
-First Contact should feel like an object with physical weight, provenance, and a reason to occupy this location. Its first encounter should change how the visitor perceives the environment, without inventing new album lore or adding a required quest. This is **a five-minute first-person story toward the album pre-save**, not a horror game or an inventory simulator.
+## Artist instruction
+The user has explicitly rejected the earlier abstract pedestal presentation: **the artifacts found should be on the floor**. The 43-image visual ZIP additionally points toward tangible, weathered, handheld recording technology, physically credible ruins, cobalt/ochre atmospheric landscapes, ancestral dignity and tactile surface workmanship. The actual album art remains the primary visual authority.
 
-The principal influences remain the supplied *Arcturian Awakening* visual identity:
-- Deep cobalt and indigo sky, huge red-orange sun, indigo mountains in ochre sunlight.
-- Weathered, ancient, isolated planetary atmosphere.
-- Physically coherent stone, mineral, oxidized metal, sun direction and scale.
-- Restrained late-1970s cinematic sci-fi presence; no generic glowing loot, ornate sci-fi widgets, or copied game props.
+## Scene intention
+First Contact should feel **found**, not exhibited. A forgotten object has fallen or been exposed by erosion among broken pieces of an old walkway. The visitor notices it from ordinary eye height, approaches naturally, inspects the actual geometry, and continues without a compulsory collection action.
 
-## Authored asset grouping
-All dimensions are in **metres**, +Y up and -Z forward. Root placed at the existing First Contact obstacle center: (x=-0.9, z=-35) with height derived from groundHeight.
+No hovering object. No tall pedestal. No rings of staged glyphs. No mandatory collectible gate. No photorealistic object copied from the mood board.
 
-### 1. The listening plaza
-- Buried concentric stone paving rings at radii ~3.1m and ~4.4m, with deliberately missing modules.
-- The pavers are near flush with underlying terrain: not unmodeled stair obstacles.
-- Additional tessellated stone and radial inscriptions remain within the plinth's physical collision area.
-- Two broken load-bearing stone wings beyond the playable corridor suggest architectural scale without presenting unmodeled obstacles to the player.
+## Actual Build 06 design
+- Keep the original cobalt mineral shell, visible blue inner surface and oxidized metal repairs **as an interim original relic** until an alternative physical recorder-inspired design is artist-reviewed.
+- Place the original `core` at **ground height**, rotated to rest on its side, with limited burial, rather than at the previous 2.39 m pedestal offset.
+- Eliminate the raised cylindrical plinth, metal seat, stone shoulders, trophy crown and perfect radial inscription display.
+- Keep fragments of a degraded pathway near flush with terrain, plus low scattered rubble.
+- Retain weathered architecture beyond the traversable corridor as a damaged, asymmetrical ruin rather than symmetrical twin framing.
+- Keep the point light quiet: the object is discovered by material contrast and environmental context, not magical beacon intensity.
 
-### 2. The pedestal
-- Tapered, weathered base with **2.36m collision radius**, matching `WORLD_OBSTACLES` exactly.
-- Layered mineral/metal seating and a physically continuous vessel contact.
-- A small, restrained point-light bounce, not a bloom-driven glow.
+## Physical contracts
+1 unit = 1 metre; +Y up, -Z into the route.
+- Root origin remains at `WORLD.artifact` and actual `groundHeight`.
+- `CONTACT_SPEC.findRadius` matches the First Contact `WORLD_OBSTACLES` proxy; no invisible 2.36 m plinth collider remains.
+- Short decorative stones must not form impassable walls. Taller ruins remain outside the walkable corridor.
+- Contact AABB must be near ground; test the bounds, not just the parent's transform.
+- Discovery distance is still permissive, with no demand to gaze precisely downward; keep mobile usability.
+- Original model/geometry is cloned for tactile inspection; world object remains stationary.
 
-### 3. The original vessel
-- Irregular cobalt mineral shell with an exposed blue mineral interior.
-- Oxidized metal binding fragments, asymmetrical anchor fins, pin-heads and surface repairs.
-- Finite original geometry, opaque PBR materials, instanced repeated details.
-- The artifact is stationary while in the world. Only visitor examination rotates the close-up geometry.
-- One scene object is cloned for examination, retaining the same geometry and materials.
+## Later hero-asset alternative (requires artist approval)
+Study an **original** weathered portable listening device with real buttons, imperfect casing, exposed mechanism, speaker vents, battery contacts and blue mineral elements. The user's reference images include cassette tape, old audio hardware, several Sony Walkman concepts and modular storage pieces. **Do not copy any commercial device's shape, labels, logos or exact trade dress.** Before replacing the current relic, create two original silhouettes, compare them at game scale and select with artist approval.
 
-## Tactile interaction
-- The visitor must approach and face the object. Existing proximity and facing checks are retained.
-- The object eases from farther away into an inspectable close-up, instead of snapping directly into the camera.
-- Mouse/touch drag and keyboard arrow keys rotate it. Wheel and +/- keys zoom within safe limits.
-- Esc or the visible Return control exits. No collectible count, no need to obtain the object to finish.
-- During the examination, *Awaken Now* is attenuated. The subsequent lighting response across the environment is restrained and does not overwrite the composition.
+## Cultural handling
+The provided Xhosa visual references, ankh image, historical Kemet portraiture and Afrofuturist figures convey cultural presence. They are not a public texture atlas or a free set of sacred glyphs. Research meaning and obtain explicit creative direction before using recognizable cultural signs. Avoid aesthetic homogenization of distinct African traditions.
 
-## Integration contracts
-- `encounter-art.mjs`: pure Three.js geometry constructor. Does not access DOM or network.
-- `inspection-motion.mjs`: render-independent easing and input functions, directly unit testable.
-- `world-art.mjs`: imports the original encounter and applies existing material families; remains owner of world lighting and terrain.
-- `world.mjs`: keeps playback, input, interaction, camera and render control separate.
-- `world-logic.mjs`: owns authoritative physical obstacle dimensions and fixed 60Hz step movement.
-- `encounter-art.test.mjs`: checks physically aligned radius, finite geometry, instanced paving, clone fidelity, material properties and structural-wing placement.
-- `inspection-motion.test.mjs`: checks input locks, keyboard rotation, bounded zoom and stable easing.
+## Tests and acceptance
+- `encounter-art.test.mjs`: approximate terrain-to-bounds contact, grounded scale and posture, absence of obsolete altar parts, finite geometry, sensible material setup and off-path ruins.
+- `world-logic.test.mjs`: updated collider footprint and existing fixed-step navigation checks.
+- Browser review: screenshots from a GPU-capable browser at eye height, approach and inspection, on desktop and portrait phone; ensure the relic is visible and convincingly grounded. Check no hovering, z-fighting, foot skating, navigation traps or excessive darkness.
+- Music: visitor-initiated Awaken Now in separate preview; pause/mute/ducking must not prevent progress.
+- Performance: inspect draw calls, frame-time p95 and actual device behavior, not just passing compilation.
 
-## Art and technical review gates
-**Not achieved by a successful build:**
-1. Visually compare the live WebGL scene against the supplied album art in a GPU-capable browser. Review at actual player eye height and during object rotation, not merely as an attractive camera still.
-2. Refine the prop in a dedicated modelling package (e.g., Blender), bake sculpted microdetail and unique wear into normal/ORM textures, author high-quality UVs, and export production GLB with Meshopt/KTX2 where appropriate.
-3. Build a collision test scene showing actual character capsule, prop bounds and paved ground contact at walking and inspection distances.
-4. Profile desktop and specific mobile devices. Target p95 frame time <=16.67ms at nominal 60Hz with quality settings and device conditions reported. Do not equate Vite build output or deterministic simulation tests with measured frame performance.
-5. Complete the musical and narrative cue sheet for the approved *Awaken Now* excerpt; maintain the existing production audio-publication safeguard.
-6. Confirm focus behavior, reduced motion, screen-reader interaction text, touch and mouse ergonomics, load and failure states.
+**Remaining unknowns:** Actual close-up aesthetic quality, physical-phone comfort, perceptual believability and stable 60 FPS. No source image from the user's ZIP is committed or deployed.
 
-## Production safety
-Feature branch / draft review only. The public website and its old /play/ route stay unchanged until actual visual quality, usability, audio rights and performance are approved.
+See `DESIGN.md` for the world-wide visual contract.

@@ -1,17 +1,16 @@
 /**
- * Arcturian Awakening / First Contact — an original, physically authored
- * encounter sculpture. Built from reusable THREE geometries and instances.
+ * Arcturian Awakening / First Contact — an original grounded found object. Built from reusable THREE geometries and instances.
  *
- * Contract: origin at the existing plinth collider (world-logic.mjs),
- * +Y up, 1 unit = 1 metre. Standing stone elements remain outside the
- * navigable corridor; exterior paving sits nearly flush with the terrain.
+ * Contract: origin at the existing encounter collider (world-logic.mjs),
+ * +Y up, 1 unit = 1 metre. The relic rests in eroded ground with roadway
+ * fragments; taller ruined structures remain outside the walking corridor.
  * No downloaded scans, third-party models, or unrelated game iconography.
  */
 import * as THREE from 'three';
 
 export const CONTACT_SPEC=Object.freeze({
-  plinthRadius:2.36, plinthTopY:.37, vesselHeight:2.65,
-  innerPavingRadius:2.28, outerPavingRadius:4.8
+  findRadius:1.06, coreScale:.76, coreRestHeight:.45,
+  debrisRadius:4.8
 });
 const TAU=Math.PI*2;
 const stoneNoise=n=>Math.sin(n*12.9898)*43758.5453-Math.floor(Math.sin(n*12.9898)*43758.5453);
@@ -32,67 +31,51 @@ function irregularStone(radius=1,detail=2,seed=3){
  p.needsUpdate=true;g.computeVertexNormals();
  return g;
 }
+/** Fragmented old footpath, not a ceremonial ring announcing the find.
+ * Near-flush pieces intentionally keep the physical ground walkable. */
 function outerPaving(root,stone,warm,groundHeight,originX,originY,originZ){
- const g=new THREE.BoxGeometry(.82,.085,.72,2,1,2);
- // Geometric chipped corners produce real silhouette variation in close-up.
- const p=g.attributes.position;
- for(let i=0;i<p.count;i++){
-  if(p.getY(i)>0){
-   const x=p.getX(i),z=p.getZ(i);
-   p.setXYZ(i,x*(.97+.025*Math.sin(i*3.1)),p.getY(i)+.009*Math.sin(i*7.5),z*(.96+.03*Math.cos(i*4.1)));
-  }
- }
- p.needsUpdate=true;g.computeVertexNormals();
- const o=new THREE.Object3D(),outer=[];
- for(let ring=0;ring<2;ring++){
-  const radius=ring===0?3.12:4.42,number=ring===0?24:34;
-  const result=new THREE.InstancedMesh(g,ring===0?stone:warm,number);
-  let written=0;
-  for(let i=0;i<number;i++){
-   if((i*7+ring*3)%17===0||(ring===1&&i===8))continue;
-   const a=i*TAU/number+ring*.13;
-   const x=Math.cos(a)*radius,z=Math.sin(a)*radius;
-   // Stone is embedded in soil rather than hovering above it.
+ const geom=new THREE.BoxGeometry(.88,.085,.72,2,1,2),dummy=new THREE.Object3D();
+ const groups=[];
+ for(let lane=0;lane<2;lane++){
+  const group=new THREE.InstancedMesh(geom,lane===0?stone:warm,32);let written=0;
+  for(let i=0;i<34;i++){
+   if((i*11+lane*7)%13<3)continue;
+   const drift=Math.sin(i*2.3+lane*1.17);
+   const x=(lane===0?-1:1)*(1.6+.23*drift),z=-5.5+i*.33+.11*Math.sin(i*.87+lane);
    const y=groundHeight(originX+x,originZ+z)-originY-.043;
-   o.position.set(x,y,z);
-   o.rotation.set(0,a+Math.PI/2+Math.sin(i*2.9)*.04,(stoneNoise(i+ring*100)-.5)*.035);
-   o.scale.set(.81+(i%4)*.068,1,.8+(i%3)*.05);
-   o.updateMatrix();result.setMatrixAt(written++,o.matrix);
+   dummy.position.set(x,y,z);
+   dummy.rotation.set(0,.11*Math.sin(i*.79+lane),0);
+   dummy.scale.set(.73+(i%4)*.09,1,.72+(i%3)*.09);dummy.updateMatrix();
+   group.setMatrixAt(written++,dummy.matrix);
   }
-  result.count=written;result.instanceMatrix.needsUpdate=true;
-  result.castShadow=false;result.receiveShadow=true;result.name='Buried ring paving '+ring;
-  root.add(result);outer.push(result);
+  group.count=written;group.instanceMatrix.needsUpdate=true;
+  group.receiveShadow=true;group.castShadow=false;
+  group.name='Partly buried roadway fragments '+lane;
+  root.add(group);groups.push(group);
  }
- return outer;
+ return groups;
 }
-function innerInlay(root,stone,oxide){
- const surface=new THREE.Group();surface.name='Contact plinth inscriptions';root.add(surface);
- const fragment=new THREE.RingGeometry(1.81,2.22,5,1,0,TAU/32*.84);
- fragment.rotateX(-Math.PI/2);
- const tiles=new THREE.InstancedMesh(fragment,stone,28),o=new THREE.Object3D();
- let count=0;
- for(let i=0;i<32;i++){
-  if(i===5||i===17||i===18||i===29)continue;
-  o.position.set(0,.385,0);
-  o.rotation.set(0,i*TAU/32,0);
-  o.scale.set(1,1,1);o.updateMatrix();tiles.setMatrixAt(count++,o.matrix);
+/** Eroded fragments around the fallen object: physically short stones rather
+ * than a perfect circular shrine or newly invented glyph marks. */
+function groundWear(root,stone,warm,groundHeight,originX,originY,originZ){
+ const group=new THREE.Group();group.name='Ground-level fall and erosion';root.add(group);
+ const geometry=new THREE.DodecahedronGeometry(.22,0),dummy=new THREE.Object3D();
+ for(let kind=0;kind<2;kind++){
+  const scatter=new THREE.InstancedMesh(geometry,kind?warm:stone,30);
+  for(let i=0;i<30;i++){
+   const a=i*2.39996+kind*.74,r=.95+(i%7)*.39;
+   const x=Math.cos(a)*r,z=Math.sin(a)*r*.85;
+   const y=groundHeight(originX+x,originZ+z)-originY-.025;
+   dummy.position.set(x,y,z);
+   dummy.rotation.set(i*.31,i*1.13,i*.29);
+   dummy.scale.set(.46+(i%4)*.18,.1+(i%3)*.04,.48+(i%5)*.13);
+   dummy.updateMatrix();scatter.setMatrixAt(i,dummy.matrix);
+  }
+  scatter.instanceMatrix.needsUpdate=true;
+  scatter.receiveShadow=true;scatter.castShadow=false;
+  scatter.name='Low fragmented stone and dust '+kind;group.add(scatter);
  }
- tiles.count=count;tiles.instanceMatrix.needsUpdate=true;
- tiles.name='Fractured inset stone tessellation';surface.add(tiles);
- const glyphs=new THREE.InstancedMesh(new THREE.BoxGeometry(.037,.012,.15),oxide,40);
- count=0;
- for(let i=0;i<40;i++){
-  if(i%11===0)continue;
-  const a=i*TAU/40;
-  const rad=1.31+(i%2)*.14;
-  o.position.set(Math.cos(a)*rad,.59,Math.sin(a)*rad);
-  o.rotation.set(0,a+Math.PI/2,0);
-  o.scale.set(1,1,.68+(i%4)*.16);
-  o.updateMatrix();glyphs.setMatrixAt(count++,o.matrix);
- }
- glyphs.count=count;glyphs.instanceMatrix.needsUpdate=true;
- glyphs.name='Original radial intaglio inscriptions';surface.add(glyphs);
- return surface;
+ return group;
 }
 function structuralWings(root,stone,oxide,groundHeight,x,z,originY,halfWidth){
  const group=new THREE.Group();group.name='Fractured supporting wings';root.add(group);
@@ -109,7 +92,10 @@ function structuralWings(root,stone,oxide,groundHeight,x,z,originY,halfWidth){
   const px=side*outer;
   const py=groundHeight(x+px,z)-originY;
   const main=mesh(group,geo,stone,px,py,1.1,true);
-  main.rotation.y=side*.16;main.rotation.z=side*.058;
+  // The ruin is damaged and asymmetrical, not a paired altar stage.
+  main.scale.setScalar(side===-1?.37:.57);
+  main.rotation.y=side*.24;
+  main.rotation.z=side===-1?-.22:.27;
   const foil=mesh(group,new THREE.BoxGeometry(.095,5.8,.1),oxide,px-side*.78,py+5.8,3.05);
   foil.rotation.z=side*.075;foil.castShadow=false;
   const base=mesh(group,new THREE.CylinderGeometry(2.05,2.35,.34,11),stone,px,py+.11,2.05);
@@ -186,23 +172,17 @@ export function createFirstContactEncounter(parent,opts){
  const ground=groundHeight(x,z);
  root.position.set(x,ground,z);
  parent.add(root);
- const plinth=mesh(root,new THREE.CylinderGeometry(2.14,CONTACT_SPEC.plinthRadius,.38,32),stone,0,.19,0,true);
- plinth.name='Plinth collision match (radius 2.36 m)';
- const inset=mesh(root,new THREE.CylinderGeometry(1.87,2.04,.23,32),oxide,0,.50,0,true);
- inset.name='Weathered metal seat';
- const shoulders=mesh(root,new THREE.CylinderGeometry(1.45,1.72,1.43,12),stone,0,1.33,0,true);
- shoulders.name='Faceted stone lower vessel';
- const collar=mesh(root,new THREE.TorusGeometry(1.23,.11,8,40),oxide,0,2.08,0);
- collar.rotation.x=Math.PI/2;
- const upper=mesh(root,new THREE.CylinderGeometry(.97,1.24,.21,12),warm,0,2.16,0);
- const ornaments=innerInlay(root,stone,oxide);
+ // Floor discovery: no giant stand, raised metal seat or stone crown.
+ const ornaments=groundWear(root,stone,warm,groundHeight,x,ground,z);
  outerPaving(root,stone,warm,groundHeight,x,ground,z);
  structuralWings(root,stone,oxide,groundHeight,x,z,ground,halfWidth);
- const core=new THREE.Group();core.name='First Contact / inspectable original artifact';
- core.position.set(0,2.39,0);root.add(core);
+ const core=new THREE.Group();core.name='First Contact / fallen inspectable artifact';
+ core.position.set(.15,CONTACT_SPEC.coreRestHeight,.15);
+ core.rotation.set(.04,.13,1.05);
+ core.scale.setScalar(CONTACT_SPEC.coreScale);
+ root.add(core);
  buildVessel(core);
- // Small light bounce. No bloom or neon. Architectural silhouette remains primary.
- const light=new THREE.PointLight(0xe8a676,.8,7,2);
- light.position.set(0,3.17,.1);root.add(light);
+ const light=new THREE.PointLight(0xe8a676,.18,3.5,2);
+ light.position.set(0,.65,.1);root.add(light);
  return {root,core,light,ornaments};
 }
