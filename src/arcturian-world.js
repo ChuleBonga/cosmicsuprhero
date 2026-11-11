@@ -3,7 +3,8 @@
 const $=(q,root=document)=>root.querySelector(q);
 const $$=(q,root=document)=>Array.from(root.querySelectorAll(q));
 const state={chapter:1,echoes:new Set(),waypoint:0,completed:false};
-// The only public music asset is the explicitly approved 45-second excerpt.
+// Public album preview audio is disabled until a reachable, cleared excerpt is provided.
+// Preserve the playback implementation for later activation, but never attempt the old Adobe link.
 const music=$("#awaken-audio");
 const musicButton=$("#music-toggle");
 const musicAction=$("#music-action");
@@ -11,6 +12,8 @@ const musicIcon=$("#music-icon");
 const musicStatus=$("#music-status");
 const musicTime=$("#music-time");
 const musicScrub=$("#music-scrub");
+const previewAvailable=music.dataset.previewAvailable==="true"&&Boolean(music.getAttribute("src"));
+if(!previewAvailable){musicButton.disabled=true;musicScrub.disabled=true;}
 let soundDeclined=false;
 let musicFrame=0;
 let lastMoment="";
@@ -52,6 +55,7 @@ function liveMusicTick(){
   if(!music.paused&&!music.ended){musicFrame=requestAnimationFrame(liveMusicTick);}
 }
 async function startMusic(){
+  if(!previewAvailable)return;
   soundDeclined=false;
   try{
     if(music.ended||music.currentTime>=excerptLength-.25)music.currentTime=0;
@@ -150,7 +154,7 @@ function setChapter(chapter){
 }
 function startEncounter(){
   if(state.chapter!==1)return;
-  if(!soundDeclined&&music.paused&&!music.ended){void startMusic();}
+  if(previewAvailable&&!soundDeclined&&music.paused&&!music.ended){void startMusic();}
   cue("First Contact");
   setChapter(2);
 }

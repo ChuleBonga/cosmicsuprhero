@@ -328,3 +328,13 @@ footer{background:var(--wine);color:#f9eddf;padding:45px clamp(20px,6vw,100px) 2
 .build-preview__links>span{font:500 10px/1.5 var(--sans);letter-spacing:.06em;color:#876e7c;margin-top:.35rem;}
 @media(max-width:900px){.build-preview{grid-template-columns:1fr;gap:1.5rem;padding-inline:clamp(1.25rem,5vw,3.5rem)}.build-preview__links{justify-self:start;max-width:32rem;}}
 @media(prefers-reduced-motion:reduce){.build-preview__links a{transition:none!important;}}
+
+/* Release information stays visible even when a media excerpt cannot be published. */
+.release-summary{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;margin-top:clamp(25px,5vh,52px);padding:17px 0;border-top:1px solid #c6bcb5;border-bottom:1px solid #c6bcb5}
+.release-summary__date{display:flex;flex-direction:column;gap:5px;min-width:0}
+.release-summary__date span{font:600 10px/1.3 var(--sans);letter-spacing:.15em;color:#876c77}
+.release-summary__date strong{font:400 clamp(23px,2.2vw,32px)/1.1 var(--serif);color:var(--wine);letter-spacing:.01em}
+.release-summary__link{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:10px 14px;background:var(--wine);color:#fff8f1;font:600 12px/1.2 var(--sans);border:1px solid var(--wine)}
+.release-summary__link:hover{background:#753253}
+.release-summary__link:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+@media(max-width:420px){.release-summary{align-items:flex-start}.release-summary__link{width:100%;justify-content:space-between}}

@@ -7,15 +7,16 @@
 <meta name="color-scheme" content="light">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Cosmicsuprhero">
-<meta name="description" content="Step into Arcturian Awakening. A playable journey through the album artwork by Cosmicsuprhero. Follow the sun, recover three memories, and pre-save the album.">
+<meta name="description" content="Arcturian Awakening by Cosmicsuprhero arrives December 4, 2026. Explore the interactive album artwork and first-person 3D world, then pre-save the release.">
 <link rel="canonical" href="https://cosmicsuprhero.vercel.app/">
 <meta property="og:site_name" content="Cosmicsuprhero">
 <meta property="og:type" content="music.album">
 <meta property="og:title" content="Arcturian Awakening — Enter the artwork">
-<meta property="og:description" content="An interactive journey through the world of the new Cosmicsuprhero album.">
+<meta property="og:description" content="Out December 4, 2026. Enter the world of Cosmicsuprhero’s new album, explore the interactive artwork and 3D experience, and pre-save now.">
 <meta property="og:url" content="https://cosmicsuprhero.vercel.app/">
 <meta property="og:image" content="https://cdn.amuse.io/cafc5a27-1bb5-4dd2-896f-9fde9e508317.jpg">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:description" content="Arcturian Awakening arrives December 4, 2026. Explore the world and pre-save now.">
 <meta name="twitter:title" content="Arcturian Awakening — Cosmicsuprhero">
 <meta name="twitter:image" content="https://cdn.amuse.io/cafc5a27-1bb5-4dd2-896f-9fde9e508317.jpg">
 <title>Arcturian Awakening — Cosmicsuprhero</title>
@@ -42,7 +43,11 @@
     <div class="edition"><span class="edition-line"></span> An album you can enter <span class="edition-number">01 / 03</span></div>
     <h1><span>Arcturian</span><span>Awakening</span></h1>
     <div class="artist-byline">Cosmicsuprhero</div>
-    <div class="music-strip" id="music-strip" aria-label="Awaken Now music preview">
+    <div class="release-summary" aria-label="Album release information">
+      <div class="release-summary__date"><span>THE NEW ALBUM</span><strong>DECEMBER 4, 2026</strong></div>
+      <a class="release-summary__link" href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" target="_blank" rel="noopener noreferrer">Pre-save now <svg class="inline-north-east" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 19L19 5M8 5H19V16" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter"/></svg></a>
+    </div>
+    <div class="music-strip" id="music-strip" aria-label="Awaken Now music preview" hidden>
       <button type="button" id="music-toggle" class="music-toggle" aria-label="Play Awaken Now preview" aria-pressed="false">
         <svg id="music-icon" class="music-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
           <circle cx="24" cy="24" r="22.5" stroke="currentColor" stroke-width="1"/>
@@ -61,7 +66,7 @@
       </div>
       <p class="music-status" id="music-status" role="status" aria-live="polite">Sound is optional</p>
     </div>
-    <audio id="awaken-audio" preload="none" src="https://at.adobe.com/sy7io6UEBpLf6mPZ"></audio>
+    <audio id="awaken-audio" data-preview-available="false" preload="none"></audio>
     <div class="intro-rule" aria-hidden="true"></div>
     <div class="chapter-details" id="chapter-details" aria-live="polite" aria-atomic="true">
       <span class="chapter-eyebrow" id="chapter-number">I. First Contact</span>
