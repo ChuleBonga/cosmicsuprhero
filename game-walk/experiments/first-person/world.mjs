@@ -13,7 +13,9 @@ const touch=$('touch-controls'),panel=$('inspect-panel'),end=$('end'),perf=$('pe
 const soundbar=$('soundbar'),scoreState=$('score-state'),scoreToggle=$('score-toggle'),scoreVolume=$('score-volume'),scoreRetry=$('score-retry');
 if(publicAudioRestricted){
   const note=intro.querySelector('.study-label');
-  if(note)note.textContent='This is a working 3D art-and-movement study, not the finished five-minute game. This public game preview is silent while music publication approvals are completed. The official album pre-save is available without playing.';
+  if(note)note.textContent='Explore this early playable 3D world before the album arrives December 4, 2026. The full story and music experience are still in development. This public preview is silent while audio publication approvals are completed.';
+  const controls=intro.querySelector('.controls-note');
+  if(controls)controls.textContent='Desktop: WASD to walk, mouse to look, E to inspect, Esc to pause. Mobile: left thumbstick to move and drag the right side to look. Pause for camera-comfort settings.';
 }
 const score=new AwakenNowScore(message=>{
  scoreState.textContent=message;
