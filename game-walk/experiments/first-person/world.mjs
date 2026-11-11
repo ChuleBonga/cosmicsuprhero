@@ -6,9 +6,15 @@ import {stickVector,lookDelta} from './control-math.mjs';
 import {InspectionMotion} from './inspection-motion.mjs';
 
 const $=id=>document.getElementById(id);
+// Only the root album site omits uncleared game audio. Separate approved reviews can retain it.
+const publicAudioRestricted=document.body.dataset.publicAudioRestricted==='true';
 const canvas=$('world'),intro=$('intro'),hud=$('hud'),hint=$('hint'),inspectButton=$('inspect');
 const touch=$('touch-controls'),panel=$('inspect-panel'),end=$('end'),perf=$('perf'),pauseOverlay=$('pause-overlay');
 const soundbar=$('soundbar'),scoreState=$('score-state'),scoreToggle=$('score-toggle'),scoreVolume=$('score-volume'),scoreRetry=$('score-retry');
+if(publicAudioRestricted){
+  const note=intro.querySelector('.study-label');
+  if(note)note.textContent='This is a working 3D art-and-movement study, not the finished five-minute game. This public game preview is silent while music publication approvals are completed. The official album pre-save is available without playing.';
+}
 const score=new AwakenNowScore(message=>{
  scoreState.textContent=message;
  $('status').textContent=message;
@@ -18,12 +24,12 @@ const score=new AwakenNowScore(message=>{
 function toggleMusic(){
  score.setMuted(!score.muted);scoreToggle.textContent=score.muted?'Music off':'Music on';
  scoreToggle.setAttribute('aria-pressed',String(score.muted));
- if(!score.muted&&score.failed)void score.play();
+ if(!score.muted&&score.failed&&!publicAudioRestricted)void score.play();
  $('status').textContent=score.muted?'Awaken Now muted':'Awaken Now unmuted';
 }
 scoreToggle.addEventListener('click',toggleMusic);
 scoreVolume.addEventListener('input',()=>{score.setVolume(Number(scoreVolume.value)/100);});
-scoreRetry.addEventListener('click',()=>{void score.play();});
+scoreRetry.addEventListener('click',()=>{if(!publicAudioRestricted)void score.play();});
 const coarse=matchMedia('(pointer:coarse)').matches;
 const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
 const showPerf=new URLSearchParams(location.search).has('perf');
@@ -124,7 +130,7 @@ function clearKeys(){
 function setPaused(value){
  if(!started||finished||inspecting)return;
  paused=value;clearKeys();pauseOverlay.hidden=!value;
- if(value)score.pause();else void score.play();
+ if(value)score.pause();else if(!publicAudioRestricted)void score.play();
  $('pause').textContent=value?'Resume':'Pause';
  hint.hidden=value;inspectButton.hidden=value;
  if(value){if(document.pointerLockElement===canvas)document.exitPointerLock?.();}
@@ -141,9 +147,9 @@ function setPaused(value){
  $('status').textContent=value?'Experience paused':'Experience resumed';
 }
 function begin(){
- intro.hidden=true;hud.hidden=false;touch.hidden=!coarse;soundbar.hidden=false;
+ intro.hidden=true;hud.hidden=false;touch.hidden=!coarse;soundbar.hidden=publicAudioRestricted;
  // play() executes synchronously under the player's explicit enter gesture.
- void score.play();
+ if(!publicAudioRestricted)void score.play();
  $('reticle').hidden=false;paused=false;started=true;finished=false;previous=performance.now();
  if(!coarse)canvas.requestPointerLock?.().catch(()=>{});
  canvas.focus();$('status').textContent='World entered. Walk with WASD, look with the mouse, E to examine an object.';
@@ -156,7 +162,7 @@ function closeInspection(){
  paused=false;previous=performance.now();
  // A return from inspection is a user gesture: retry music if the tab
  // backgrounded during inspection and paused the audio transport.
- if(score.paused)void score.play();
+ if(score.paused&&!publicAudioRestricted)void score.play();
  $('reticle').hidden=false;
  if(!coarse)canvas.requestPointerLock?.().catch(()=>{});
  canvas.focus();$('status').textContent='Returned to the world.';
@@ -192,7 +198,7 @@ $('restart').addEventListener('click',()=>{
  finished=false;started=true;inspecting=false;paused=false;hasInspected=false;
  score.setSceneLevel(1);revealLevel=0;revealTarget=0;art.reveal(0);
  scene.fog.color.copy(lightBefore);
- if(score.audio.paused)void score.play();
+ if(score.audio.paused&&!publicAudioRestricted)void score.play();
  touch.hidden=!coarse;$('reticle').hidden=false;art.sky.material.uniforms.warm.value=0;
  previous=performance.now();canvas.focus();
 });
@@ -206,7 +212,7 @@ document.addEventListener('keydown',e=>{
  if(e.code==='Escape'){e.preventDefault();if(started&&!finished)setPaused(!paused);return;}
  if(e.target instanceof HTMLElement&&e.target.closest('a,button,input,textarea'))return;
  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();
- if(e.code==='KeyM'&&started){toggleMusic();return;}
+ if(e.code==='KeyM'&&started&&!publicAudioRestricted){toggleMusic();return;}
  if(e.code==='KeyE'){inspect();return;}
  if(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))activeKeys.add(e.code);
 });
