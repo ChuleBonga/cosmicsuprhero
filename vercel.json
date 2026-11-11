@@ -1,13 +1,27 @@
 {
-  "rewrites": [
+  "redirects": [
     {
       "source": "/play",
-      "destination": "/play/index.html"
+      "destination": "/play/experiments/first-person/index.html",
+      "permanent": false
     },
     {
       "source": "/play/",
-      "destination": "/play/index.html"
+      "destination": "/play/experiments/first-person/index.html",
+      "permanent": false
     },
+    {
+      "source": "/play/index.html",
+      "destination": "/play/experiments/first-person/index.html",
+      "permanent": false
+    },
+    {
+      "source": "/play/experiments/movement/lab.html",
+      "destination": "/play/experiments/first-person/index.html",
+      "permanent": false
+    }
+  ],
+  "rewrites": [
     {
       "source": "/(.*)",
       "destination": "/"

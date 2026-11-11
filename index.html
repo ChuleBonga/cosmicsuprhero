@@ -7,12 +7,12 @@
 <meta name="color-scheme" content="light">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Cosmicsuprhero">
-<meta name="description" content="Arcturian Awakening by Cosmicsuprhero arrives December 4, 2026. Explore the interactive album artwork and first-person 3D world, then pre-save the release.">
+<meta name="description" content="Arcturian Awakening by Cosmicsuprhero arrives December 4, 2026. Enter the first-person 3D world and pre-save the new album.">
 <link rel="canonical" href="https://cosmicsuprhero.vercel.app/">
 <meta property="og:site_name" content="Cosmicsuprhero">
 <meta property="og:type" content="music.album">
 <meta property="og:title" content="Arcturian Awakening — Enter the artwork">
-<meta property="og:description" content="Out December 4, 2026. Enter the world of Cosmicsuprhero’s new album, explore the interactive artwork and 3D experience, and pre-save now.">
+<meta property="og:description" content="Out December 4, 2026. Enter the world of Cosmicsuprhero’s new album in one early-access 3D experience. Pre-save now.">
 <meta property="og:url" content="https://cosmicsuprhero.vercel.app/">
 <meta property="og:image" content="https://cdn.amuse.io/cafc5a27-1bb5-4dd2-896f-9fde9e508317.jpg">
 <meta name="twitter:card" content="summary_large_image">
@@ -27,7 +27,7 @@
 <link rel="stylesheet" href="/src/arcturian-world.css">
 </head>
 <body>
-<a class="skip-link" href="#world">Skip to the experience</a>
+<a class="skip-link" href="#world">Skip to album content</a>
 <div class="site-shell">
 <header class="masthead">
   <a href="/" class="wordmark" aria-label="Cosmicsuprhero home">Cosmicsuprhero<span>Arcturian Awakening / 2026</span></a>
@@ -38,129 +38,35 @@
 </header>
 
 <main>
-<section class="play" id="world" aria-label="Interactive album world">
+<section class="play album-hero" id="world" aria-label="Arcturian Awakening album and game">
   <div class="play-intro">
-    <div class="edition"><span class="edition-line"></span> An album you can enter <span class="edition-number">01 / 03</span></div>
+    <div class="edition"><span class="edition-line" aria-hidden="true"></span> THE NEW ALBUM <span class="edition-number">COSMICSUPRHERO / 2026</span></div>
     <h1><span>Arcturian</span><span>Awakening</span></h1>
     <div class="artist-byline">Cosmicsuprhero</div>
     <div class="release-summary" aria-label="Album release information">
-      <div class="release-summary__date"><span>THE NEW ALBUM</span><strong>DECEMBER 4, 2026</strong></div>
-      <a class="release-summary__link" href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" target="_blank" rel="noopener noreferrer">Pre-save now <svg class="inline-north-east" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 19L19 5M8 5H19V16" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter"/></svg></a>
+      <div class="release-summary__date"><span>AVAILABLE WORLDWIDE</span><strong>DECEMBER 4, 2026</strong></div>
+      <a class="release-summary__link" href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" target="_blank" rel="noopener noreferrer">Pre-save the album <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true"><path d="M4 12h16m-7-7 7 7-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
-    <div class="music-strip" id="music-strip" aria-label="Awaken Now music preview" hidden>
-      <button type="button" id="music-toggle" class="music-toggle" aria-label="Play Awaken Now preview" aria-pressed="false">
-        <svg id="music-icon" class="music-icon" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-          <circle cx="24" cy="24" r="22.5" stroke="currentColor" stroke-width="1"/>
-          <path class="music-icon__play" d="M20.5 16.5L32 24L20.5 31.5V16.5Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
-          <path class="music-icon__pause" d="M20 17V31M28 17V31" stroke="currentColor" stroke-width="2" stroke-linecap="square"/>
-        </svg>
-        <span class="sr-only" id="music-action">Listen</span>
-      </button>
-      <div class="music-strip__body">
-        <div class="music-strip__heading"><div><span class="music-strip__eyebrow">A 45-second listening excerpt</span><strong>Awaken Now</strong></div><span class="music-strip__edition">COSMICSUPRHERO / 2026</span></div>
-        <div class="music-strip__timeline">
-          <label for="music-scrub" class="sr-only">Seek within the 45-second audio excerpt</label>
-          <input id="music-scrub" type="range" min="0" max="45" step="0.1" value="0" aria-label="Seek within Awaken Now excerpt">
-          <div class="music-strip__time"><output id="music-time" for="music-scrub">0:00</output><span>0:45</span></div>
-        </div>
-      </div>
-      <p class="music-status" id="music-status" role="status" aria-live="polite">Sound is optional</p>
+    <div class="hero-story">
+      <span class="chapter-eyebrow">AN ALBUM YOU CAN ENTER</span>
+      <h2>Not an escape.<br><em>A return.</em></h2>
+      <p>Explore a world shaped by music, memory and belonging. Step onto an ancient causeway beneath the red sun, and discover what has been left behind.</p>
     </div>
-    <audio id="awaken-audio" data-preview-available="false" preload="none"></audio>
-    <div class="intro-rule" aria-hidden="true"></div>
-    <div class="chapter-details" id="chapter-details" aria-live="polite" aria-atomic="true">
-      <span class="chapter-eyebrow" id="chapter-number">I. First Contact</span>
-      <h2 id="chapter-title">It begins with a light.</h2>
-      <p id="chapter-instructions">Enter the painting. Follow the sun, then discover what the mountains hold.</p>
-    </div>
-    <div class="chapter-footer">
-      <div class="chapter-steps" aria-label="Journey progress" id="progress">
-        <span class="active" aria-label="Chapter one">01</span><span aria-label="Chapter two">02</span><span aria-label="Chapter three">03</span>
-      </div>
-      <p class="play-hint">Three encounters. One way back.</p>
+    <div class="hero-actions">
+      <a class="hero-enter" href="/play/experiments/first-person/index.html" aria-label="Enter the Arcturian Awakening first-person 3D world">Enter the world <svg viewBox="0 0 24 24" width="20" height="20" fill="none" aria-hidden="true"><path d="M4 12h16m-7-7 7 7-7 7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <p class="hero-note">Early-access 3D experience. Play in your browser. The full story is still in production; this public game preview is currently silent.</p>
     </div>
   </div>
-
   <div class="art-area">
     <div class="gold-band" aria-hidden="true"></div>
     <div class="world-wrapper">
-      <div class="painting" id="painting" data-chapter="1" role="group" aria-label="Interactive album landscape">
-        <img id="cover-image" class="painting-image" src="https://cdn.amuse.io/cafc5a27-1bb5-4dd2-896f-9fde9e508317.jpg" srcset="https://cdn.amuse.io/cafc5a27-1bb5-4dd2-896f-9fde9e508317.800x800.jpg 800w, https://cdn.amuse.io/cafc5a27-1bb5-4dd2-896f-9fde9e508317.jpg 3000w" sizes="(max-width: 760px) 278vw, 1420px" alt="Arcturian Awakening illustration: blue mountains under an orange sun, with a solitary figure in the foreground" fetchpriority="high" decoding="async">
+      <figure class="painting album-cover" aria-label="Arcturian Awakening album artwork">
+        <img id="cover-image" class="painting-image" src="https://cdn.amuse.io/cafc5a27-1bb5-4dd2-896f-9fde9e508317.jpg" srcset="https://cdn.amuse.io/cafc5a27-1bb5-4dd2-896f-9fde9e508317.800x800.jpg 800w, https://cdn.amuse.io/cafc5a27-1bb5-4dd2-896f-9fde9e508317.jpg 3000w" sizes="(max-width: 760px) 100vw, 45vw" alt="Arcturian Awakening album artwork: cobalt mountains under an enormous orange-red sun and a lone cloaked figure" fetchpriority="high" decoding="async">
         <div class="painting-wash" aria-hidden="true"></div>
         <div class="painting-horizon" aria-hidden="true"></div>
-        <button class="sun-target stage-target" id="sun-target" type="button" aria-label="Touch the orange sun to begin the journey"><span class="sun-target-ring" aria-hidden="true"></span><span class="sun-target-label" aria-hidden="true">TOUCH TO BEGIN</span></button>
-        <div class="echo-targets" id="echo-targets" hidden>
-          <button class="echo echo-a" type="button" data-echo="xaba" aria-label="Find the memory Xaba"><svg class="echo-sigil" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4L28 16L16 28L4 16L16 4Z" stroke="currentColor" stroke-width="1.1"/><path d="M16 10V22M10 16H22" stroke="currentColor" stroke-width="1"/></svg><span class="echo-caption">01</span></button>
-          <button class="echo echo-b" type="button" data-echo="mama" aria-label="Find the memory Mama Calls Me Chule"><svg class="echo-sigil" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4L28 16L16 28L4 16L16 4Z" stroke="currentColor" stroke-width="1.1"/><path d="M16 10V22M10 16H22" stroke="currentColor" stroke-width="1"/></svg><span class="echo-caption">02</span></button>
-          <button class="echo echo-c" type="button" data-echo="god" aria-label="Find the memory Songs Sent to God"><svg class="echo-sigil" viewBox="0 0 32 32" fill="none" aria-hidden="true"><path d="M16 4L28 16L16 28L4 16L16 4Z" stroke="currentColor" stroke-width="1.1"/><path d="M16 10V22M10 16H22" stroke="currentColor" stroke-width="1"/></svg><span class="echo-caption">03</span></button>
-        </div>
-        <svg class="route-trace" id="route-trace" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><polyline id="route-line" points="54,17" /></svg>
-        <div class="waypoints" id="waypoints" hidden>
-          <button class="waypoint waypoint-1" data-waypoint="0" type="button" aria-label="Follow the ridge, first marker"><span>01</span></button>
-          <button class="waypoint waypoint-2" data-waypoint="1" type="button" aria-label="Follow the ridge, second marker"><span>02</span></button>
-          <button class="waypoint waypoint-3" data-waypoint="2" type="button" aria-label="Return to the human figure, final marker"><span>03</span></button>
-        </div>
-        <div class="game-entry" id="game-entry">
-          <span class="game-entry__index">01 / THE ENCOUNTER</span>
-          <button type="button" id="begin-journey" aria-label="Begin the playable Arcturian Awakening journey">
-            <span>Enter the painting</span>
-            <svg viewBox="0 0 24 24" width="21" height="21" fill="none" aria-hidden="true"><path d="M4 12H20M13 5L20 12L13 19" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          </button>
-          <span class="game-entry__instruction">Or touch the sun above</span>
-          <a class="game-entry__external" href="/play/experiments/first-person/index.html" aria-label="Explore the first-person Arcturian Awakening 3D world study">Explore the 3D world <span aria-hidden="true">↗</span></a>
-        </div>
-        <div class="game-objective" id="game-objective" hidden aria-live="polite">
-          <span id="objective-label">FIND THE THREE MEMORIES</span><strong id="objective-progress">00 / 03</strong>
-        </div>
-        <div class="painting-chapter" id="painting-chapter">I / THE ENCOUNTER</div>
-        <div class="painting-feedback" id="painting-feedback" aria-live="polite"></div>
-      </div>
-      <div class="stage-subtitle" aria-hidden="true"><span>ARTWORK / COSMICSUPRHERO</span><span id="scene-indicator">THE ENCOUNTER</span></div>
+      </figure>
+      <div class="stage-subtitle"><span>ALBUM ARTWORK / COSMICSUPRHERO</span><span>DECEMBER 4, 2026</span></div>
     </div>
-  </div>
-
-  <div class="mobile-story" aria-live="polite">
-    <span id="mobile-chapter-number">I. First Contact</span>
-    <p id="mobile-chapter-text">Enter the painting. Follow the sun.</p>
-  </div>
-</section>
-
-<section class="build-preview" id="game-preview" aria-labelledby="game-preview-heading">
-  <div class="build-preview__copy">
-    <p class="build-preview__eyebrow">Arcturian Awakening / playable worlds</p>
-    <h2 id="game-preview-heading">Walk the planet.<br><em>Find what was left behind.</em></h2>
-    <p>Explore the current first-person 3D world on this site. Walk the weathered causeway, experience the cobalt-and-ochre landscape, and inspect a grounded First Contact discovery. The original Chapter I and movement study remain available.</p>
-    <p class="build-preview__disclosure">Development access: the 3D experience is a playable art and movement study, not the finished five-minute story. Final cinematics, characters, and approved game audio are still in production. Public game previews remain silent until audio publication clearance.</p>
-  </div>
-  <div class="build-preview__links">
-    <a class="build-preview__primary" href="/play/experiments/first-person/index.html">
-      Explore the first-person 3D world <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 12H20M13 5L20 12L13 19" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-    </a>
-    <a class="build-preview__secondary" href="/play/">
-      Play Chapter I (2D) <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 19L19 5M8 5H19V16" stroke="currentColor" stroke-width="1.5"/></svg>
-    </a>
-    <a class="build-preview__secondary" href="/play/experiments/movement/lab.html">
-      Movement &amp; architecture lab <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 19L19 5M8 5H19V16" stroke="currentColor" stroke-width="1.5"/></svg>
-    </a>
-    <span>Playable in your browser · No account required · Public game audio awaiting approval</span>
-  </div>
-</section>
-
-<section class="journal" id="journal" aria-label="Fragments found" hidden>
-  <div class="journal-heading">What the land remembers <span id="echo-count">00 / 03</span></div>
-  <div id="journal-entries" class="journal-entries" aria-live="polite"><p>There are three memories hidden in the mountains.</p></div>
-</section>
-
-<section class="finale" id="finale" hidden aria-labelledby="finale-title">
-  <div class="finale-border">
-    <span class="finale-intro">The journey has brought you here</span>
-    <h2 id="finale-title">The world is ours.</h2>
-    <p>You went toward the light. You found what was human. The music is waiting.</p>
-    <div class="finale-actions">
-      <a class="finale-presave" href="https://share.amuse.io/album/cosmicsuprhero-arcturian-awakening" target="_blank" rel="noopener noreferrer">Pre-save Arcturian Awakening <span aria-hidden="true"><svg class="inline-north-east" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 19L19 5M8 5H19V16" stroke="currentColor" stroke-width="1.6" stroke-linecap="square" stroke-linejoin="miter"/></svg></span></a>
-      <button id="play-again" type="button">Begin again</button>
-    </div>
-    <p class="finale-note">Choose Spotify or Apple Music on the next page. No account is required to play this experience.</p>
   </div>
 </section>
 

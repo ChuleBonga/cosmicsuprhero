@@ -338,3 +338,50 @@ footer{background:var(--wine);color:#f9eddf;padding:45px clamp(20px,6vw,100px) 2
 .release-summary__link:hover{background:#753253}
 .release-summary__link:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
 @media(max-width:420px){.release-summary{align-items:flex-start}.release-summary__link{width:100%;justify-content:space-between}}
+
+/* November launch consolidation: a single album-to-game journey. */
+.album-hero .play-intro{justify-content:center}
+.album-hero .edition{margin-bottom:clamp(32px,5vh,64px)}
+.album-hero .play-intro h1{font-size:clamp(66px,8vw,140px)}
+.album-hero .release-summary{margin-top:clamp(30px,5vh,62px)}
+.album-hero .painting{margin:0 auto}
+.hero-story{max-width:35rem;margin:clamp(28px,4vh,48px) 0 0}
+.hero-story .chapter-eyebrow{margin-bottom:12px}
+.hero-story h2{font:400 clamp(32px,3.25vw,54px)/1.03 var(--serif);letter-spacing:-.018em;margin:0 0 13px}
+.hero-story h2 em{font-weight:400}
+.hero-story p{font:400 clamp(14px,1.1vw,16px)/1.6 var(--sans);color:#684858;max-width:48ch;margin:0}
+.hero-actions{max-width:35rem;margin-top:clamp(24px,3vh,36px)}
+.hero-enter{display:flex;align-items:center;justify-content:space-between;gap:18px;min-height:60px;padding:16px 20px;background:var(--wine);border:1px solid var(--wine);color:#fff9f3;font:600 clamp(13px,1.1vw,16px)/1.3 var(--sans);text-decoration:none;transition:background .16s ease}
+.hero-enter svg{flex:none}
+.hero-enter:hover{background:#743354}
+.hero-enter:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+.hero-note{font:400 12px/1.55 var(--sans);color:#846e77;margin:13px 0 0;max-width:51ch}
+.album-hero .painting{touch-action:auto}
+.album-cover .painting-wash,.album-cover .painting-horizon{pointer-events:none}
+@media(max-width:1080px) and (min-width:761px){
+  .album-hero .play-intro{padding-left:clamp(22px,3vw,45px);padding-right:25px}
+  .album-hero .play-intro h1{font-size:clamp(59px,7.9vw,100px)}
+  .album-hero .art-area{padding-right:28px}
+}
+@media(max-width:760px){
+  .album-hero{display:flex;flex-direction:column;min-height:0}
+  .album-hero .edition{order:0;margin:0;padding:22px 20px 0}
+  .album-hero .play-intro h1{order:1;padding:22px 20px 0;font-size:clamp(57px,12vw,94px);line-height:.76}
+  .album-hero .artist-byline{order:2}
+  .album-hero .release-summary{order:3;margin:20px 20px 0;padding:12px 0}
+  .album-hero .hero-actions{order:4;max-width:none;margin:18px 20px 0}
+  .album-hero .hero-story{order:6;margin:28px 20px 40px;max-width:none}
+  .album-hero .art-area{order:5;padding:18px 18px 0;min-height:0}
+  .album-hero .painting{width:min(100%,450px)}
+  .album-hero .stage-subtitle{margin-top:10px}
+  .album-hero .hero-note{font-size:11px;margin:8px 0 0}
+  .hero-story h2{font-size:clamp(38px,9vw,56px)}
+  .hero-story p{font-size:15px;max-width:55ch}
+  .hero-enter{min-height:56px}
+}
+@media(max-width:400px){
+  .album-hero .play-intro h1{font-size:clamp(53px,11.8vw,67px)}
+  .album-hero .release-summary{margin-top:17px}
+  .album-hero .art-area{padding-top:12px}
+}
+@media(prefers-reduced-motion:reduce){.hero-enter{transition:none}}
