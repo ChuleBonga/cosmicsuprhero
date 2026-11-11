@@ -22,7 +22,7 @@ const score=new AwakenNowScore(message=>{
  $('status').textContent=message;
  if(message.includes('unavailable')||message.includes('could not start'))scoreRetry.hidden=false;
  else scoreRetry.hidden=true;
-});
+}, source=>publicAudioRestricted ? new Audio() : new Audio(source));
 function toggleMusic(){
  score.setMuted(!score.muted);scoreToggle.textContent=score.muted?'Music off':'Music on';
  scoreToggle.setAttribute('aria-pressed',String(score.muted));
