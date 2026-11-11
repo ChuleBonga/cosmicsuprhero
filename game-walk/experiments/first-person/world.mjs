@@ -45,6 +45,7 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 let yaw=0,pitch=-.04,motion=initialState(),priorMotion={...initialState()},walkPhase=0,started=false,paused=true;
 let inspecting=false,hasInspected=false,finished=false,pointerLockWasActive=false;
 let previous=0,accumulator=0,lookPointer=null,lookX=0,lookY=0;
+let contextLost=false;
 let inspectingPointer=null,inspectX=0,inspectY=0;
 const inspectionRig=new InspectionMotion();
 
@@ -293,7 +294,7 @@ document.addEventListener('visibilitychange',()=>{
  if(document.hidden)interruptForBackground();
 });
 canvas.addEventListener('webglcontextlost',e=>{
- e.preventDefault();setPaused(true);pauseOverlay.hidden=false;
+ e.preventDefault();contextLost=true;paused=true;clearKeys();score.pause();pauseOverlay.hidden=false;
  pauseOverlay.querySelector('p').textContent='THE GRAPHICS CONTEXT WAS LOST';
  $('resume').textContent='Reload experience';
  $('resume').onclick=()=>location.reload();
@@ -340,7 +341,9 @@ function tick(timestamp){
  // not float or rotate as a generic collectible. Inspection is the player's
  // deliberate action; atmospheric light responds only to that discovery.
  art.artifact.light.intensity=.18+revealLevel*.11;
- renderer.render(scene,camera);
+ // Preserve the last world frame behind static overlays; avoid unnecessary GPU draws.
+ // Inspection and the ending light transition still animate until they settle.
+ if(!contextLost&&started&&(!paused||inspecting||revealLevel!==revealTarget))renderer.render(scene,camera);
  if(!started||paused||delta<=0)return;
  const ms=delta*1000;samples.push(ms);if(samples.length>180)samples.shift();
  metricsElapsed+=delta;adaptiveElapsed+=delta;
