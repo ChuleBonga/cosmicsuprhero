@@ -1,5 +1,5 @@
 id,group,priority,asset_name,quantity,deliverable,reference,dependency,acceptance,status,rights
-"REF-001","VISDEV","P0","Canonical album artwork color/silhouette/scale study","1","PNG+MD","Approved album illustration; game DESIGN.md","approved source art access","Compare screenshot against actual album reference","planned","original/approval-pending"
+"REF-001","VISDEV","P0","Canonical album artwork color/silhouette/scale study","1","PNG+MD","Approved album illustration; game DESIGN.md","approved source art access","Compare screenshot against actual album reference","concept-only","original/approval-pending"
 "REF-002","VISDEV","P0","Private 43-image reference classification/contact sheet","1","private JPG board+MD","Private reference set","re-access sources/rights","Provenance and use/not-copy tagged","planned","original/approval-pending"
 "REF-003","VISDEV","P0","Arrival composition target","1","PNG/EXR","Approved album illustration; game DESIGN.md","REF-001","Recognizable sky sun mountains and directional path","planned","original/approval-pending"
 "REF-004","VISDEV","P0","Inhabited location composition target","1","PNG/EXR","Album illustration and private mood-board architecture/landscape categories","REF-002","Believable local people, work and built context","planned","original/approval-pending"

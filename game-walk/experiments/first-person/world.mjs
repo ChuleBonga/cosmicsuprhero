@@ -4,6 +4,7 @@ import {createWorldArt} from './world-art.mjs';
 import {AwakenNowScore} from './score.mjs';
 import {stickVector,lookDelta} from './control-math.mjs';
 import {InspectionMotion} from './inspection-motion.mjs';
+import {parseReviewPose,createReviewMotion} from './art-review-presets.mjs';
 
 const $=id=>document.getElementById(id);
 // Only the root album site omits uncleared game audio. Separate approved reviews can retain it.
@@ -44,7 +45,11 @@ sensitivity.addEventListener('input',()=>{$('sensitivity-value').textContent=Num
 steadyCamera.checked=reducedMotion;
 const FDT=1/WORLD.hz;
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-let yaw=0,pitch=-.04,motion=initialState(),priorMotion={...initialState()},walkPhase=0,started=false,paused=true;
+// An explicit art-review query changes only the starting viewpoint for scene QA.
+// The default public journey and its progression remain unchanged.
+const artReviewPose=parseReviewPose(location.search);
+const initialPoseMotion=artReviewPose?createReviewMotion(artReviewPose):initialState();
+let yaw=artReviewPose?.yaw??0,pitch=artReviewPose?.pitch??-.04,motion=initialPoseMotion,priorMotion={...initialPoseMotion},walkPhase=0,started=false,paused=true;
 let inspecting=false,hasInspected=false,finished=false,pointerLockWasActive=false;
 let previous=0,accumulator=0,lookPointer=null,lookX=0,lookY=0;
 let contextLost=false;
@@ -374,7 +379,7 @@ Main-thread cadence; GPU timings not measured`;
  }
 }
 syncCamera();renderer.render(scene,camera);requestAnimationFrame(tick);
-window.__AA_DEV__={getState:()=>({...motion,yaw,pitch,paused,inspecting,finished}),goToArtifact:()=>{
+window.__AA_DEV__={getState:()=>({...motion,yaw,pitch,paused,inspecting,finished,artReviewPose:artReviewPose?.id??null}),goToArtifact:()=>{
  motion={...motion,x:1.95,z:WORLD.artifact.z+1.7};motion.y=groundHeight(motion.x,motion.z);
  priorMotion={...motion};yaw=-.85;
 },goToEnd:()=>{motion={...motion,x:0,z:WORLD.endZ+.95};motion.y=groundHeight(motion.x,motion.z);priorMotion={...motion};}};

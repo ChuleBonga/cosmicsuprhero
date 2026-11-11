@@ -1,0 +1,88 @@
+{
+  "version": 1,
+  "source": "Artist-provided Arcturian Awakening — Cosmicsuprhero.pdf, page 1, embedded 3000x3000 album artwork",
+  "sample": "World inset approximately x950..2048 y535..2165 in original artwork. Statistics from 1098x1630 cropped pixels.",
+  "color_space": "sRGB",
+  "method": "25x25 median patches at specified crop pixel coordinates; ochre is masked mountain highlights",
+  "warning": "Flattened artwork contains a semi-transparent central layout band. These are visual references only, not linear-light Three.js shader constants. The image is not a new game model or completed environment.",
+  "tokens": [
+    {
+      "name": "sky_cobalt",
+      "hex": "#384E81",
+      "sample_px": [
+        135,
+        100
+      ]
+    },
+    {
+      "name": "sky_indigo",
+      "hex": "#384E80",
+      "sample_px": [
+        820,
+        130
+      ]
+    },
+    {
+      "name": "sun_top",
+      "hex": "#F86B1F",
+      "sample_px": [
+        555,
+        160
+      ]
+    },
+    {
+      "name": "sun_lower",
+      "hex": "#F65321",
+      "sample_px": [
+        540,
+        260
+      ]
+    },
+    {
+      "name": "mountain_indigo",
+      "hex": "#1A2146",
+      "sample_px": [
+        340,
+        410
+      ]
+    },
+    {
+      "name": "mountain_mid_blue",
+      "hex": "#40527F",
+      "sample_px": [
+        735,
+        385
+      ]
+    },
+    {
+      "name": "mountain_ochre_particles",
+      "hex": "#95673C",
+      "sample_px": null,
+      "method": "Median of 29,291 mountain-strip warm-highlight pixels satisfying R>120, R>1.2B, G>1.25B, G>65, R>G."
+    },
+    {
+      "name": "face_blue_green",
+      "hex": "#435F82",
+      "sample_px": [
+        675,
+        665
+      ]
+    },
+    {
+      "name": "cloak_burgundy",
+      "hex": "#7C3F5C",
+      "sample_px": [
+        565,
+        1060
+      ]
+    },
+    {
+      "name": "cloak_deep",
+      "hex": "#1B1D3C",
+      "sample_px": [
+        865,
+        1230
+      ]
+    }
+  ]
+}
