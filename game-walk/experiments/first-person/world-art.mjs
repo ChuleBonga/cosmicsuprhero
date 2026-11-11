@@ -6,6 +6,7 @@
 import * as THREE from 'three';
 import {WORLD,WORLD_OBSTACLES,groundHeight,halfWidth} from './world-logic.mjs';
 import {createFirstContactEncounter} from './encounter-art.mjs';
+import {createWaystation} from './waystation-art.mjs';
 const seedRand=(initial)=>{let s=initial>>>0;return()=>((s=Math.imul(s,1664525)+1013904223>>>0)/4294967296)};
 const rng=seedRand(20261106);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -422,21 +423,14 @@ export function createWorldArt(scene){
  causeway(root,stone,warm);groundDebris(root,stone,warm);
  cliffWall(root,1,40,-190,basalt);cliffWall(root,-1,40,-190,basalt);
  rockScatter(root,stone,warm);mountainMass(root);
- const gateways=[gateway(root,-13,stone,oxide,1),gateway(root,-78,stone,oxide,.78)];
+ const gateways=[gateway(root,-13,stone,oxide,1)];
+ const waystation=createWaystation(root,{groundHeight,stone,warm,oxide});
  spatialObstacles(root,stone,oxide,warm);
  horizonArray(root,stone,oxide,warm);
  const relic=createFirstContactEncounter(root,{x:WORLD.artifact.x,z:WORLD.artifact.z,groundHeight,halfWidth,stone,oxide,warm});
  const skies=sky(scene);
  const exitStone=mesh(root,new THREE.CylinderGeometry(5.6,6.1,.32,20),warm,0,groundHeight(0,-110)+.11,-110);exitStone.castShadow=false;
- // Shared iconography becomes a material language across the route.
- const shards=new THREE.InstancedMesh(new THREE.TetrahedronGeometry(.025),mat(0xd3a485,.95),160);
- const dummy=new THREE.Object3D();
- for(let i=0;i<160;i++){
-  const x=(rng()-.5)*27,z=26-rng()*160,y=groundHeight(x,z)+.3+rng()*11;
-  dummy.position.set(x,y,z);dummy.scale.setScalar(.5+rng()*2.4);dummy.rotation.y=rng()*5;
-  dummy.updateMatrix();shards.setMatrixAt(i,dummy.matrix);
- }
- shards.instanceMatrix.needsUpdate=true;shards.frustumCulled=false;shards.castShadow=false;root.add(shards);
+ // No arbitrary floating tetrahedra: discoveries remain grounded in the physical world.
  const maps=[basalt.albedo,basalt.normal,basalt.roughness,ochre.albedo,ochre.normal,ochre.roughness,...terrainData.textures];
  return {root,sky:skies,artifact:relic,
   reveal(progress){
@@ -445,6 +439,6 @@ export function createWorldArt(scene){
   },
   dispose(){
   root.traverse(o=>{if(o.geometry)o.geometry.dispose()});
-  for(const tex of maps)tex.dispose();skies.sphere.geometry.dispose();skies.material.dispose();
+  for(const tex of maps)tex.dispose();waystation.dispose();skies.sphere.geometry.dispose();skies.material.dispose();
  }};
 }

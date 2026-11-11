@@ -339,7 +339,7 @@ function tick(timestamp){
  }
  syncCamera();
  art.sky.sphere.position.copy(camera.position);
- // The relic is a heavy material object anchored to its plinth. It does
+ // The relic is a heavy material object discovered on the ground. It does
  // not float or rotate as a generic collectible. Inspection is the player's
  // deliberate action; atmospheric light responds only to that discovery.
  art.artifact.light.intensity=.18+revealLevel*.11;
