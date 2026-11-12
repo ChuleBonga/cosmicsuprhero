@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import {WORLD,groundHeight,initialState,stepMovement,canInspect,narrativeBeat,atEnd} from './world-logic.mjs';
 import {createWorldArt} from './world-art.mjs';
+import {artworkReviewEnabled} from './artwork-calibration.mjs';
 import {AwakenNowScore} from './score.mjs';
 import {stickVector,lookDelta} from './control-math.mjs';
 import {InspectionMotion} from './inspection-motion.mjs';
@@ -50,6 +51,7 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 // An explicit art-review query changes only the starting viewpoint for scene QA.
 // The default public journey and its progression remain unchanged.
 const artReviewPose=parseReviewPose(location.search);
+const coverLook=artworkReviewEnabled(location.search,artReviewPose);
 const workerReviewEnabled=artReviewPose?.id==='inhabitants';
 const initialPoseMotion=artReviewPose?createReviewMotion(artReviewPose):initialState();
 let yaw=artReviewPose?.yaw??0,pitch=artReviewPose?.pitch??-.04,motion=initialPoseMotion,priorMotion={...initialPoseMotion},walkPhase=0,started=false,paused=true;
@@ -60,8 +62,8 @@ let inspectingPointer=null,inspectX=0,inspectY=0;
 const inspectionRig=new InspectionMotion();
 
 const scene=new THREE.Scene();
-scene.fog=new THREE.FogExp2(0x314362,.0045);
-scene.background=new THREE.Color(0x101e40);
+scene.fog=new THREE.FogExp2(coverLook?0x384e81:0x314362,coverLook?.0042:.0045);
+scene.background=new THREE.Color(coverLook?0x384e81:0x101e40);
 const camera=new THREE.PerspectiveCamera(mobile?78:68,1,.075,850);camera.rotation.order='YXZ';
 scene.add(camera); // This also allows a physical artifact inspection object attached to the camera.
 let renderer;
@@ -74,7 +76,7 @@ try{
 }
 renderer.outputColorSpace=THREE.SRGBColorSpace;
 renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1.16;
+renderer.toneMappingExposure=coverLook?1.01:1.16;
 const quality={
  ratio: mobile?Math.min(1.05,devicePixelRatio):Math.min(1.55,devicePixelRatio),
  max:mobile?Math.min(1.1,devicePixelRatio):Math.min(1.7,devicePixelRatio),
@@ -84,14 +86,14 @@ const quality={
 renderer.setPixelRatio(quality.ratio);
 renderer.shadowMap.enabled=!mobile;
 renderer.shadowMap.type=THREE.PCFShadowMap;
-const ambient=new THREE.HemisphereLight(0x8bb7e1,0x87523d,2.8);scene.add(ambient);
-const sun=new THREE.DirectionalLight(0xffa466,3.1);
+const ambient=new THREE.HemisphereLight(0x8bb7e1,0x87523d,coverLook?1.45:2.8);scene.add(ambient);
+const sun=new THREE.DirectionalLight(0xffa466,coverLook?3.25:3.1);
 sun.position.set(-60,42,-145);sun.target.position.set(0,0,-55);scene.add(sun,sun.target);
 sun.castShadow=!mobile;sun.shadow.mapSize.set(1024,1024);
 Object.assign(sun.shadow.camera,{left:-40,right:40,top:35,bottom:-35,near:1,far:220});
 sun.shadow.bias=-.0008;
 const bounce=new THREE.DirectionalLight(0x4666b8,.95);bounce.position.set(40,15,10);scene.add(bounce);
-const art=createWorldArt(scene);
+const art=createWorldArt(scene,{coverLook});
 // Explicit review route only; ordinary visitors never see this unapproved character.
 let worker=null;
 let workerState=initialWorkerState();
@@ -417,7 +419,7 @@ Main-thread cadence; GPU timings not measured`;
  }
 }
 syncCamera();renderer.render(scene,camera);requestAnimationFrame(tick);
-window.__AA_DEV__={getState:()=>({...motion,yaw,pitch,paused,inspecting,finished,artReviewPose:artReviewPose?.id??null,worker:worker?{...workerState,x:WORKER_POS.x,z:WORKER_POS.z}:null,workerLoadStatus,workerLoadError,workerDiagnostics}),goToArtifact:()=>{
+window.__AA_DEV__={getState:()=>({...motion,yaw,pitch,paused,inspecting,finished,artReviewPose:artReviewPose?.id??null,coverLook,worker:worker?{...workerState,x:WORKER_POS.x,z:WORKER_POS.z}:null,workerLoadStatus,workerLoadError,workerDiagnostics}),goToArtifact:()=>{
  motion={...motion,x:1.95,z:WORLD.artifact.z+1.7};motion.y=groundHeight(motion.x,motion.z);
  priorMotion={...motion};yaw=-.85;
 },goToEnd:()=>{motion={...motion,x:0,z:WORLD.endZ+.95};motion.y=groundHeight(motion.x,motion.z);priorMotion={...motion};}};

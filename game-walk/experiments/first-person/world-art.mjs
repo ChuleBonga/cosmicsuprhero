@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import {WORLD,WORLD_OBSTACLES,groundHeight,halfWidth} from './world-logic.mjs';
 import {createFirstContactEncounter} from './encounter-art.mjs';
 import {createWaystation} from './waystation-art.mjs';
+import {COVER_PALETTE} from './artwork-calibration.mjs';
 const seedRand=(initial)=>{let s=initial>>>0;return()=>((s=Math.imul(s,1664525)+1013904223>>>0)/4294967296)};
 const rng=seedRand(20261106);
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
@@ -21,11 +22,11 @@ function valueNoise(values,size,x,y){
  const ix=Math.floor(x),iy=Math.floor(y),read=(a,b)=>values[((b%size+size)%size)*size+(a%size+size)%size];
  return mix(mix(read(ix,iy),read(ix+1,iy),u),mix(read(ix,iy+1),read(ix+1,iy+1),u),v);
 }
-function materialFamily(kind){
+function materialFamily(kind,coverLook=false){
  const size=256,r=seedRand(kind==='basalt'?55403:38071),random=new Float32Array(size*size);
  for(let i=0;i<random.length;i++)random[i]=r();
  const height=new Float32Array(random.length);
- const base=kind==='basalt'?[51,70,98]:[130,93,70];
+ const base=kind==='basalt'?[51,70,98]:(coverLook?[151,109,69]:[130,93,70]);
  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
    const n1=valueNoise(random,size,x*.085,y*.085);
    const n2=valueNoise(random,size,x*.022,y*.022);
@@ -63,14 +64,19 @@ function materialFamily(kind){
  }
  return {albedo:mapFromPixels('albedo'),normal:mapFromPixels('normal'),roughness:mapFromPixels('roughness')};
 }
-function terrain(scene,stone,clay){
+function terrain(scene,stone,clay,coverLook=false){
  const g=new THREE.PlaneGeometry(205,350,140,220);g.rotateX(-Math.PI/2);g.translate(0,0,-112);
- const p=g.attributes.position,colors=new Float32Array(p.count*3),a=c(0x825c4f),b=c(0xb79a76),d=c(0x425773),col=new THREE.Color();
+ const p=g.attributes.position,colors=new Float32Array(p.count*3),a=c(coverLook?0x1a2146:0x825c4f),b=c(coverLook?0x40527f:0xb79a76),d=c(coverLook?0x95673c:0x425773),col=new THREE.Color();
  for(let i=0;i<p.count;i++){
   const x=p.getX(i),z=p.getZ(i);
   p.setY(i,groundHeight(x,z));
   const noise=Math.sin(x*.36+z*.23)*.07+Math.sin(x*.1-z*.06)*.06;
-  col.copy(a).lerp(b,clamp(.5+noise,0,1)).lerp(d,clamp((Math.abs(x)-6)/32,0,1)*.5);
+  if(coverLook){
+   // Blue geology with fine particulate ochre exposure, not beige desert terrain.
+   const grit=Math.pow(Math.abs(Math.sin(x*1.77+z*.29)*Math.cos(z*2.37-x*.88)),5);
+   const exposed=clamp(.16+.22*Math.sin(x*.16+z*.08)+.18*grit,0,.44);
+   col.copy(a).lerp(b,clamp(.46+noise+.025*groundHeight(x,z),0,1)).lerp(d,exposed);
+  } else col.copy(a).lerp(b,clamp(.5+noise,0,1)).lerp(d,clamp((Math.abs(x)-6)/32,0,1)*.5);
   colors[3*i]=col.r;colors[3*i+1]=col.g;colors[3*i+2]=col.b;
  }
  g.setAttribute('color',new THREE.BufferAttribute(colors,3));g.computeVertexNormals();
@@ -87,9 +93,9 @@ function terrain(scene,stone,clay){
  * fractures and weather-softened pockets. The collider follows halfWidth(z).
  * Static topology: two meshes, not a collection of disconnected rock props.
  */
-function cliffWall(scene,side,startZ,endZ,stone){
+function cliffWall(scene,side,startZ,endZ,stone,coverLook=false){
  const steps=128,rings=14,positions=[],uvs=[],colors=[],indices=[];
- const dark=c(0x283b5e),mid=c(0x536987),rim=c(0x917b71),ochre=c(0xbaa183);
+ const dark=c(coverLook?0x1a2146:0x283b5e),mid=c(coverLook?0x40527f:0x536987),rim=c(coverLook?0x2f3a64:0x917b71),ochre=c(coverLook?0x95673c:0xbaa183);
  for(let s=0;s<=steps;s++){
   const z=mix(startZ,endZ,s/steps),fz=s/steps;
   const bedTilt=Math.sin(z*.035+side)*.15;
@@ -106,7 +112,9 @@ function cliffWall(scene,side,startZ,endZ,stone){
    const color=dark.clone().lerp(mid,clamp(t*.96+.07,0,1));
    const variegation=.54+.46*Math.sin(z*.067+h*2.49);
    color.lerp(rim,clamp(t*.18+variegation*.09,0,.4));
-   color.lerp(ochre,Math.pow(Math.max(0,Math.sin(h*2.02+z*.12)),7)*.19);
+   const coarseStipple=Math.pow(Math.max(0,Math.sin(h*2.02+z*.12)),7);
+    const ochreExposure=coverLook?clamp(coarseStipple*.40+Math.pow(Math.abs(Math.sin(z*.94+h*3.3)),7)*.15,0,.55):coarseStipple*.19;
+    color.lerp(ochre,ochreExposure);
    color.multiplyScalar(1+.065*Math.sin(z*.36+h*1.6));
    colors.push(color.r,color.g,color.b);
   }
@@ -213,9 +221,9 @@ function rockScatter(scene,basalt,ochre){
  * 3 depth layers, mesh-backed irregular crests and varying strata. Geometry
  * remains original, fully 3D, and one draw call per ridge.
  */
-function mountainMass(scene){
+function mountainMass(scene,coverLook=false){
  const root=new THREE.Group();root.name='Distant indigo fold mountains';scene.add(root);
- const layerColors=[0x1c365d,0x2b4568,0x405671,0x53637a];
+ const layerColors=coverLook?[0x1a2146,0x29395e,0x40527f,0x53637a]:[0x1c365d,0x2b4568,0x405671,0x53637a];
  const ranges=[{z:-425,span:390,peak:74,base:-9},{z:-312,span:350,peak:62,base:-2},{z:-225,span:260,peak:39,base:0}];
  for(let layer=0;layer<ranges.length;layer++){
   const {z,span,peak,base}=ranges[layer],segments=118,depthSteps=4;
@@ -237,7 +245,7 @@ function mountainMass(scene){
     const zz=z-(t-.5)*16+Math.sin(i*.77+layer)*2*t;
     points.push(x,height,zz);
     uv.push(i/segments*8,t*3);
-    const color=new THREE.Color(layerColors[layer]).lerp(new THREE.Color(0xa18b85),Math.pow(t,.6)*.065);
+    const color=new THREE.Color(layerColors[layer]).lerp(new THREE.Color(coverLook?COVER_PALETTE.stoneOchre:0xa18b85),Math.pow(t,.6)*(coverLook?.23:.065));
     const strata=Math.sin(i*.13+j*3.2+layer)*.034 +Math.sin(i*.5+j*.31)*.02;
     color.multiplyScalar(1+strata);
     colors.push(color.r,color.g,color.b);
@@ -388,12 +396,34 @@ function horizonArray(scene,stone,oxide,warm){
  crown.rotation.z=.13;
  return group;
 }
-function sky(scene){
+function sky(scene,coverLook=false){
  const geo=new THREE.SphereGeometry(800,48,26);
- const material=new THREE.ShaderMaterial({
-  side:THREE.BackSide,depthWrite:false,fog:false,uniforms:{warm:{value:0}},
-  vertexShader:`varying vec3 vDir;void main(){vDir=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
-  fragmentShader:`varying vec3 vDir;uniform float warm;
+ const uniforms={warm:{value:0}};
+ let fragmentShader;
+ if(coverLook){
+  Object.assign(uniforms,{
+   skyCobalt:{value:c(COVER_PALETTE.skyCobalt)},
+   skyIndigo:{value:c(COVER_PALETTE.skyIndigo)},
+   sunOrange:{value:c(COVER_PALETTE.sunOrange)},
+   sunHot:{value:c(COVER_PALETTE.sunHot)}
+  });
+  fragmentShader=`varying vec3 vDir;uniform float warm;uniform vec3 skyCobalt,skyIndigo,sunOrange,sunHot;
+  void main(){
+   vec3 d=normalize(vDir);
+   float height=clamp(d.y,-1.,1.);
+   vec3 col=mix(skyIndigo,skyCobalt,smoothstep(-.45,.65,height));
+   vec3 sunDir=normalize(vec3(-.32,.16,-1.));
+   float cosAngle=dot(d,sunDir);
+   // Large crisp red-orange solar disk; avoid generic yellow solar bloom.
+   float disc=smoothstep(.967,.971,cosAngle);
+   float hot=smoothstep(.984,.995,cosAngle);
+   col=mix(col,mix(sunOrange,sunHot,hot*.75),disc);
+   col+=warm*vec3(.033,.009,.004);
+   gl_FragColor=vec4(col,1.);
+   #include <colorspace_fragment>
+  }`;
+ }else{
+  fragmentShader=`varying vec3 vDir;uniform float warm;
   void main(){vec3 d=normalize(vDir);float horizon=clamp(d.y*.87+.31,0.,1.);
    vec3 blue=vec3(.014,.044,.16),indigo=vec3(.045,.115,.28),dust=vec3(.24,.17,.18);
    vec3 col=mix(dust,indigo,smoothstep(.05,.53,horizon));
@@ -408,27 +438,32 @@ function sky(scene){
    col=mix(col,vec3(.75,.105,.025),disc);
    col=mix(col,vec3(.99,.22,.042),core*.55);
    col+=warm*vec3(.08,.025,.01);
-   gl_FragColor=vec4(col,1.);}`
+   gl_FragColor=vec4(col,1.);}`;
+ }
+ const material=new THREE.ShaderMaterial({
+  side:THREE.BackSide,depthWrite:false,fog:false,uniforms,
+  vertexShader:`varying vec3 vDir;void main(){vDir=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+  fragmentShader
  });
  const sphere=new THREE.Mesh(geo,material);sphere.renderOrder=-100;sphere.frustumCulled=false;scene.add(sphere);
  return {sphere,material};
 }
-export function createWorldArt(scene){
+export function createWorldArt(scene,{coverLook=false}={}){
  const root=new THREE.Group();root.name='The Sunward Causeway / original art study';scene.add(root);
- const basalt=materialFamily('basalt'),ochre=materialFamily('ochre');
- const stone=mat(0xa3b0c4,.94,{map:basalt.albedo,normalMap:basalt.normal,roughnessMap:basalt.roughness});
- const warm=mat(0xdfb39a,.96,{map:ochre.albedo,normalMap:ochre.normal,roughnessMap:ochre.roughness});
+ const basalt=materialFamily('basalt',coverLook),ochre=materialFamily('ochre',coverLook);
+ const stone=mat(coverLook?0xc6d1e8:0xa3b0c4,.94,{map:basalt.albedo,normalMap:basalt.normal,roughnessMap:basalt.roughness});
+ const warm=mat(coverLook?0xdfb67c:0xdfb39a,.96,{map:ochre.albedo,normalMap:ochre.normal,roughnessMap:ochre.roughness});
  const oxide=mat(0x3c4b60,.76,{metalness:.18});
- const terrainData=terrain(root,basalt,ochre);
+ const terrainData=terrain(root,basalt,ochre,coverLook);
  causeway(root,stone,warm);groundDebris(root,stone,warm);
- cliffWall(root,1,40,-190,basalt);cliffWall(root,-1,40,-190,basalt);
- rockScatter(root,stone,warm);mountainMass(root);
+ cliffWall(root,1,40,-190,basalt,coverLook);cliffWall(root,-1,40,-190,basalt,coverLook);
+ rockScatter(root,stone,warm);mountainMass(root,coverLook);
  const gateways=[gateway(root,-13,stone,oxide,1)];
  const waystation=createWaystation(root,{groundHeight,stone,warm,oxide});
  spatialObstacles(root,stone,oxide,warm);
  horizonArray(root,stone,oxide,warm);
  const relic=createFirstContactEncounter(root,{x:WORLD.artifact.x,z:WORLD.artifact.z,groundHeight,halfWidth,stone,oxide,warm});
- const skies=sky(scene);
+ const skies=sky(scene,coverLook);
  const exitStone=mesh(root,new THREE.CylinderGeometry(5.6,6.1,.32,20),warm,0,groundHeight(0,-110)+.11,-110);exitStone.castShadow=false;
  // No arbitrary floating tetrahedra: discoveries remain grounded in the physical world.
  const maps=[basalt.albedo,basalt.normal,basalt.roughness,ochre.albedo,ochre.normal,ochre.roughness,...terrainData.textures];
