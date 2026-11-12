@@ -3,8 +3,8 @@
  * No named character, invented dialogue, cultural symbols, or game progression.
  * Model integration remains gated by ?art-review=inhabitants until visual approval.
  */
-import {WAYSTATION} from './world-logic.mjs';
-export const WORKER_POS=Object.freeze({x:WAYSTATION.x+1.08,z:WAYSTATION.z+.91});
+import {WORKER_POS} from './waystation-layout.mjs';
+export {WORKER_POS};
 export function initialWorkerState(){
  return {phase:'working',elapsed:0,workCycles:0,acknowledgements:0};
 }

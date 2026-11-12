@@ -2,6 +2,7 @@
 // Material evidence of a lived-in world, not a named site or approved narrative.
 import * as THREE from 'three';
 import {WAYSTATION} from './world-logic.mjs';
+import {WORKBENCH} from './waystation-layout.mjs';
 const add=(root,g,material,name,x,y,z)=>{
  const mesh=new THREE.Mesh(g,material);
  mesh.name=name;mesh.position.set(x,y,z);
@@ -32,8 +33,8 @@ export function createWaystation(parent,{groundHeight,stone,warm,oxide}){
  const canopy=add(root,brokenBox(2.01,.18,.92,6),warm,'Damaged canopy repair',-.58,2.96,1.1);
  canopy.rotation.x=.07;canopy.rotation.z=-.08;
  // A bench, repaired audio chassis, folds of fabric and storage vessels.
- add(root,brokenBox(1.67,.16,.78,7),warm,'Listening workbench',-.35,1.02,.34);
- for(const side of [-1,1])add(root,brokenBox(.14,.88,.52,8+side),stone,'Workbench leg',-.35+side*.64,.53,.34);
+ add(root,brokenBox(WORKBENCH.width,.16,WORKBENCH.depth,7),warm,'Listening workbench',WORKBENCH.localX,WORKBENCH.centerY,WORKBENCH.localZ);
+ for(const side of [-1,1])add(root,brokenBox(.14,.88,.52,8+side),stone,'Workbench leg',WORKBENCH.localX+side*.64,.53,WORKBENCH.localZ);
  add(root,brokenBox(.93,.29,.48,11),oxide,'Unpowered repairable listening shell',-.38,1.29,.31);
  add(root,new THREE.BoxGeometry(.48,.024,.05),warm,'Scratched chassis contact rail',-.4,1.49,.59);
  const slots=new THREE.InstancedMesh(new THREE.BoxGeometry(.077,.014,.022),stone,6);

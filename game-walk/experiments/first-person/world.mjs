@@ -5,7 +5,7 @@ import {AwakenNowScore} from './score.mjs';
 import {stickVector,lookDelta} from './control-math.mjs';
 import {InspectionMotion} from './inspection-motion.mjs';
 import {parseReviewPose,createReviewMotion} from './art-review-presets.mjs';
-import {createWorkerProxy} from './worker-art.mjs';
+// The real GLB loader is imported lazily only by the explicit W0 art-review pose.
 import {WORKER_POS,initialWorkerState,stepWorkerRoutine,workerDistance,canAcknowledgeWorker,acknowledgeWorker} from './worker-routine.mjs';
 
 const $=id=>document.getElementById(id);
@@ -93,8 +93,26 @@ sun.shadow.bias=-.0008;
 const bounce=new THREE.DirectionalLight(0x4666b8,.95);bounce.position.set(40,15,10);scene.add(bounce);
 const art=createWorldArt(scene);
 // Explicit review route only; ordinary visitors never see this unapproved character.
-const worker=workerReviewEnabled?createWorkerProxy(scene,groundHeight):null;
+let worker=null;
 let workerState=initialWorkerState();
+let workerLoadStatus=workerReviewEnabled?'loading':'not-requested';
+let workerLoadError=null,workerDiagnostics=null,workerDisposed=false;
+// Never load unfinished character art for ordinary players. In review mode,
+// a missing/broken source shows an honest failure, NOT a low-quality stand-in.
+if(workerReviewEnabled){
+ import('./worker-gltf.mjs')
+  .then(({loadWorkerGLB})=>loadWorkerGLB(scene,groundHeight))
+  .then(instance=>{
+   if(workerDisposed){instance.dispose();return;}
+   worker=instance;workerLoadStatus='ready';workerDiagnostics=instance.diagnostic;
+   if(started&&!finished)$('status').textContent='Original W0 model loaded for art review. Character and workshop performance remain unapproved.';
+  })
+  .catch(error=>{
+   workerLoadStatus='failed';workerLoadError=String(error?.message??error);
+   $('status').textContent='W0 asset failed to load. This review character is unavailable; the world remains playable.';
+   console.error('W0 art-review GLB failed:',error);
+  });
+}
 const lightBefore=scene.fog.color.clone(),lightAfter=new THREE.Color(0x596179);
 const baseSunIntensity=sun.intensity;
 let revealLevel=0,revealTarget=0;
@@ -399,8 +417,8 @@ Main-thread cadence; GPU timings not measured`;
  }
 }
 syncCamera();renderer.render(scene,camera);requestAnimationFrame(tick);
-window.__AA_DEV__={getState:()=>({...motion,yaw,pitch,paused,inspecting,finished,artReviewPose:artReviewPose?.id??null,worker:worker?{...workerState,x:WORKER_POS.x,z:WORKER_POS.z}:null}),goToArtifact:()=>{
+window.__AA_DEV__={getState:()=>({...motion,yaw,pitch,paused,inspecting,finished,artReviewPose:artReviewPose?.id??null,worker:worker?{...workerState,x:WORKER_POS.x,z:WORKER_POS.z}:null,workerLoadStatus,workerLoadError,workerDiagnostics}),goToArtifact:()=>{
  motion={...motion,x:1.95,z:WORLD.artifact.z+1.7};motion.y=groundHeight(motion.x,motion.z);
  priorMotion={...motion};yaw=-.85;
 },goToEnd:()=>{motion={...motion,x:0,z:WORLD.endZ+.95};motion.y=groundHeight(motion.x,motion.z);priorMotion={...motion};}};
-window.addEventListener('pagehide',()=>{clearKeys();score.destroy();art.dispose();worker?.dispose();renderer.dispose()});
+window.addEventListener('pagehide',()=>{workerDisposed=true;clearKeys();score.destroy();art.dispose();worker?.dispose();renderer.dispose()});
