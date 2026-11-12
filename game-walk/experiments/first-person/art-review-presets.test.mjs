@@ -8,8 +8,8 @@ test('no review mode unless explicitly requested in the query',()=>{
  assert.equal(parseReviewPose('?art-review=unknown'),null);
  assert.equal(parseReviewPose('?art-review=__proto__'),null);
 });
-test('three meaningful camera positions exist for actual scene inspection',()=>{
- assert.deepEqual(ART_REVIEW_POSE_IDS,['arrival','contact','waystation']);
+test('four deterministic camera positions exist for actual scene inspection',()=>{
+ assert.deepEqual(ART_REVIEW_POSE_IDS,['arrival','contact','waystation','inhabitants']);
  for(const id of ART_REVIEW_POSE_IDS){
   const pose=parseReviewPose('?art-review='+id);
   assert.ok(Number.isFinite(pose.x)&&Number.isFinite(pose.z)&&Number.isFinite(pose.yaw));
@@ -26,4 +26,11 @@ test('waystation view is on the live route beside the shelter, not inside it',()
  assert.ok(pose.x>0&&pose.z<0);
  assert.ok(pose.z>-82);
  assert.ok(pose.yaw<0,'camera should face toward left-side shelter');
+});
+
+test('inhabitants art review starts beside the public route, not inside the shelter',()=>{
+ const p=parseReviewPose('?art-review=inhabitants');
+ assert.equal(parseReviewPose(''),null);
+ assert.ok(p&&p.x<0&&p.z<-70);
+ assert.ok(createReviewMotion(p).grounded);
 });

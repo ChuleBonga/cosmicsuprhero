@@ -5,6 +5,8 @@ import {AwakenNowScore} from './score.mjs';
 import {stickVector,lookDelta} from './control-math.mjs';
 import {InspectionMotion} from './inspection-motion.mjs';
 import {parseReviewPose,createReviewMotion} from './art-review-presets.mjs';
+import {createWorkerProxy} from './worker-art.mjs';
+import {WORKER_POS,initialWorkerState,stepWorkerRoutine,workerDistance,canAcknowledgeWorker,acknowledgeWorker} from './worker-routine.mjs';
 
 const $=id=>document.getElementById(id);
 // Only the root album site omits uncleared game audio. Separate approved reviews can retain it.
@@ -48,6 +50,7 @@ const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
 // An explicit art-review query changes only the starting viewpoint for scene QA.
 // The default public journey and its progression remain unchanged.
 const artReviewPose=parseReviewPose(location.search);
+const workerReviewEnabled=artReviewPose?.id==='inhabitants';
 const initialPoseMotion=artReviewPose?createReviewMotion(artReviewPose):initialState();
 let yaw=artReviewPose?.yaw??0,pitch=artReviewPose?.pitch??-.04,motion=initialPoseMotion,priorMotion={...initialPoseMotion},walkPhase=0,started=false,paused=true;
 let inspecting=false,hasInspected=false,finished=false,pointerLockWasActive=false;
@@ -89,6 +92,9 @@ Object.assign(sun.shadow.camera,{left:-40,right:40,top:35,bottom:-35,near:1,far:
 sun.shadow.bias=-.0008;
 const bounce=new THREE.DirectionalLight(0x4666b8,.95);bounce.position.set(40,15,10);scene.add(bounce);
 const art=createWorldArt(scene);
+// Explicit review route only; ordinary visitors never see this unapproved character.
+const worker=workerReviewEnabled?createWorkerProxy(scene,groundHeight):null;
+let workerState=initialWorkerState();
 const lightBefore=scene.fog.color.clone(),lightAfter=new THREE.Color(0x596179);
 const baseSunIntensity=sun.intensity;
 let revealLevel=0,revealTarget=0;
@@ -175,6 +181,14 @@ function closeInspection(){
  if(!coarse)canvas.requestPointerLock?.().catch(()=>{});
  canvas.focus();$('status').textContent='Returned to the world.';
 }
+function interact(){
+ if(worker&&started&&!paused&&!finished&&!inspecting&&workerState.phase==='noticing'&&canAcknowledgeWorker(motion,yaw)){
+  workerState=acknowledgeWorker(workerState,motion,yaw);
+  $('status').textContent='The worker acknowledges you and returns to the repair task. Non-canonical behavior test.';
+  return;
+ }
+ inspect();
+}
 function inspect(){
  if(!started||paused||finished||inspecting||!canInspect(motion,yaw))return;
  clearKeys();inspecting=true;inspectionRig.open();paused=true;hasInspected=true;
@@ -199,10 +213,11 @@ function finish(){
 $('begin').addEventListener('click',begin);
 $('pause').addEventListener('click',()=>setPaused(!paused));
 $('resume').addEventListener('click',()=>setPaused(false));
-$('inspect').addEventListener('click',inspect);
+$('inspect').addEventListener('click',interact);
 $('leave-inspect').addEventListener('click',closeInspection);
 $('restart').addEventListener('click',()=>{
- end.hidden=true;hud.hidden=false;motion=initialState();priorMotion={...motion};yaw=0;pitch=-.04;
+ end.hidden=true;hud.hidden=false;motion=artReviewPose?createReviewMotion(artReviewPose):initialState();priorMotion={...motion};yaw=artReviewPose?.yaw??0;pitch=artReviewPose?.pitch??-.04;
+  workerState=initialWorkerState();
  finished=false;started=true;inspecting=false;paused=false;hasInspected=false;
  score.setSceneLevel(1);revealLevel=0;revealTarget=0;art.reveal(0);
  scene.fog.color.copy(lightBefore);
@@ -221,7 +236,7 @@ document.addEventListener('keydown',e=>{
  if(e.target instanceof HTMLElement&&e.target.closest('a,button,input,textarea'))return;
  if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space'].includes(e.code))e.preventDefault();
  if(e.code==='KeyM'&&started&&!publicAudioRestricted){toggleMusic();return;}
- if(e.code==='KeyE'){inspect();return;}
+ if(e.code==='KeyE'){interact();return;}
  if(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.code))activeKeys.add(e.code);
 });
 document.addEventListener('keyup',e=>activeKeys.delete(e.code));
@@ -333,16 +348,21 @@ function tick(timestamp){
    const [f,r]=readInput();
    priorMotion={...motion};
    motion=stepMovement(motion,f,r,yaw);
+   if(worker)workerState=stepWorkerRoutine(workerState,FDT,workerDistance(motion));
    walkPhase+=Math.hypot(motion.vx,motion.vz)*FDT;
    accumulator-=FDT;steps++;
   }
   if(steps===4)accumulator=0;
-  const nearby=canInspect(motion,yaw);hint.hidden=!nearby;inspectButton.hidden=!nearby;
-  if(nearby)hint.textContent=coarse?'AN OBJECT LIES IN THE DUST':'E / EXAMINE THE FOUND OBJECT';
+  const nearby=canInspect(motion,yaw);
+  const nearWorker=Boolean(worker&&workerState.phase==='noticing'&&canAcknowledgeWorker(motion,yaw));
+  hint.hidden=!(nearby||nearWorker);inspectButton.hidden=!(nearby||nearWorker);
+  if(nearWorker){hint.textContent=coarse?'GREET THE WORKER':'E / ACKNOWLEDGE THE WORKER';inspectButton.textContent='Acknowledge';}
+  else if(nearby){hint.textContent=coarse?'AN OBJECT LIES IN THE DUST':'E / EXAMINE THE FOUND OBJECT';inspectButton.textContent='Examine';}
   $('stage').textContent=narrativeBeat(motion.z);
   if(atEnd(motion))finish();
  }
  syncCamera();
+ if(worker&&started&&!paused&&!finished)worker.update(workerState,motion,delta);
  art.sky.sphere.position.copy(camera.position);
  // The relic is a heavy material object discovered on the ground. It does
  // not float or rotate as a generic collectible. Inspection is the player's
@@ -379,8 +399,8 @@ Main-thread cadence; GPU timings not measured`;
  }
 }
 syncCamera();renderer.render(scene,camera);requestAnimationFrame(tick);
-window.__AA_DEV__={getState:()=>({...motion,yaw,pitch,paused,inspecting,finished,artReviewPose:artReviewPose?.id??null}),goToArtifact:()=>{
+window.__AA_DEV__={getState:()=>({...motion,yaw,pitch,paused,inspecting,finished,artReviewPose:artReviewPose?.id??null,worker:worker?{...workerState,x:WORKER_POS.x,z:WORKER_POS.z}:null}),goToArtifact:()=>{
  motion={...motion,x:1.95,z:WORLD.artifact.z+1.7};motion.y=groundHeight(motion.x,motion.z);
  priorMotion={...motion};yaw=-.85;
 },goToEnd:()=>{motion={...motion,x:0,z:WORLD.endZ+.95};motion.y=groundHeight(motion.x,motion.z);priorMotion={...motion};}};
-window.addEventListener('pagehide',()=>{clearKeys();score.destroy();art.dispose();renderer.dispose()});
+window.addEventListener('pagehide',()=>{clearKeys();score.destroy();art.dispose();worker?.dispose();renderer.dispose()});
