@@ -10,7 +10,7 @@ test('cover palette is opt-in only for a named review camera',()=>{
 test('candidate terrain uses neutral albedo without changing legacy route',()=>{
  assert.ok(art.includes("terrainNeutral=coverLook?materialFamily('neutral',true):null"));
  assert.ok(art.includes('terrain(root,basalt,terrainNeutral??ochre,coverLook)'));
- assert.ok(art.includes("kind==='neutral'?[230,234,238]"));
+ assert.ok(art.includes("kind==='neutral'?[201,217,236]"));
  assert.ok(art.includes('coverLook?9:36,coverLook?14:64'));
  assert.ok(art.includes('map:coverLook?null:stone.albedo'));
 });

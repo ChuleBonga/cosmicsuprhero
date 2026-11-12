@@ -27,7 +27,7 @@ function materialFamily(kind,coverLook=false){
  for(let i=0;i<random.length;i++)random[i]=r();
  const height=new Float32Array(random.length);
  // Neutral albedo preserves blue geological vertex colors.
- const base=kind==='basalt'?[51,70,98]:kind==='neutral'?[230,234,238]:(coverLook?[151,109,69]:[130,93,70]);
+ const base=kind==='basalt'?[51,70,98]:kind==='neutral'?[201,217,236]:(coverLook?[151,109,69]:[130,93,70]);
  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
    const n1=valueNoise(random,size,x*.085,y*.085);
    const n2=valueNoise(random,size,x*.022,y*.022);
@@ -76,9 +76,11 @@ function terrain(scene,stone,clay,coverLook=false){
   const noise=Math.sin(x*.36+z*.23)*.07+Math.sin(x*.1-z*.06)*.06;
   if(coverLook){
    // Blue geology with fine particulate ochre exposure, not beige desert terrain.
-   const grit=Math.pow(Math.abs(Math.sin(x*1.77+z*.29)*Math.cos(z*2.37-x*.88)),5);
-   const exposed=clamp(.16+.22*Math.sin(x*.16+z*.08)+.18*grit,0,.44);
-   col.copy(a).lerp(b,clamp(.46+noise+.025*groundHeight(x,z),0,1)).lerp(d,exposed);
+   // Blue bedrock dominates; ochre shows only as exposed strata/abrasion.
+   const stratum=Math.pow(Math.max(0,Math.sin(x*.23+z*.048+Math.sin(z*.07)*.45)),5);
+   const abrasion=Math.pow(Math.abs(Math.sin(x*.74+z*.39)*Math.cos(z*.59-x*.31)),7);
+   const exposed=clamp(.025+.19*stratum+.075*abrasion,0,.29);
+   col.copy(a).lerp(b,clamp(.49+noise+.012*groundHeight(x,z),0,1)).lerp(d,exposed);
   } else col.copy(a).lerp(b,clamp(.5+noise,0,1)).lerp(d,clamp((Math.abs(x)-6)/32,0,1)*.5);
   colors[3*i]=col.r;colors[3*i+1]=col.g;colors[3*i+2]=col.b;
  }
