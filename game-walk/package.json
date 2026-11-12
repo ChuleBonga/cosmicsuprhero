@@ -10,7 +10,7 @@
     "check": "tsc --noEmit",
     "test": "node --experimental-strip-types scripts/test-journey.mjs",
     "test:movement-lab": "node --test experiments/movement/movement-model.test.mjs experiments/movement/terrain.test.mjs",
-    "test:first-person": "node --test experiments/first-person/world-logic.test.mjs experiments/first-person/waystation-art.test.mjs experiments/first-person/art-review-presets.test.mjs experiments/first-person/worker-routine.test.mjs experiments/first-person/worker-art.test.mjs experiments/first-person/waystation-layout.test.mjs experiments/first-person/worker-glb.test.mjs experiments/first-person/artwork-calibration.test.mjs",
+    "test:first-person": "node --test experiments/first-person/world-logic.test.mjs experiments/first-person/waystation-art.test.mjs experiments/first-person/art-review-presets.test.mjs experiments/first-person/worker-routine.test.mjs experiments/first-person/worker-art.test.mjs experiments/first-person/waystation-layout.test.mjs experiments/first-person/worker-glb.test.mjs experiments/first-person/artwork-calibration.test.mjs experiments/first-person/cover-terrain-material.test.mjs",
     "test:score": "node --test experiments/first-person/score.test.mjs",
     "test:controls": "node --test experiments/first-person/control-math.test.mjs",
     "test:encounter": "node --test experiments/first-person/encounter-art.test.mjs",

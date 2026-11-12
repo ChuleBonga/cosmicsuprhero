@@ -23,10 +23,11 @@ function valueNoise(values,size,x,y){
  return mix(mix(read(ix,iy),read(ix+1,iy),u),mix(read(ix,iy+1),read(ix+1,iy+1),u),v);
 }
 function materialFamily(kind,coverLook=false){
- const size=256,r=seedRand(kind==='basalt'?55403:38071),random=new Float32Array(size*size);
+ const size=256,r=seedRand(kind==='basalt'?55403:kind==='neutral'?74211:38071),random=new Float32Array(size*size);
  for(let i=0;i<random.length;i++)random[i]=r();
  const height=new Float32Array(random.length);
- const base=kind==='basalt'?[51,70,98]:(coverLook?[151,109,69]:[130,93,70]);
+ // Neutral albedo preserves blue geological vertex colors.
+ const base=kind==='basalt'?[51,70,98]:kind==='neutral'?[230,234,238]:(coverLook?[151,109,69]:[130,93,70]);
  for(let y=0;y<size;y++)for(let x=0;x<size;x++){
    const n1=valueNoise(random,size,x*.085,y*.085);
    const n2=valueNoise(random,size,x*.022,y*.022);
@@ -41,12 +42,14 @@ function materialFamily(kind,coverLook=false){
   for(let y=0;y<size;y++)for(let x=0;x<size;x++){
    const i=y*size+x,k=4*i,v=height[i],dx=height[y*size+(x+1)%size]-height[y*size+(x+size-1)%size],dy=height[((y+1)%size)*size+x]-height[((y+size-1)%size)*size+x];
    if(type==='albedo'){
-    const variation=(v-.5)*112+(Math.sin(y*.07)*9);
-    for(let j=0;j<3;j++)id.data[k+j]=clamp(base[j]+variation+(j===2?10:0),1,255);
+    const neutral=kind==='neutral';
+    const variation=neutral?(v-.5)*24+Math.sin(y*.07)*2:(v-.5)*112+Math.sin(y*.07)*9;
+    for(let j=0;j<3;j++)id.data[k+j]=clamp(base[j]+variation+(j===2&&!neutral?10:0),1,255);
    }else if(type==='normal'){
     // Avoid allocating a Vector3 per texture pixel (131,072 allocations on
     // initial load across two material families).
-    const nx=-dx*6,ny=-dy*6,inv=1/Math.hypot(nx,ny,1);
+    const strength=coverLook?2:6;
+    const nx=-dx*strength,ny=-dy*strength,inv=1/Math.hypot(nx,ny,1);
     id.data[k]=(nx*inv*.5+.5)*255;
     id.data[k+1]=(ny*inv*.5+.5)*255;
     id.data[k+2]=(inv*.5+.5)*255;
@@ -82,10 +85,13 @@ function terrain(scene,stone,clay,coverLook=false){
  g.setAttribute('color',new THREE.BufferAttribute(colors,3));g.computeVertexNormals();
  // Dedicated textures for terrain preserve 1x1 repeat UVs on architectural
  // and collectible materials. Prior builds accidentally tiled all ochre props.
+ // The cover route uses neutral albedo rather than re-tinting the blue vertices brown.
  const terrainMaps=[clay.albedo.clone(),clay.normal.clone(),clay.roughness.clone()];
  const base=mat(0xffffff,.92,{vertexColors:true,map:terrainMaps[0],normalMap:terrainMaps[1],roughnessMap:terrainMaps[2]});
- for(const m of terrainMaps){m.repeat.set(36,64);m.needsUpdate=true;}
+ for(const m of terrainMaps){m.repeat.set(coverLook?9:36,coverLook?14:64);m.needsUpdate=true;}
+ if(coverLook)base.normalScale.set(.38,.38);
  const ground=mesh(scene,g,base);ground.castShadow=false;
+ ground.name=coverLook?'Cover test: indigo/ochre terrain':'Legacy terrain';
  return {ground,textures:terrainMaps};
 }
 /**
@@ -129,7 +135,9 @@ function cliffWall(scene,side,startZ,endZ,stone,coverLook=false){
  geo.setAttribute('uv',new THREE.Float32BufferAttribute(uvs,2));
  geo.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));
  geo.setIndex(indices);geo.computeVertexNormals();
- const face=mat(0xffffff,.96,{side:THREE.DoubleSide,vertexColors:true,map:stone.albedo,normalMap:stone.normal,roughnessMap:stone.roughness});
+ // The cover grade preserves vertex colors instead of double-multiplying by dark basalt.
+ const face=mat(0xffffff,.96,{side:THREE.DoubleSide,vertexColors:true,map:coverLook?null:stone.albedo,normalMap:stone.normal,roughnessMap:stone.roughness});
+ if(coverLook)face.normalScale.set(.34,.34);
  const m=mesh(scene,geo,face);m.name=side===1?'East cliff bedding':'West cliff bedding';m.castShadow=false;
  return m;
 }
@@ -451,10 +459,11 @@ function sky(scene,coverLook=false){
 export function createWorldArt(scene,{coverLook=false}={}){
  const root=new THREE.Group();root.name='The Sunward Causeway / original art study';scene.add(root);
  const basalt=materialFamily('basalt',coverLook),ochre=materialFamily('ochre',coverLook);
+ const terrainNeutral=coverLook?materialFamily('neutral',true):null;
  const stone=mat(coverLook?0xc6d1e8:0xa3b0c4,.94,{map:basalt.albedo,normalMap:basalt.normal,roughnessMap:basalt.roughness});
  const warm=mat(coverLook?0xdfb67c:0xdfb39a,.96,{map:ochre.albedo,normalMap:ochre.normal,roughnessMap:ochre.roughness});
  const oxide=mat(0x3c4b60,.76,{metalness:.18});
- const terrainData=terrain(root,basalt,ochre,coverLook);
+ const terrainData=terrain(root,basalt,terrainNeutral??ochre,coverLook);
  causeway(root,stone,warm);groundDebris(root,stone,warm);
  cliffWall(root,1,40,-190,basalt,coverLook);cliffWall(root,-1,40,-190,basalt,coverLook);
  rockScatter(root,stone,warm);mountainMass(root,coverLook);
@@ -466,7 +475,7 @@ export function createWorldArt(scene,{coverLook=false}={}){
  const skies=sky(scene,coverLook);
  const exitStone=mesh(root,new THREE.CylinderGeometry(5.6,6.1,.32,20),warm,0,groundHeight(0,-110)+.11,-110);exitStone.castShadow=false;
  // No arbitrary floating tetrahedra: discoveries remain grounded in the physical world.
- const maps=[basalt.albedo,basalt.normal,basalt.roughness,ochre.albedo,ochre.normal,ochre.roughness,...terrainData.textures];
+ const maps=[basalt.albedo,basalt.normal,basalt.roughness,ochre.albedo,ochre.normal,ochre.roughness,...(terrainNeutral?[terrainNeutral.albedo,terrainNeutral.normal,terrainNeutral.roughness]:[]),...terrainData.textures];
  return {root,sky:skies,artifact:relic,
   reveal(progress){
    const t=clamp(progress,0,1);

@@ -87,7 +87,7 @@ renderer.setPixelRatio(quality.ratio);
 renderer.shadowMap.enabled=!mobile;
 renderer.shadowMap.type=THREE.PCFShadowMap;
 const ambient=new THREE.HemisphereLight(0x8bb7e1,0x87523d,coverLook?1.45:2.8);scene.add(ambient);
-const sun=new THREE.DirectionalLight(0xffa466,coverLook?3.25:3.1);
+const sun=new THREE.DirectionalLight(coverLook?0xffcfac:0xffa466,coverLook?2.65:3.1);
 sun.position.set(-60,42,-145);sun.target.position.set(0,0,-55);scene.add(sun,sun.target);
 sun.castShadow=!mobile;sun.shadow.mapSize.set(1024,1024);
 Object.assign(sun.shadow.camera,{left:-40,right:40,top:35,bottom:-35,near:1,far:220});
