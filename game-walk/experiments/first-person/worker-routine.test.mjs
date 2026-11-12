@@ -1,5 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {parseReviewPose,createReviewMotion} from './art-review-presets.mjs';
+import {stepMovement} from './world-logic.mjs';
 import {initialWorkerState,workerDistance,canAcknowledgeWorker,stepWorkerRoutine,acknowledgeWorker,WORKER_POS} from './worker-routine.mjs';
 
 function tick(state,seconds,distance){
@@ -46,4 +48,16 @@ test('invalid timestep and distance are rejected',()=>{
  assert.throws(()=>stepWorkerRoutine(initialWorkerState(),0,1),RangeError);
  assert.throws(()=>stepWorkerRoutine(initialWorkerState(),.05,1),RangeError);
  assert.throws(()=>stepWorkerRoutine(initialWorkerState(),1/60,Infinity),RangeError);
+});
+
+test('the resident can be approached by normal walking without crossing stone or hidden colliders',()=>{
+ const pose=parseReviewPose('?art-review=inhabitants');
+ let player=createReviewMotion(pose),withinReach=false,visible=false;
+ for(let i=0;i<480;i++){
+  player=stepMovement(player,1,0,pose.yaw);
+  if(workerDistance(player)<3.2)withinReach=true;
+  if(canAcknowledgeWorker(player,pose.yaw)){visible=true;break;}
+ }
+ assert.ok(withinReach,'the resident must be reachable without teleporting through the shelter');
+ assert.ok(visible,'a visitor following the review camera must be able to face the resident');
 });
