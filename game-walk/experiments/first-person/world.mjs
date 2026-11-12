@@ -419,7 +419,7 @@ Main-thread cadence; GPU timings not measured`;
  }
 }
 syncCamera();renderer.render(scene,camera);requestAnimationFrame(tick);
-window.__AA_DEV__={getState:()=>({...motion,yaw,pitch,paused,inspecting,finished,artReviewPose:artReviewPose?.id??null,coverLook,worker:worker?{...workerState,x:WORKER_POS.x,z:WORKER_POS.z}:null,workerLoadStatus,workerLoadError,workerDiagnostics}),goToArtifact:()=>{
+window.__AA_DEV__={getState:()=>({...motion,yaw,pitch,paused,inspecting,finished,artReviewPose:artReviewPose?.id??null,coverLook,scanState:art.scanState?{...art.scanState}:null,worker:worker?{...workerState,x:WORKER_POS.x,z:WORKER_POS.z}:null,workerLoadStatus,workerLoadError,workerDiagnostics}),goToArtifact:()=>{
  motion={...motion,x:1.95,z:WORLD.artifact.z+1.7};motion.y=groundHeight(motion.x,motion.z);
  priorMotion={...motion};yaw=-.85;
 },goToEnd:()=>{motion={...motion,x:0,z:WORLD.endZ+.95};motion.y=groundHeight(motion.x,motion.z);priorMotion={...motion};}};

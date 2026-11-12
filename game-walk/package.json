@@ -4,19 +4,20 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "npm run prepare:w0-review && vite --host 0.0.0.0",
-    "build": "npm run prepare:w0-review && npm run check && npm test && npm run test:movement-lab && npm run test:first-person && npm run test:score && npm run test:controls && npm run test:encounter && npm run test:inspection && npm run test:production-assets && vite build && node scripts/check-budget.mjs",
+    "dev": "npm run prepare:scan-rock && npm run prepare:w0-review && vite --host 0.0.0.0",
+    "build": "npm run prepare:scan-rock && npm run prepare:w0-review && npm run check && npm test && npm run test:movement-lab && npm run test:first-person && npm run test:score && npm run test:controls && npm run test:encounter && npm run test:inspection && npm run test:production-assets && vite build && node scripts/check-budget.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "check": "tsc --noEmit",
     "test": "node --experimental-strip-types scripts/test-journey.mjs",
     "test:movement-lab": "node --test experiments/movement/movement-model.test.mjs experiments/movement/terrain.test.mjs",
-    "test:first-person": "node --test experiments/first-person/world-logic.test.mjs experiments/first-person/waystation-art.test.mjs experiments/first-person/art-review-presets.test.mjs experiments/first-person/worker-routine.test.mjs experiments/first-person/worker-art.test.mjs experiments/first-person/waystation-layout.test.mjs experiments/first-person/worker-glb.test.mjs experiments/first-person/artwork-calibration.test.mjs experiments/first-person/cover-terrain-material.test.mjs",
+    "test:first-person": "node --test experiments/first-person/world-logic.test.mjs experiments/first-person/waystation-art.test.mjs experiments/first-person/art-review-presets.test.mjs experiments/first-person/worker-routine.test.mjs experiments/first-person/worker-art.test.mjs experiments/first-person/waystation-layout.test.mjs experiments/first-person/worker-glb.test.mjs experiments/first-person/artwork-calibration.test.mjs experiments/first-person/cover-terrain-material.test.mjs experiments/first-person/scanned-terrain.test.mjs",
     "test:score": "node --test experiments/first-person/score.test.mjs",
     "test:controls": "node --test experiments/first-person/control-math.test.mjs",
     "test:encounter": "node --test experiments/first-person/encounter-art.test.mjs",
     "test:inspection": "node --test experiments/first-person/inspection-motion.test.mjs",
     "test:production-assets": "node scripts/validate-production-assets.mjs",
-    "prepare:w0-review": "node scripts/assemble-w0-review.mjs"
+    "prepare:w0-review": "node scripts/assemble-w0-review.mjs",
+    "prepare:scan-rock": "node scripts/assemble-scan-rock.mjs"
   },
   "dependencies": {
     "phaser": "3.90.0",

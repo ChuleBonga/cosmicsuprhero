@@ -92,9 +92,18 @@ function terrain(scene,stone,clay,coverLook=false){
  const base=mat(0xffffff,.92,{vertexColors:true,map:terrainMaps[0],normalMap:terrainMaps[1],roughnessMap:terrainMaps[2]});
  for(const m of terrainMaps){m.repeat.set(coverLook?9:36,coverLook?14:64);m.needsUpdate=true;}
  if(coverLook)base.normalScale.set(.38,.38);
+ // Load source-credited scanned rock PBR details only in the art-review grade.
+ // Keep synthetic maps active as a fallback until images have actually loaded.
+ const scanState=coverLook?{normal:'loading',rough:'loading'}:null;
+ if(coverLook)import('./scanned-terrain.mjs')
+  .then(({applyScannedTerrain})=>applyScannedTerrain(base,scanState,tex=>terrainMaps.push(tex)))
+  .catch(error=>{
+   scanState.normal=scanState.rough='failed';
+   console.warn('Rock scan review unavailable; using procedural map fallback',error);
+  });
  const ground=mesh(scene,g,base);ground.castShadow=false;
  ground.name=coverLook?'Cover test: indigo/ochre terrain':'Legacy terrain';
- return {ground,textures:terrainMaps};
+ return {ground,textures:terrainMaps,scanState};
 }
 /**
  * A continuous stone face with coherent geological bedding, transverse
@@ -477,14 +486,17 @@ export function createWorldArt(scene,{coverLook=false}={}){
  const skies=sky(scene,coverLook);
  const exitStone=mesh(root,new THREE.CylinderGeometry(5.6,6.1,.32,20),warm,0,groundHeight(0,-110)+.11,-110);exitStone.castShadow=false;
  // No arbitrary floating tetrahedra: discoveries remain grounded in the physical world.
- const maps=[basalt.albedo,basalt.normal,basalt.roughness,ochre.albedo,ochre.normal,ochre.roughness,...(terrainNeutral?[terrainNeutral.albedo,terrainNeutral.normal,terrainNeutral.roughness]:[]),...terrainData.textures];
- return {root,sky:skies,artifact:relic,
+ const maps=[basalt.albedo,basalt.normal,basalt.roughness,ochre.albedo,ochre.normal,ochre.roughness,...(terrainNeutral?[terrainNeutral.albedo,terrainNeutral.normal,terrainNeutral.roughness]:[])];
+ // terrainData.textures is mutable because scanned PBR maps arrive asynchronously.
+ return {root,sky:skies,artifact:relic,scanState:terrainData.scanState,
   reveal(progress){
    const t=clamp(progress,0,1);
    for(const g of gateways)g.glyph.emissiveIntensity=.07+t*.62;
   },
   dispose(){
   root.traverse(o=>{if(o.geometry)o.geometry.dispose()});
-  for(const tex of maps)tex.dispose();waystation.dispose();skies.sphere.geometry.dispose();skies.material.dispose();
+  for(const tex of maps)tex.dispose();
+   for(const tex of terrainData.textures)tex.dispose();
+   waystation.dispose();skies.sphere.geometry.dispose();skies.material.dispose();
  }};
 }
