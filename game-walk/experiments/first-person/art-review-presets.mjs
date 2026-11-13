@@ -9,7 +9,7 @@ const POSES=Object.freeze({
   arrival:Object.freeze({id:'arrival',x:WORLD.start.x,z:WORLD.start.z,yaw:0,pitch:-.04,looksAt:'sunward causeway'}),
   contact:Object.freeze({id:'contact',x:1.5,z:WORLD.artifact.z+7,yaw:-.35,pitch:-.10,looksAt:'grounded First Contact find'}),
   waystation:Object.freeze({id:'waystation',x:1.2,z:-74.5,yaw:-.70,pitch:-.08,looksAt:'roadside repair shelter'}),
-  inhabitants:Object.freeze({id:'inhabitants',x:-1.35,z:-76.1,yaw:-.67,pitch:-.06,looksAt:'original Blender W0 model and workshop, review only'})
+  inhabitants:Object.freeze({id:'inhabitants',x:-2.35,z:-77.85,yaw:-.76,pitch:-.035,looksAt:'original Blender W0 model and workshop at close review distance'})
 });
 export function parseReviewPose(queryString=''){
  const name=new URLSearchParams(queryString).get('art-review');

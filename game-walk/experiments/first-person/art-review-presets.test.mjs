@@ -34,3 +34,12 @@ test('inhabitants art review starts beside the public route, not inside the shel
  assert.ok(p&&p.x<0&&p.z<-70);
  assert.ok(createReviewMotion(p).grounded);
 });
+
+test('inhabitants inspection camera has direct but collision-safe worker proximity',()=>{
+ const p=parseReviewPose('?art-review=inhabitants');
+ assert.ok(p.z < -77 && p.x < -2);
+ assert.ok(createReviewMotion(p).grounded);
+ const workerX=-5.46,workerZ=-81.07;
+ const d=Math.hypot(p.x-workerX,p.z-workerZ);
+ assert.ok(d>3.5&&d<5.2,'camera should reveal full body without intersecting worker or shelter: '+d);
+});

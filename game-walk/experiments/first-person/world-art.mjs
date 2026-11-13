@@ -478,10 +478,14 @@ export function createWorldArt(scene,{coverLook=false}={}){
  causeway(root,stone,warm);groundDebris(root,stone,warm);
  cliffWall(root,1,40,-190,basalt,coverLook);cliffWall(root,-1,40,-190,basalt,coverLook);
  rockScatter(root,stone,warm);mountainMass(root,coverLook);
- const gateways=[gateway(root,-13,stone,oxide,1)];
+ // The arch is unapproved and obscures the official cover's enormous sun.
+ // Remove only in the opt-in cover comparison; preserve the normal visitor world.
+ const gateways=coverLook?[]:[gateway(root,-13,stone,oxide,1)];
  const waystation=createWaystation(root,{groundHeight,stone,warm,oxide});
  spatialObstacles(root,stone,oxide,warm);
- horizonArray(root,stone,oxide,warm);
+ // The monumental ring has no established purpose in the civilization.
+ // In the cover-look study, let the blue mountain geology and open horizon read instead.
+ if(!coverLook)horizonArray(root,stone,oxide,warm);
  const relic=createFirstContactEncounter(root,{x:WORLD.artifact.x,z:WORLD.artifact.z,groundHeight,halfWidth,stone,oxide,warm});
  const skies=sky(scene,coverLook);
  const exitStone=mesh(root,new THREE.CylinderGeometry(5.6,6.1,.32,20),warm,0,groundHeight(0,-110)+.11,-110);exitStone.castShadow=false;
