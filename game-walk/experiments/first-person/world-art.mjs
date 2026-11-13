@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import {WORLD,WORLD_OBSTACLES,groundHeight,halfWidth} from './world-logic.mjs';
 import {createFirstContactEncounter} from './encounter-art.mjs';
 import {createWaystation} from './waystation-art.mjs';
+import {shouldRenderLandmark} from './world-landmark-policy.mjs';
 import {COVER_PALETTE} from './artwork-calibration.mjs';
 const seedRand=(initial)=>{let s=initial>>>0;return()=>((s=Math.imul(s,1664525)+1013904223>>>0)/4294967296)};
 const rng=seedRand(20261106);
@@ -352,10 +353,10 @@ function gateway(scene,z,stone,oxide,scale=1){
 }
 // Standing stones and fallen architecture share their positions with
 // world-logic.mjs collider definitions, keeping visual and physical space aligned.
-function spatialObstacles(scene,stone,oxide,warm){
+function spatialObstacles(scene,stone,oxide,warm,{workerReviewEnabled=false}={}){
  const group=new THREE.Group();group.name='Physical path landmarks';scene.add(group);
  for(const data of WORLD_OBSTACLES){
-  if(data.id==='first-contact-find')continue;
+  if(!shouldRenderLandmark(data.id,{workerReviewEnabled}))continue;
   const baseY=groundHeight(data.x,data.z);
   const tower=new THREE.Group();tower.name=data.id;
   tower.position.set(data.x,baseY,data.z);group.add(tower);
@@ -482,7 +483,7 @@ export function createWorldArt(scene,{coverLook=false,workerReviewEnabled=false}
  // Remove only in the opt-in cover comparison; preserve the normal visitor world.
  const gateways=coverLook?[]:[gateway(root,-13,stone,oxide,1)];
  const waystation=createWaystation(root,{groundHeight,stone,warm,oxide,reviewWorker:workerReviewEnabled});
- spatialObstacles(root,stone,oxide,warm);
+ spatialObstacles(root,stone,oxide,warm,{workerReviewEnabled});
  // The monumental ring has no established purpose in the civilization.
  // In the cover-look study, let the blue mountain geology and open horizon read instead.
  if(!coverLook)horizonArray(root,stone,oxide,warm);
