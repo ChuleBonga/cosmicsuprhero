@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import {WAYSTATION} from './world-logic.mjs';
 import {WORKBENCH} from './waystation-layout.mjs';
 import {createRepairMechanism} from './repair-mechanism.mjs';
+import {createWorkshopStructure} from './workshop-structure.mjs';
 const add=(root,g,material,name,x,y,z)=>{
  const mesh=new THREE.Mesh(g,material);
  mesh.name=name;mesh.position.set(x,y,z);
@@ -66,6 +67,21 @@ export function createWaystation(parent,{groundHeight,stone,warm,oxide,reviewWor
   d.updateMatrix();tiles.setMatrixAt(i,d.matrix);
  }
  tiles.instanceMatrix.needsUpdate=true;tiles.castShadow=false;tiles.receiveShadow=true;root.add(tiles);
+ // The public scene is untouched. In the art-review scene, replace the
+ // monolithic scaffolding with an authored physical construction study.
+ let structure=null;
+ if(reviewWorker){
+  const oldParts=new Set([
+   'Buried working floor','Weathered rear wall','Remaining canopy support',
+   'Collapsed canopy support','Sheltering roof fragment','Damaged canopy repair',
+   'Listening workbench','Workbench leg','Folded weathered cloth',
+   'Roadside walking repairs'
+  ]);
+  root.traverse(object=>{
+   if(oldParts.has(object.name))object.visible=false;
+  });
+  structure=createWorkshopStructure(root,{stone,warm,oxide});
+ }
  const repair=reviewWorker?createRepairMechanism(root,{stone,warm,oxide}):null;
- return {root,repair,footprintRadius:radius,dispose(){repair?.dispose();fabric.dispose()}};
+ return {root,repair,structure,footprintRadius:radius,dispose(){repair?.dispose();structure?.dispose();fabric.dispose()}};
 }
