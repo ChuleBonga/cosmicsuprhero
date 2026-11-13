@@ -172,7 +172,9 @@ export function createWorkshopStructure(parent,{stone,warm,oxide:sharedOxide}){
  shade.castShadow=false;
  mesh(group,new THREE.SphereGeometry(.055,10,8),lightMaterial,'Shielded service lamp bulb',[-.96,2.11,.22]);
  wire(group,[[-.96,2.29,.22],[-1.18,2.55,.11],[-1.35,2.55,-.6]],.009,metal,'Lamp power cable');
- const bounce=new THREE.PointLight(0xf2b588,.8,3.3,2);
+ // The working light is a short-range tungsten source attached to a real lamp and cable.
+ // Strong enough to show human material detail under the roof; no magical aura.
+ const bounce=new THREE.PointLight(0xf2b588,3.4,4.0,2);
  bounce.position.set(-.96,2.12,.22);
  bounce.name='Actual suspended task lamp / local illumination';
  group.add(bounce);

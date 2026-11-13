@@ -23,6 +23,8 @@ test('the workshop is a coherent physical structure and not a monolithic podium'
  assert.ok(names.includes('Wired listening transport supply'));
  assert.ok(names.includes('Hanging practical service lamp'));
  assert.ok(names.includes('Actual suspended task lamp / local illumination'));
+ const lamp=station.root.getObjectByName('Actual suspended task lamp / local illumination');
+ assert.ok(lamp.isPointLight && lamp.intensity>=2 && lamp.distance<5);
  assert.ok(!names.some(n=>/altar|ceremonial|glyph|plinth/i.test(n)));
  const box=new THREE.Box3().setFromObject(station.root),size=box.getSize(new THREE.Vector3());
  assert.ok(size.x>=2.7&&size.x<4.6);
