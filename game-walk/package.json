@@ -8,7 +8,7 @@
     "build": "npm run check && npm test && vite build && node scripts/check-budget.mjs",
     "preview": "vite preview --host 0.0.0.0",
     "check": "tsc --noEmit",
-    "test": "node --experimental-strip-types scripts/test-journey.mjs"
+    "test": "node --experimental-strip-types scripts/test-journey.mjs && node --experimental-strip-types scripts/test-settlement.mjs"
   },
   "dependencies": {
     "phaser": "3.90.0"
