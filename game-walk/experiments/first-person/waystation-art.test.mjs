@@ -43,5 +43,8 @@ test('real task mechanism exists only in opted-in worker review scene',()=>{
  assert.ok(review.repair);
  assert.ok(review.root.getObjectByName('Visible mechanical drive shafts'));
  assert.ok(review.repair.getState().rotations===0);
+ assert.equal(review.root.getObjectByName('Unpowered repairable listening shell').visible,false);
+ assert.equal(review.root.getObjectByName('Physical ventilation slots').visible,false);
+ assert.equal(normal.root.getObjectByName('Unpowered repairable listening shell').visible,true);
  normal.dispose();review.dispose();
 });

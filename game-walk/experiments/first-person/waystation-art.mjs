@@ -36,8 +36,10 @@ export function createWaystation(parent,{groundHeight,stone,warm,oxide,reviewWor
  // A bench, repaired audio chassis, folds of fabric and storage vessels.
  add(root,brokenBox(WORKBENCH.width,.16,WORKBENCH.depth,7),warm,'Listening workbench',WORKBENCH.localX,WORKBENCH.centerY,WORKBENCH.localZ);
  for(const side of [-1,1])add(root,brokenBox(.14,.88,.52,8+side),stone,'Workbench leg',WORKBENCH.localX+side*.64,.53,WORKBENCH.localZ);
- add(root,brokenBox(.93,.29,.48,11),oxide,'Unpowered repairable listening shell',-.38,1.29,.31);
- add(root,new THREE.BoxGeometry(.48,.024,.05),warm,'Scratched chassis contact rail',-.4,1.49,.59);
+ const oldShell=add(root,brokenBox(.93,.29,.48,11),oxide,'Unpowered repairable listening shell',-.38,1.29,.31);
+ if(reviewWorker)oldShell.visible=false; // removed from review for exposed physical workpiece
+ const oldRail=add(root,new THREE.BoxGeometry(.48,.024,.05),warm,'Scratched chassis contact rail',-.4,1.49,.59);
+ if(reviewWorker)oldRail.visible=false;
  const slots=new THREE.InstancedMesh(new THREE.BoxGeometry(.077,.014,.022),stone,6);
  slots.name='Physical ventilation slots';
  const d=new THREE.Object3D();
@@ -46,6 +48,7 @@ export function createWaystation(parent,{groundHeight,stone,warm,oxide,reviewWor
   d.updateMatrix();slots.setMatrixAt(i,d.matrix);
  }
  slots.instanceMatrix.needsUpdate=true;root.add(slots);
+ if(reviewWorker)slots.visible=false;
  const fabric=new THREE.MeshStandardMaterial({color:0x684354,roughness:1,side:THREE.DoubleSide});
  const folded=add(root,brokenBox(.69,.028,.83,12),fabric,'Folded weathered cloth',.18,1.18,.29);
  folded.rotation.y=-.1;
