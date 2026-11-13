@@ -467,7 +467,7 @@ function sky(scene,coverLook=false){
  const sphere=new THREE.Mesh(geo,material);sphere.renderOrder=-100;sphere.frustumCulled=false;scene.add(sphere);
  return {sphere,material};
 }
-export function createWorldArt(scene,{coverLook=false}={}){
+export function createWorldArt(scene,{coverLook=false,workerReviewEnabled=false}={}){
  const root=new THREE.Group();root.name='The Sunward Causeway / original art study';scene.add(root);
  const basalt=materialFamily('basalt',coverLook),ochre=materialFamily('ochre',coverLook);
  const terrainNeutral=coverLook?materialFamily('neutral',true):null;
@@ -481,7 +481,7 @@ export function createWorldArt(scene,{coverLook=false}={}){
  // The arch is unapproved and obscures the official cover's enormous sun.
  // Remove only in the opt-in cover comparison; preserve the normal visitor world.
  const gateways=coverLook?[]:[gateway(root,-13,stone,oxide,1)];
- const waystation=createWaystation(root,{groundHeight,stone,warm,oxide});
+ const waystation=createWaystation(root,{groundHeight,stone,warm,oxide,reviewWorker:workerReviewEnabled});
  spatialObstacles(root,stone,oxide,warm);
  // The monumental ring has no established purpose in the civilization.
  // In the cover-look study, let the blue mountain geology and open horizon read instead.
@@ -493,6 +493,7 @@ export function createWorldArt(scene,{coverLook=false}={}){
  const maps=[basalt.albedo,basalt.normal,basalt.roughness,ochre.albedo,ochre.normal,ochre.roughness,...(terrainNeutral?[terrainNeutral.albedo,terrainNeutral.normal,terrainNeutral.roughness]:[])];
  // terrainData.textures is mutable because scanned PBR maps arrive asynchronously.
  return {root,sky:skies,artifact:relic,scanState:terrainData.scanState,
+  repair:waystation.repair,
   reveal(progress){
    const t=clamp(progress,0,1);
    for(const g of gateways)g.glyph.emissiveIntensity=.07+t*.62;

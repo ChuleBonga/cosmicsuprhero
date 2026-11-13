@@ -33,3 +33,15 @@ test('center route remains open past the roadside shelter',()=>{
  for(let i=0;i<430;i++)s=stepMovement(s,1,0,0);
  assert.ok(s.z<WAYSTATION.z-7);
 });
+
+test('real task mechanism exists only in opted-in worker review scene',()=>{
+ const materials={stone:new THREE.MeshStandardMaterial(),warm:new THREE.MeshStandardMaterial(),oxide:new THREE.MeshStandardMaterial()};
+ const parent=new THREE.Group();
+ const normal=createWaystation(parent,{groundHeight,...materials});
+ assert.equal(normal.repair,null);
+ const review=createWaystation(parent,{groundHeight,...materials,reviewWorker:true});
+ assert.ok(review.repair);
+ assert.ok(review.root.getObjectByName('Visible mechanical drive shafts'));
+ assert.ok(review.repair.getState().rotations===0);
+ normal.dispose();review.dispose();
+});

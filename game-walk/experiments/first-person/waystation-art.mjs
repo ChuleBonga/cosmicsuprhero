@@ -3,6 +3,7 @@
 import * as THREE from 'three';
 import {WAYSTATION} from './world-logic.mjs';
 import {WORKBENCH} from './waystation-layout.mjs';
+import {createRepairMechanism} from './repair-mechanism.mjs';
 const add=(root,g,material,name,x,y,z)=>{
  const mesh=new THREE.Mesh(g,material);
  mesh.name=name;mesh.position.set(x,y,z);
@@ -16,7 +17,7 @@ const brokenBox=(w,h,d,seed)=>{
  }
  p.needsUpdate=true;g.computeVertexNormals();return g;
 };
-export function createWaystation(parent,{groundHeight,stone,warm,oxide}){
+export function createWaystation(parent,{groundHeight,stone,warm,oxide,reviewWorker=false}){
  const {x,z,radius}=WAYSTATION,y=groundHeight(x,z);
  if(!Number.isFinite(y))throw Error('Waystation must stand on finite terrain');
  const root=new THREE.Group();root.name='Weathered roadside listening and repair shelter';
@@ -62,5 +63,6 @@ export function createWaystation(parent,{groundHeight,stone,warm,oxide}){
   d.updateMatrix();tiles.setMatrixAt(i,d.matrix);
  }
  tiles.instanceMatrix.needsUpdate=true;tiles.castShadow=false;tiles.receiveShadow=true;root.add(tiles);
- return {root,footprintRadius:radius,dispose(){fabric.dispose()}};
+ const repair=reviewWorker?createRepairMechanism(root,{stone,warm,oxide}):null;
+ return {root,repair,footprintRadius:radius,dispose(){repair?.dispose();fabric.dispose()}};
 }

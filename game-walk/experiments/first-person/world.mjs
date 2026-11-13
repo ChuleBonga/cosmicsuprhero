@@ -93,7 +93,7 @@ sun.castShadow=!mobile;sun.shadow.mapSize.set(1024,1024);
 Object.assign(sun.shadow.camera,{left:-40,right:40,top:35,bottom:-35,near:1,far:220});
 sun.shadow.bias=-.0008;
 const bounce=new THREE.DirectionalLight(0x4666b8,.95);bounce.position.set(40,15,10);scene.add(bounce);
-const art=createWorldArt(scene,{coverLook});
+const art=createWorldArt(scene,{coverLook,workerReviewEnabled});
 // Explicit review route only; ordinary visitors never see this unapproved character.
 let worker=null;
 let workerState=initialWorkerState();
@@ -382,7 +382,10 @@ function tick(timestamp){
   if(atEnd(motion))finish();
  }
  syncCamera();
- if(worker&&started&&!paused&&!finished)worker.update(workerState,motion,delta);
+ if(worker&&started&&!paused&&!finished){
+  worker.update(workerState,motion,delta);
+  art.repair?.update(workerState,delta);
+ }
  art.sky.sphere.position.copy(camera.position);
  // The relic is a heavy material object discovered on the ground. It does
  // not float or rotate as a generic collectible. Inspection is the player's
@@ -419,7 +422,7 @@ Main-thread cadence; GPU timings not measured`;
  }
 }
 syncCamera();renderer.render(scene,camera);requestAnimationFrame(tick);
-window.__AA_DEV__={getState:()=>({...motion,yaw,pitch,paused,inspecting,finished,artReviewPose:artReviewPose?.id??null,coverLook,scanState:art.scanState?{...art.scanState}:null,worker:worker?{...workerState,x:WORKER_POS.x,z:WORKER_POS.z}:null,workerLoadStatus,workerLoadError,workerDiagnostics}),goToArtifact:()=>{
+window.__AA_DEV__={getState:()=>({...motion,yaw,pitch,paused,inspecting,finished,artReviewPose:artReviewPose?.id??null,coverLook,scanState:art.scanState?{...art.scanState}:null,worker:worker?{...workerState,x:WORKER_POS.x,z:WORKER_POS.z}:null,workerLoadStatus,workerLoadError,workerDiagnostics,repair:art.repair?.getState()??null}),goToArtifact:()=>{
  motion={...motion,x:1.95,z:WORLD.artifact.z+1.7};motion.y=groundHeight(motion.x,motion.z);
  priorMotion={...motion};yaw=-.85;
 },goToEnd:()=>{motion={...motion,x:0,z:WORLD.endZ+.95};motion.y=groundHeight(motion.x,motion.z);priorMotion={...motion};}};
