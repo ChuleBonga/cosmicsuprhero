@@ -101,9 +101,14 @@ function render() {
     choices.append(decision('Disclose the record','Tell everyone where it was kept. The district knows the truth, but the caretaker questions Chule’s judgment.','disclose'));
     content.append(choices);
   }else{
-    heading('A consequence, not a collectible',state.choice==='protect'?
-      'Chule protects the families’ confidence. Credo may listen, but the wider community still needs answers.':
-      'Chule exposes the record. Credo can respond publicly, but the caretaker is less willing to trust him.');
+    const ending=state.choice==='protect'
+      ? (state.trust>0
+        ? 'Chule protects the families’ confidence. The caretaker agrees to help him reach Credo, while the wider community still needs answers.'
+        : 'Chule keeps the record private, but his mistaken accusations have damaged trust. The caretaker will not speak for him to Credo.')
+      : (state.trust>0
+        ? 'Chule reveals the record. The community can respond openly, while the caretaker questions his judgment.'
+        : 'Chule reveals the record after misreading the witnesses. Some welcome the truth, but his credibility has been damaged.');
+    heading('A consequence, not a collectible',ending);
     content.append(node('p','The next scene is deliberately locked until the civilization, character performances, and approved script meet the quality gate.','instruction'));
     content.append(node('span','MECHANIC PROTOTYPE COMPLETE / STORY NOT YET APPROVED','recorded'));
   }
