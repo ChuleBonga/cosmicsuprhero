@@ -36,12 +36,13 @@ export const WITNESSES: Readonly<Record<Witness, { role: string; statement: stri
   }
 };
 export const CLUES: Readonly<Record<Fragment, { title: string; evidence: string }>> = {
-  departure: { title: '01 — Dispatch', evidence: 'The household message left the district before the storm.' },
-  shelter: { title: '02 — Refuge', evidence: 'A copy was received at the shelter while the hall was still active.' },
-  silence: { title: '03 — Silence', evidence: 'Only later did the public listening hall go dark.' }
+  departure: { title: 'Dispatch', evidence: 'The household message left the district before the storm.' },
+  shelter: { title: 'Refuge', evidence: 'A copy was received at the shelter while the hall was still active.' },
+  silence: { title: 'Silence', evidence: 'Only later did the public listening hall go dark.' }
 };
 export const WITNESS_ORDER: readonly Witness[] = ['caretaker','courier','apprentice'];
-export const FRAGMENTS: readonly Fragment[] = ['departure','shelter','silence'];
+// Presentation order deliberately differs from the correct chronology.
+export const FRAGMENTS: readonly Fragment[] = ['silence','departure','shelter'];
 export const SOLUTION: readonly Fragment[] = ['departure','shelter','silence'];
 export const INITIAL: State = {
   phase:'hear',heard:[],order:[],attempts:0,trust:2,choice:null,lastError:null
