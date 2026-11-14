@@ -1,5 +1,11 @@
 import assert from 'node:assert/strict';
-import { INITIAL, replay, transition, SOLUTION } from '../src/encounter.ts';
+import { INITIAL, replay, transition, SOLUTION, FRAGMENTS } from '../src/encounter.ts';
+import * as THREE from 'three';
+import { inspectNpc } from '../src/assetGate.ts';
+assert.notDeepEqual(FRAGMENTS,SOLUTION,'evidence order must not give away solution');
+const emptyModel=inspectNpc({scene:new THREE.Group(),animations:[]});
+assert.equal(emptyModel.acceptableForArtReview,false,'empty scene is never a valid NPC');
+assert.ok(emptyModel.warnings.some(w=>w.includes('No skinned')));
 const hear=(state,witness)=>transition(state,{type:'HEAR',witness});
 let state=INITIAL;
 assert.equal(transition(state,{type:'SUBMIT'}),state,'cannot skip listening');
@@ -36,4 +42,4 @@ const history=[
 ];
 assert.deepEqual(replay(JSON.parse(JSON.stringify(history))).phase,'complete','save history roundtrip');
 assert.equal(replay(history).choice,'disclose');
-console.log('Narrative mechanics: 16 assertions passed');
+console.log('Narrative and NPC asset gates passed');
