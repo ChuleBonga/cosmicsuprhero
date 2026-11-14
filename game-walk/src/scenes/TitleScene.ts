@@ -49,7 +49,7 @@ export class TitleScene extends Phaser.Scene{
     app.audio.setMuted(app.progress.muted);
     if(app.progress.stage==='campfire')this.scene.start('SliceComplete');
     else if(app.progress.stage==='credo')this.scene.start('Credo');
-    else if(app.progress.stage==='first_contact')this.scene.start('Prologue');
+    else if(app.progress.stage==='first_contact')this.scene.start(app.progress.has('first_contact') && app.progress.distance>9500 ? 'Settlement' : 'Prologue');
     else if(app.progress.stage==='crossing')this.scene.start('Crossing');
     else this.scene.start('Meditate');
   }
