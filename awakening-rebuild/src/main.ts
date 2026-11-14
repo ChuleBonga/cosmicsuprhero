@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import {inspectNpc} from './assetGate';
 import './style.css';
 import {
   CLUES, FRAGMENTS, INITIAL, WITNESSES, WITNESS_ORDER, replay, transition
@@ -155,7 +156,8 @@ halo.position.copy(sun.position);scene.add(halo);
 
 // Asset gate: no invented procedural humanoids. Renderer only loads approved GLB.
 const APPROVED_WORLD: string|null=null;
-const APPROVED_NPCS: readonly {id:Witness;url:string;position:[number,number,number]}[]=[];
+const APPROVED_NPCS: readonly {id:Witness;url:string;position:[number,number,number];approved:boolean;rights:string;reference:string}[]=[];
+const characterMixers:THREE.AnimationMixer[]=[];
 async function loadApprovedAssets() {
   const loader=new GLTFLoader();
   if(APPROVED_WORLD){
@@ -163,15 +165,21 @@ async function loadApprovedAssets() {
     catch(error){console.warn('Approved world asset failed to load',error);}
   }
   for(const npc of APPROVED_NPCS){
+    if(!npc.approved||!npc.rights||!npc.reference){
+      console.warn('Unapproved or undocumented character skipped',npc.id);continue;
+    }
     try{
       const asset=await loader.loadAsync(npc.url);
+      const assessment=inspectNpc(asset);
+      if(!assessment.acceptableForArtReview){
+        console.warn('Character failed technical art gate',npc.id,assessment.warnings);continue;
+      }
       asset.scene.position.set(...npc.position);
       scene.add(asset.scene);
-      if(asset.animations.length){
+      const idle=asset.animations.find(clip=>clip.name.toLowerCase().includes('idle'));
+      if(idle){
         const mixer=new THREE.AnimationMixer(asset.scene);
-        mixer.clipAction(asset.animations[0]).play();
-        // Production implementation must retain and update this mixer.
-        mixer.stopAllAction();
+        mixer.clipAction(idle).play();characterMixers.push(mixer);
       }
     }catch(error){console.warn('Approved character asset failed to load',npc.id,error);}
   }
@@ -185,9 +193,12 @@ const size=()=>{
 const observer=new ResizeObserver(size);observer.observe(stage);
 size();
 let raf=0;
+const clock=new THREE.Clock();
 function frame(){
   raf=requestAnimationFrame(frame);
+  const delta=clock.getDelta();
   if(document.hidden)return;
+  for(const mixer of characterMixers)mixer.update(delta);
   if(!reduced.matches)halo.rotation.z+=.00018;
   renderer.render(scene,camera);
 }
