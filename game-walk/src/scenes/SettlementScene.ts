@@ -17,7 +17,6 @@ export class SettlementScene extends Phaser.Scene {
   private repairer!: Phaser.GameObjects.Sprite;
   private passerby!: Phaser.GameObjects.Sprite;
   private message!: Phaser.GameObjects.Text;
-  private instruction!: Phaser.GameObjects.Text;
   private choices: Phaser.GameObjects.GameObject[] = [];
   private choiceActions: Array<() => void> = [];
   private fixture!: Phaser.GameObjects.Graphics;
@@ -86,7 +85,7 @@ export class SettlementScene extends Phaser.Scene {
       color: '#fae8d0', backgroundColor: '#101e35',
       padding: { x: 7, y: 6 }, wordWrap: { width: W - 35 }, lineSpacing: 3,
     }).setScrollFactor(0).setDepth(44).setVisible(false);
-    this.instruction = this.add.text(W / 2, H - 27, 'WALK: LEFT / RIGHT   INTERACT: E', {
+    this.add.text(W / 2, H - 27, 'WALK: LEFT / RIGHT   INTERACT: E', {
       fontFamily: 'Arial,sans-serif', fontSize: '10px', color: '#fff0d1',
       backgroundColor: '#19233a', padding: { x: 4, y: 3 },
     }).setOrigin(.5).setScrollFactor(0).setDepth(40);
