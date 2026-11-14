@@ -6,6 +6,7 @@ import { PrologueScene } from './scenes/WalkScene';
 import { MeditateScene } from './scenes/MeditateScene';
 import { CrossingScene } from './scenes/CrossingScene';
 import { CredoScene } from './scenes/CredoScene';
+import { SettlementScene } from './scenes/SettlementScene';
 import { PauseUIScene } from './scenes/PauseUIScene';
 import { SliceCompleteScene } from './scenes/SliceCompleteScene';
 import './style.css';
@@ -49,7 +50,7 @@ const game = new Phaser.Game({
   scale: { mode: Phaser.Scale.NONE },
   fps: { target: 60, min: 30 },
   input: { activePointers: 3 },
-  scene: [BootScene, TitleScene, MeditateScene, CrossingScene, PrologueScene, CredoScene, PauseUIScene, SliceCompleteScene]
+  scene: [BootScene, TitleScene, MeditateScene, CrossingScene, PrologueScene, SettlementScene, CredoScene, PauseUIScene, SliceCompleteScene]
 });
 // Whole-number CSS scaling: no fractional pixel scaling.
 function resize() {
