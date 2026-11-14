@@ -157,8 +157,7 @@ export class PrologueScene extends Phaser.Scene{
       this.hint.setAlpha(Math.max(0,1-(this.duration-5)/3));
     if(this.pickupDone&&!this.waitingForMusic&&this.player.x>9500){
       this.transitioned=true;
-      this.app.progress.advance('ARRIVED_AT_CREDO');
-      this.scene.start('Credo');
+      this.scene.start('Settlement');
       return;
     }
     if(this.duration-this.lastSave>3){this.lastSave=this.duration;this.app.progress.save();}
