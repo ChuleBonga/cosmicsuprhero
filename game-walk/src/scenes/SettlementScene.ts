@@ -18,6 +18,7 @@ export class SettlementScene extends Phaser.Scene {
   private message!: Phaser.GameObjects.Text;
   private instruction!: Phaser.GameObjects.Text;
   private choices: Phaser.GameObjects.GameObject[] = [];
+  private choiceActions: Array<() => void> = [];
   private fixture!: Phaser.GameObjects.Graphics;
   private progressLabel!: Phaser.GameObjects.Text;
   private avatarX = 0;
@@ -114,6 +115,12 @@ export class SettlementScene extends Phaser.Scene {
     this.keyA = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.keyD = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.input.keyboard?.on('keydown-E', () => this.interact());
+    this.input.keyboard?.on('keydown', (event: KeyboardEvent) => {
+      if (this.lock && /^[1-3]$/.test(event.key)) {
+        event.preventDefault();
+        this.choiceActions[Number(event.key) - 1]?.();
+      }
+    });
     this.input.keyboard?.on('keydown-ENTER', () => this.interact());
     this.input.keyboard?.on('keydown-ESC', () => this.openPause());
     this.input.keyboard?.on('keydown-P', () => this.openPause());
@@ -138,6 +145,7 @@ export class SettlementScene extends Phaser.Scene {
   private clearChoices() {
     for (const object of this.choices) object.destroy();
     this.choices = [];
+    this.choiceActions = [];
   }
 
   private say(message: string) {
@@ -166,7 +174,7 @@ export class SettlementScene extends Phaser.Scene {
       };
       rect.on('pointerdown', activate);
       this.choices.push(rect, text);
-      this.input.keyboard?.once('keydown-' + (i + 1), activate);
+      this.choiceActions.push(activate);
     });
   }
 
