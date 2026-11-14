@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import type { GameContext } from '../main';
 import { buildWorld } from '../world/GrayboxWorld';
 import type { ResidentId, ResponseTone } from '../story/SettlementEncounter';
+import { residentPose } from '../story/ResidentRoutine';
 
 /**
  * FIRST INTEGRATION / ART BLOCKOUT ONLY.
@@ -180,10 +181,10 @@ export class SettlementScene extends Phaser.Scene {
 
   private nearby(): ResidentId | 'fixture' | null {
     const x = this.avatarX;
-    if (Math.abs(x - this.positions.caretaker) < 42) return 'caretaker';
-    if (Math.abs(x - this.positions.repairer) < 45) return 'repairer';
+    if (Math.abs(x - this.caretaker.x) < 42) return 'caretaker';
+    if (Math.abs(x - this.repairer.x) < 45) return 'repairer';
     if (Math.abs(x - 467) < 37) return 'fixture';
-    if (Math.abs(x - this.positions.market_resident) < 28) return 'market_resident';
+    if (Math.abs(x - this.passerby.x) < 28) return 'market_resident';
     return null;
   }
 
@@ -316,10 +317,20 @@ export class SettlementScene extends Phaser.Scene {
     if (axis) this.player.setFlipX(axis < 0);
     const animation = axis ? 'alien-walk' : 'alien-idle';
     if (this.player.anims.currentAnim?.key !== animation) this.player.play(animation);
-    // The wandering resident is deliberately not anchored to a quest marker.
-    const offset = Math.sin(this.elapsed * .35) * 20;
-    this.passerby.x = this.positions.market_resident + offset;
-    this.caretaker.x = this.positions.caretaker + Math.sin(this.elapsed * .3) * 7;
-    this.repairer.x = this.positions.repairer + Math.sin(this.elapsed * .55) * 5;
+    // Work, walking, conversation and resting are authored repeatable schedules.
+    const poses = {
+      caretaker: residentPose('caretaker', this.elapsed),
+      repairer: residentPose('repairer', this.elapsed),
+      market_resident: residentPose('market_resident', this.elapsed),
+    };
+    for (const [key, actor] of [
+      ['caretaker', this.caretaker],
+      ['repairer', this.repairer],
+      ['market_resident', this.passerby],
+    ] as const) {
+      const pose = poses[key];
+      actor.x = Math.round(pose.x);
+      actor.setFlipX(pose.facing < 0);
+    }
   }
 }
