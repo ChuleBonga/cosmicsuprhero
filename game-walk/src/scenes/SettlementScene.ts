@@ -25,7 +25,6 @@ export class SettlementScene extends Phaser.Scene {
   private avatarX = 0;
   private hold: -1 | 0 | 1 = 0;
   private elapsed = 0;
-  private work = 0;
   private lock = false;
   private readonly positions = { caretaker: 130, repairer: 385, market_resident: 290 };
   private readonly worldWidth = 570;
@@ -254,13 +253,14 @@ export class SettlementScene extends Phaser.Scene {
         this.say('The listening fixture is working again.');
         return;
       }
-      this.work++;
-      if (this.work >= 3) {
+      this.app.progress.actInSettlement({ type: 'ADJUST_FIXTURE' });
+      const steps = this.app.progress.settlement.repairSteps;
+      if (steps >= 3) {
         this.app.progress.actInSettlement({ type: 'COMPLETE_REPAIR' });
         this.say('The fixture responds. Return to the caretaker.');
         this.redrawFixture(); this.showState();
       } else {
-        this.say('A connection holds. Make another careful adjustment. (' + this.work + '/3)');
+        this.say('A connection holds. Make another careful adjustment. (' + steps + '/3)');
       }
     }
   }
