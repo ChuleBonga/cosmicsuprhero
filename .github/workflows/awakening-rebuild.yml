@@ -1,0 +1,30 @@
+name: Arcturian Awakening clean rebuild
+
+on:
+  push:
+    branches:
+      - rebuild/arcturian-awakening-20261113
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: awakening-rebuild
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install pinned packages
+        run: npm install --no-package-lock --ignore-scripts --no-audit --no-fund
+      - name: TypeScript and narrative test and production build
+        run: npm run build
+      - name: Flag missing approved production models
+        run: |
+          echo "Rendering engine compiled, but NPC and civilization art remains unapproved."
+          echo "This check does not qualify production visual fidelity."
