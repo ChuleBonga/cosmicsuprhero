@@ -8,6 +8,7 @@ export type SettlementEvent =
   | { type: 'MEET_RESIDENT'; resident: ResidentId }
   | { type: 'RESPOND'; tone: ResponseTone }
   | { type: 'START_REPAIR' }
+  | { type: 'ADJUST_FIXTURE' }
   | { type: 'COMPLETE_REPAIR' }
   | { type: 'ACKNOWLEDGE_REPAIR' }
   | { type: 'RESET' };
@@ -17,6 +18,7 @@ export interface SettlementState {
   met: ResidentId[];
   responseTone: ResponseTone | null;
   repairStarted: boolean;
+  repairSteps: number;
   repairCompleted: boolean;
   residentsReacted: boolean;
   credoLeadUnlocked: boolean;
@@ -27,6 +29,7 @@ export const NEW_SETTLEMENT: Readonly<SettlementState> = Object.freeze({
   met: [],
   responseTone: null,
   repairStarted: false,
+  repairSteps: 0,
   repairCompleted: false,
   residentsReacted: false,
   credoLeadUnlocked: false,
@@ -45,9 +48,12 @@ export function settlementTransition(state: SettlementState, event: SettlementEv
     case 'START_REPAIR':
       if (!state.met.includes('repairer') || state.responseTone === null || state.repairStarted)
         return state;
-      return { ...state, repairStarted: true };
-    case 'COMPLETE_REPAIR':
+      return { ...state, repairStarted: true, repairSteps: 0 };
+    case 'ADJUST_FIXTURE':
       if (!state.repairStarted || state.repairCompleted) return state;
+      return { ...state, repairSteps: Math.min(3, state.repairSteps + 1) };
+    case 'COMPLETE_REPAIR':
+      if (!state.repairStarted || state.repairSteps < 3 || state.repairCompleted) return state;
       return { ...state, repairCompleted: true };
     case 'ACKNOWLEDGE_REPAIR':
       if (!state.repairCompleted || !state.met.includes('caretaker') || state.residentsReacted)
@@ -67,10 +73,12 @@ export function restoreSettlement(raw: unknown): SettlementState {
   const responseTone = v.responseTone && TONES.includes(v.responseTone) && met.includes('caretaker')
     ? v.responseTone : null;
   const repairStarted = responseTone !== null && met.includes('repairer') && v.repairStarted === true;
-  const repairCompleted = repairStarted && v.repairCompleted === true;
+  const repairSteps = repairStarted && Number.isInteger(v.repairSteps)
+    ? Math.min(3, Math.max(0, v.repairSteps!)) : 0;
+  const repairCompleted = repairStarted && repairSteps === 3 && v.repairCompleted === true;
   const residentsReacted = repairCompleted && met.includes('caretaker') && v.residentsReacted === true;
   return {
-    version: 1, met, responseTone, repairStarted, repairCompleted, residentsReacted,
+    version: 1, met, responseTone, repairStarted, repairSteps, repairCompleted, residentsReacted,
     credoLeadUnlocked: residentsReacted,
   };
 }
