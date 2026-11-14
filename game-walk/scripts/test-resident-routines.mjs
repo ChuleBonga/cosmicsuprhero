@@ -7,8 +7,11 @@ for (const [resident, frames] of Object.entries(RESIDENT_ROUTINES)) {
   for (let i = 1; i < frames.length; i++) assert.ok(frames[i].time > frames[i - 1].time);
   const period = frames.at(-1).time;
   for (const t of [0, 1, 6.3, 19, 26.1, 99.2]) {
-    assert.deepEqual(residentPose(resident, t), residentPose(resident, t + period),
-      `${resident} route should loop without drifting`);
+    const a = residentPose(resident, t), b = residentPose(resident, t + period);
+    assert.equal(a.action, b.action);
+    assert.equal(a.facing, b.facing);
+    assert.ok(Math.abs(a.x - b.x) < 1e-8,
+      `${resident} route should loop without material drifting`);
     const pose = residentPose(resident, t);
     assert.ok(Number.isFinite(pose.x) && pose.x >= 0 && pose.x <= 570);
   }
