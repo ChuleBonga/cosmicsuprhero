@@ -18,6 +18,14 @@ step({ type: 'START_REPAIR' });
 assert.equal(state.repairStarted, true);
 step({ type: 'ACKNOWLEDGE_REPAIR' });
 assert.equal(state.credoLeadUnlocked, false, 'must finish repair');
+step({ type: 'ADJUST_FIXTURE' });
+step({ type: 'ADJUST_FIXTURE' });
+assert.equal(state.repairCompleted, false, 'two adjustments are not enough');
+const partial = restoreSettlement(JSON.parse(JSON.stringify(state)));
+assert.equal(partial.repairSteps, 2, 'partial repair survives reload');
+step({ type: 'COMPLETE_REPAIR' });
+assert.equal(state.repairCompleted, false, 'cannot bypass final adjustment');
+step({ type: 'ADJUST_FIXTURE' });
 step({ type: 'COMPLETE_REPAIR' });
 assert.equal(state.repairCompleted, true);
 step({ type: 'ACKNOWLEDGE_REPAIR' });
@@ -37,6 +45,9 @@ for (const tone of ['family', 'community', 'listen']) {
     {type:'RESPOND',tone},
     {type:'MEET_RESIDENT',resident:'repairer'},
     {type:'START_REPAIR'},
+    {type:'ADJUST_FIXTURE'},
+    {type:'ADJUST_FIXTURE'},
+    {type:'ADJUST_FIXTURE'},
     {type:'COMPLETE_REPAIR'},
     {type:'ACKNOWLEDGE_REPAIR'},
   ]) branch = settlementTransition(branch, event);
