@@ -30,6 +30,9 @@ export class SettlementScene extends Phaser.Scene {
   private floor = 0;
   private W = 0;
   private H = 0;
+  private cursors?: Phaser.Types.Input.Keyboard.CursorKeys;
+  private keyA?: Phaser.Input.Keyboard.Key;
+  private keyD?: Phaser.Input.Keyboard.Key;
 
   constructor() { super('Settlement'); }
 
@@ -107,6 +110,9 @@ export class SettlementScene extends Phaser.Scene {
       backgroundColor: '#583c4e', padding: { x: 8, y: 5 },
     }).setOrigin(1, 0).setScrollFactor(0).setDepth(43).setInteractive({ useHandCursor: true });
     interact.on('pointerdown', () => this.interact());
+    this.cursors = this.input.keyboard?.createCursorKeys();
+    this.keyA = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    this.keyD = this.input.keyboard?.addKey(Phaser.Input.Keyboard.KeyCodes.D);
     this.input.keyboard?.on('keydown-E', () => this.interact());
     this.input.keyboard?.on('keydown-ENTER', () => this.interact());
     this.input.keyboard?.on('keydown-ESC', () => this.openPause());
@@ -294,9 +300,8 @@ export class SettlementScene extends Phaser.Scene {
   update(_time: number, delta: number) {
     const dt = Math.min(.05, delta / 1000);
     this.elapsed += dt;
-    const cursors = this.input.keyboard?.createCursorKeys();
-    const left = !!cursors?.left.isDown || !!this.input.keyboard?.addKey('A').isDown;
-    const right = !!cursors?.right.isDown || !!this.input.keyboard?.addKey('D').isDown;
+    const left = !!this.cursors?.left.isDown || !!this.keyA?.isDown;
+    const right = !!this.cursors?.right.isDown || !!this.keyD?.isDown;
     const axis = this.lock ? 0 : (right ? 1 : 0) - (left ? 1 : 0) || this.hold;
     this.avatarX = Phaser.Math.Clamp(this.avatarX + axis * 92 * dt, 18, this.worldWidth - 15);
     this.player.x = Math.round(this.avatarX);
