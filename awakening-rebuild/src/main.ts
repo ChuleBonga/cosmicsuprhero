@@ -210,7 +210,12 @@ void loadApprovedAssets();
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const size=()=>{
   const w=Math.max(1,stageElement.clientWidth),h=Math.max(1,stageElement.clientHeight);
-  camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false);
+  camera.aspect=w/h;
+  // Keep the red celestial calibration sphere out of the title/copy region.
+  const compact=camera.aspect < 1.6;
+  sun.position.set(compact ? 18 : 35, compact ? 9 : 3, -25);
+  halo.position.copy(sun.position);
+  camera.updateProjectionMatrix();renderer.setSize(w,h,false);
 };
 const observer=new ResizeObserver(size);observer.observe(stageElement);
 size();
