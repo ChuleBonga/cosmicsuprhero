@@ -81,7 +81,7 @@ function showMetrics(file:File,asset:AssetContainer) {
     heightMetres:lastHeight
   },ui.roleInput.value as AssetRole);
   setStatus(review.verdict==='reject'
-    ? 'Technical intake FAILED: '+review.reasons.join('; ')+'. Not approved.'
+    ? 'Technical intake FAILED: '+review.reasons.join('; ')+'. NOT APPROVED.'
     : 'Technical intake passed for this asset role. Visual reference, provenance, performance and animation QA still required. NOT APPROVED.');
 }
 async function loadFile(file:File) {
