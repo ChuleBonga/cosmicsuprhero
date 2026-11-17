@@ -8,6 +8,7 @@ test('loads a real licensed rigged GLB and evaluates it without approving it',as
   await page.goto('/');
   await page.locator('#model').setInputFiles(fixture);
   await expect(page.locator('#metrics')).toContainText('CesiumMan.glb',{timeout:30000});
+  await expect(page.locator('#stage-empty')).toBeHidden();
   await expect(page.locator('#metrics')).toContainText('Skinned skeletons');
   await expect(page.locator('#metrics')).toContainText('Animation groups');
   await expect(page.locator('#status')).toContainText('NOT APPROVED',{timeout:20000});
@@ -31,6 +32,9 @@ test('rejects broken files while preserving the interactive page',async({page})=
 test('asset review controls fit a narrow mobile viewport',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto('/');
+  await expect(page.locator('#stage-empty')).toBeVisible();
+  const emptyBounds=await page.locator('.stage').boundingBox();
+  expect(emptyBounds?.height ?? Infinity).toBeLessThanOrEqual(220);
   await page.locator('#asset-role').selectOption('prop');
   await expect(page.locator('#asset-role')).toHaveValue('prop');
   const size=await page.evaluate(()=>({
