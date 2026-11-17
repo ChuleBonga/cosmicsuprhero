@@ -4,3 +4,16 @@
 .stage-empty{position:absolute;inset:0;display:grid;place-items:center;padding:32px;color:#c5bbab;font-size:14px;text-align:center;line-height:1.6;pointer-events:none}
 .stage-empty[hidden]{display:none}
 @media(max-width:850px){.stage.is-empty{min-height:190px;height:200px}}
+
+/* Real project art reference plates; their purpose is measured comparison, not marketing. */
+.reference-comparison{margin-top:48px;padding-top:28px;border-top:1px solid #46536d}
+.reference-heading{display:flex;justify-content:space-between;align-items:end;gap:30px}
+.reference-heading h2{font:400 clamp(31px,4vw,52px)/1.05 Georgia,serif;margin:8px 0 16px}
+.reference-heading p:last-child{max-width:410px;color:#c5baa9;font-size:14px;line-height:1.6}
+.reference-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+.reference-grid figure{margin:0;min-width:0;border:1px solid #4d5975;background:#0c1730}
+.reference-grid img{width:100%;height:clamp(230px,30vw,440px);object-fit:contain;display:block;background:#060d22}
+.reference-grid figcaption{padding:16px 20px 20px;display:flex;flex-direction:column;gap:6px;line-height:1.55}
+.reference-grid figcaption strong{font-size:14px;color:#edd8bd;font-weight:600}
+.reference-grid figcaption span{font-size:12px;color:#b7aea5}
+@media(max-width:750px){.reference-heading{display:block}.reference-grid{grid-template-columns:1fr}.reference-grid img{height:260px}}
