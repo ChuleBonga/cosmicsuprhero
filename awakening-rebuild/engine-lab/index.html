@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Arcturian Awakening — 3D Asset Review</title><meta name="theme-color" content="#0b1633"></head>
+<body>
+<main class="layout">
+  <header class="heading">
+    <p class="eyebrow">COSMICSUPRHERO / ARCTURIAN AWAKENING / PRODUCTION LAB</p>
+    <h1>Asset review room.</h1>
+    <p>Babylon.js 9.37.0 GLB inspection. Technical measurements and an interactive turntable do not establish artistic approval.</p>
+  </header>
+  <section class="review" aria-labelledby="review-title">
+    <div class="stage">
+      <canvas id="viewer" aria-label="Interactive 3D model turntable"></canvas>
+      <div id="canvas-fallback" class="canvas-fallback" hidden>WebGL is unavailable here. You can still read the asset report and quality criteria.</div>
+    </div>
+    <div class="control-panel">
+      <h2 id="review-title">Review controls</h2>
+      <label for="model">Load original GLB</label>
+      <input id="model" type="file" accept=".glb,model/gltf-binary">
+      <p class="help">Choose a locally saved model. The file remains in this browser session, not uploaded to a server.</p>
+      <label class="toggle"><input id="wireframe" type="checkbox"> Inspect wireframe</label>
+      <label class="toggle"><input id="autoplay" type="checkbox" checked> Play first animation</label>
+      <button id="reset-camera" type="button">Reset camera</button>
+      <h3>Technical inspection</h3>
+      <dl id="metrics"></dl>
+      <p id="status" class="status" role="status">No 3D model loaded. Awaiting original asset.</p>
+    </div>
+  </section>
+  <section class="criteria">
+    <h2>Approval requires more than passing this test</h2>
+    <p>Compare the model with artist-supplied civilization references: facial anatomy, dark eyes, scale, wardrobe, material realism, locomotion, speaking performance, world-light response and performance at gameplay camera distance.</p>
+    <p class="failure">Current game status: no approved Arcturian NPC or environment. This lab is not the game.</p>
+  </section>
+  <footer>Build benchmark, not public release • No generative AI in the browser • No audio files</footer>
+</main><script type="module" src="/src/main.ts"></script></body></html>
