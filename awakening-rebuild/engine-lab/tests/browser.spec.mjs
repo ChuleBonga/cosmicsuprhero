@@ -44,3 +44,16 @@ test('asset review controls fit a narrow mobile viewport',async({page})=>{
   expect(size.scroll).toBeLessThanOrEqual(size.client+1);
   await page.screenshot({path:'artifacts/asset-review-mobile.png',fullPage:true});
 });
+test('archived artist reference plates load at correct resolution',async({page})=>{
+  const responses=[];
+  page.on('response',r=>{if(r.url().includes('/references/')) responses.push({url:r.url(),status:r.status()});});
+  await page.goto('/');
+  const images=page.locator('.reference-grid img');
+  await expect(images).toHaveCount(2);
+  for(const image of await images.all()){
+    await image.scrollIntoViewIfNeeded();
+    await expect.poll(async()=>image.evaluate(el=>el.complete && el.naturalWidth>100 && el.naturalHeight>100)).toBe(true);
+  }
+  expect(responses.filter(x=>x.status>=400)).toEqual([]);
+  await page.screenshot({path:'artifacts/source-reference-comparison.png',fullPage:true});
+});
