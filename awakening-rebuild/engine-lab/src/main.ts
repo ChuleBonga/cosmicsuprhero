@@ -7,19 +7,24 @@ import { DirectionalLight } from '@babylonjs/core/Lights/directionalLight';
 import { LoadAssetContainerAsync } from '@babylonjs/core/Loading/sceneLoader';
 import type { AssetContainer } from '@babylonjs/core/assetContainer';
 import '@babylonjs/loaders/glTF';
+import { inspectAsset } from './assetReview';
+import type { AssetRole } from './assetReview';
 import './style.css';
 
 const canvas=document.querySelector<HTMLCanvasElement>('#viewer');
 const input=document.querySelector<HTMLInputElement>('#model');
+const roleInput=document.querySelector<HTMLSelectElement>('#asset-role');
 const wire=document.querySelector<HTMLInputElement>('#wireframe');
 const autoplay=document.querySelector<HTMLInputElement>('#autoplay');
 const reset=document.querySelector<HTMLButtonElement>('#reset-camera');
 const metrics=document.querySelector<HTMLElement>('#metrics');
 const status=document.querySelector<HTMLElement>('#status');
 const fallback=document.querySelector<HTMLElement>('#canvas-fallback');
-if(!canvas||!input||!wire||!autoplay||!reset||!metrics||!status||!fallback)
+if(!canvas||!input||!roleInput||!wire||!autoplay||!reset||!metrics||!status||!fallback)
   throw new Error('Asset review controls missing');
-const ui={canvas,input,wire,autoplay,reset,metrics,status,fallback};
+const ui={canvas,input,roleInput,wire,autoplay,reset,metrics,status,fallback};
+let activeFile: File|null=null;
+let lastHeight=0;
 let engine:Engine;
 let scene:Scene;
 let camera:ArcRotateCamera;
@@ -30,10 +35,10 @@ function item(k:string,v:string|number) {
   const dd=document.createElement('dd');dd.textContent=String(v);
   ui.metrics.append(dt,dd);
 }
-function frameModel() {
-  if(!active)return;
+function frameModel(): number {
+  if(!active)return 0;
   const meshes=active.meshes.filter(m=>m.getTotalVertices()>0);
-  if(!meshes.length)return;
+  if(!meshes.length)return 0;
   let min=new Vector3(Infinity,Infinity,Infinity),max=new Vector3(-Infinity,-Infinity,-Infinity);
   for(const m of meshes){
     m.computeWorldMatrix(true);
@@ -49,6 +54,8 @@ function frameModel() {
     camera.lowerRadiusLimit=Math.max(.1,ext.length()*.35);
     camera.upperRadiusLimit=Math.max(4,ext.length()*5);
   }
+  lastHeight=ext.y;
+  return ext.y;
 }
 function showMetrics(file:File,asset:AssetContainer) {
   ui.metrics.replaceChildren();
@@ -57,9 +64,25 @@ function showMetrics(file:File,asset:AssetContainer) {
   item('Animation groups',asset.animationGroups.length);
   item('Materials',asset.materials.length);item('Textures',asset.textures.length);
   item('Model cameras',asset.cameras.length);
-  item('Draw calls now',scene.getEngine().getFps().toFixed(0)+' fps (render only)');
+  const triangles=asset.meshes.reduce((n,m)=>n + Math.round(m.getTotalIndices()/3),0);
+  item('Triangles',triangles.toLocaleString());
+  item('Height (m)',lastHeight.toFixed(2));
+  item('Frame rate (diagnostic)',scene.getEngine().getFps().toFixed(0)+' fps (render only, not benchmark)');
   const groups=asset.animationGroups.map(g=>g.name||'Unnamed').join(', ')||'None';
   item('Animation clips',groups);
+  const review=inspectAsset({
+    meshes:asset.meshes.filter(m=>m.getTotalVertices()>0).length,
+    skeletons:asset.skeletons.length,
+    animationNames:asset.animationGroups.map(g=>g.name),
+    textureCount:asset.textures.length,
+    materialCount:asset.materials.length,
+    triangles,
+    fileBytes:file.size,
+    heightMetres:lastHeight
+  },ui.roleInput.value as AssetRole);
+  setStatus(review.verdict==='reject'
+    ? 'Technical intake FAILED: '+review.reasons.join('; ')+'. Not approved.'
+    : 'Technical intake passed for this asset role. Visual reference, provenance, performance and animation QA still required. NOT APPROVED.');
 }
 async function loadFile(file:File) {
   if(file.size>75*1024*1024){setStatus('File is too large for this review (>75 MB). Optimize and retry.');return;}
@@ -69,18 +92,10 @@ async function loadFile(file:File) {
   try {
     const incoming=await LoadAssetContainerAsync(objectURL,scene,{pluginExtension:'.glb'});
     if(active){active.removeAllFromScene();active.dispose();}
-    active=incoming;active.addAllToScene();
+    active=incoming;activeFile=file;active.addAllToScene();
     frameModel();
     showMetrics(file,active);
     if(ui.autoplay.checked)active.animationGroups[0]?.start(true);
-    const problems:string[]=[];
-    if(!active.meshes.length)problems.push('no meshes');
-    if(!active.skeletons.length)problems.push('no rigged skeleton');
-    if(!active.animationGroups.length)problems.push('no animation clips');
-    if(!active.textures.length)problems.push('no image textures');
-    setStatus(problems.length
-      ? 'Technical art review issues: '+problems.join(', ')+'. Inspect before any approval.'
-      : 'Model loaded. Technical counts present; still requires actual visual reference comparison.');
     updateWireframe();
   }catch(error){setStatus('GLB import failed: '+(error instanceof Error?error.message:String(error)));}
   finally{URL.revokeObjectURL(objectURL);}
@@ -115,6 +130,9 @@ function init(){
   }
   ui.input.addEventListener('change',()=>{const file=ui.input.files?.[0];if(file)void loadFile(file);});
   ui.wire.addEventListener('change',updateWireframe);
+  ui.roleInput.addEventListener('change',()=>{
+    if(active&&activeFile) showMetrics(activeFile,active);
+  });
   ui.autoplay.addEventListener('change',()=>{
     if(!active)return;
     for(const a of active.animationGroups){if(ui.autoplay.checked)a.start(true);else a.stop();}
