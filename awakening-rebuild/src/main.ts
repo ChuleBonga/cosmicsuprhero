@@ -14,6 +14,7 @@ const root=document.getElementById('content');
 const stage=document.getElementById('stage');
 if(!root||!stage)throw new Error('Required root nodes are missing');
 const content=root;
+const stageElement: HTMLElement = stage;
 let log:Event[]=[];
 try {
   const stored=localStorage.getItem(SAVE_KEY);
@@ -160,7 +161,7 @@ renderer.outputColorSpace=THREE.SRGBColorSpace;
 renderer.toneMapping=THREE.ACESFilmicToneMapping;
 renderer.toneMappingExposure=1;
 renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.6));
-stage.append(renderer.domElement);
+stageElement.append(renderer.domElement);
 const light=new THREE.HemisphereLight(0x25447f,0x111021,1.4);scene.add(light);
 const rim=new THREE.DirectionalLight(0xff914e,2.0);rim.position.set(-5,8,4);scene.add(rim);
 const sun=new THREE.Mesh(
@@ -208,10 +209,10 @@ async function loadApprovedAssets() {
 void loadApprovedAssets();
 const reduced=matchMedia('(prefers-reduced-motion: reduce)');
 const size=()=>{
-  const w=Math.max(1,stage.clientWidth),h=Math.max(1,stage.clientHeight);
+  const w=Math.max(1,stageElement.clientWidth),h=Math.max(1,stageElement.clientHeight);
   camera.aspect=w/h;camera.updateProjectionMatrix();renderer.setSize(w,h,false);
 };
-const observer=new ResizeObserver(size);observer.observe(stage);
+const observer=new ResizeObserver(size);observer.observe(stageElement);
 size();
 let raf=0;
 const clock=new THREE.Clock();
@@ -227,7 +228,7 @@ frame();
 window.addEventListener('pagehide',()=>{cancelAnimationFrame(raf);observer.disconnect();renderer.dispose();});
 }catch(error){
   const warning=node('p','3D lighting preview unavailable on this device; the narrative prototype remains playable.','render-fallback');
-  stage.append(warning);
+  stageElement.append(warning);
   console.warn('3D preview unavailable',error);
 }
 }
