@@ -6,7 +6,7 @@
   <header class="heading">
     <p class="eyebrow">COSMICSUPRHERO / ARCTURIAN AWAKENING / PRODUCTION LAB</p>
     <h1>Asset review room.</h1>
-    <p>Babylon.js 9.37.0 GLB inspection. Technical measurements and an interactive turntable do not establish artistic approval.</p>
+    <p>Babylon.js 9.37.0 GLB inspection. Technical measurements and an interactive turntable do not establish artistic approval. Select the correct asset category before reviewing.</p>
   </header>
   <section class="review" aria-labelledby="review-title">
     <div class="stage">
@@ -15,6 +15,12 @@
     </div>
     <div class="control-panel">
       <h2 id="review-title">Review controls</h2>
+      <label for="asset-role">Asset category</label>
+      <select id="asset-role" aria-label="Asset category">
+        <option value="character">Character / NPC</option>
+        <option value="prop">Prop / object</option>
+        <option value="environment">Environment</option>
+      </select>
       <label for="model">Load original GLB</label>
       <input id="model" type="file" accept=".glb,model/gltf-binary">
       <p class="help">Choose a locally saved model. The file remains in this browser session, not uploaded to a server.</p>
