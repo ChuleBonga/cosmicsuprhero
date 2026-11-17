@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {inspectAsset} from '../src/assetReview.ts';
+const specimen={meshes:5,skeletons:1,animationNames:['Idle','Walk','Gesture'],textureCount:3,materialCount:2,triangles:14000,fileBytes:3000000,heightMetres:1.85};
+assert.equal(inspectAsset(specimen,'character').verdict,'visual-review');
+assert.equal(inspectAsset({...specimen,skeletons:0},'character').verdict,'reject');
+assert.ok(inspectAsset({...specimen,animationNames:['Motion']},'character').reasons.some(x=>x.includes('idle')));
+const untextured={...specimen,textureCount:0,skeletons:0,animationNames:[]};
+assert.equal(inspectAsset(untextured,'prop').verdict,'reject');
+assert.ok(!inspectAsset({...untextured,textureCount:1},'prop').reasons.some(x=>x.includes('skeleton')));
+assert.equal(inspectAsset({...specimen,heightMetres:0},'environment').verdict,'reject');
+assert.equal(inspectAsset({...specimen,fileBytes:40*1024*1024},'prop').verdict,'reject');
+console.log('Asset intake role-aware gates: passed');
