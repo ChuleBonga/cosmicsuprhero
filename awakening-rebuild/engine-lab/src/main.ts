@@ -12,6 +12,8 @@ import type { AssetRole } from './assetReview';
 import './style.css';
 
 const canvas=document.querySelector<HTMLCanvasElement>('#viewer');
+const stageContainer=document.querySelector<HTMLElement>('.stage');
+const stageEmpty=document.querySelector<HTMLElement>('#stage-empty');
 const input=document.querySelector<HTMLInputElement>('#model');
 const roleInput=document.querySelector<HTMLSelectElement>('#asset-role');
 const wire=document.querySelector<HTMLInputElement>('#wireframe');
@@ -20,9 +22,9 @@ const reset=document.querySelector<HTMLButtonElement>('#reset-camera');
 const metrics=document.querySelector<HTMLElement>('#metrics');
 const status=document.querySelector<HTMLElement>('#status');
 const fallback=document.querySelector<HTMLElement>('#canvas-fallback');
-if(!canvas||!input||!roleInput||!wire||!autoplay||!reset||!metrics||!status||!fallback)
+if(!canvas||!stageContainer||!stageEmpty||!input||!roleInput||!wire||!autoplay||!reset||!metrics||!status||!fallback)
   throw new Error('Asset review controls missing');
-const ui={canvas,input,roleInput,wire,autoplay,reset,metrics,status,fallback};
+const ui={canvas,stageContainer,stageEmpty,input,roleInput,wire,autoplay,reset,metrics,status,fallback};
 let activeFile: File|null=null;
 let lastHeight=0;
 let engine:Engine;
@@ -93,6 +95,8 @@ async function loadFile(file:File) {
     const incoming=await LoadAssetContainerAsync(objectURL,scene,{pluginExtension:'.glb'});
     if(active){active.removeAllFromScene();active.dispose();}
     active=incoming;activeFile=file;active.addAllToScene();
+    ui.stageEmpty.hidden=true;
+    ui.stageContainer.classList.remove('is-empty');
     frameModel();
     showMetrics(file,active);
     if(ui.autoplay.checked)active.animationGroups[0]?.start(true);
@@ -129,6 +133,14 @@ function init(){
     return;
   }
   ui.input.addEventListener('change',()=>{const file=ui.input.files?.[0];if(file)void loadFile(file);});
+  ui.stageContainer.addEventListener('dragover',event=>{
+    if(event.dataTransfer?.types.includes('Files'))event.preventDefault();
+  });
+  ui.stageContainer.addEventListener('drop',event=>{
+    event.preventDefault();
+    const file=event.dataTransfer?.files[0];
+    if(file)void loadFile(file);
+  });
   ui.wire.addEventListener('change',updateWireframe);
   ui.roleInput.addEventListener('change',()=>{
     if(active&&activeFile) showMetrics(activeFile,active);
