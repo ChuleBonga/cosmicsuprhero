@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { INITIAL, replay, transition, SOLUTION, FRAGMENTS } from '../src/encounter.ts';
 import * as THREE from 'three';
 import { inspectNpc } from '../src/assetGate.ts';
+import { consequence, availableLocations } from '../src/aftermath.ts';
 assert.notDeepEqual(FRAGMENTS,SOLUTION,'evidence order must not give away solution');
 const emptyModel=inspectNpc({scene:new THREE.Group(),animations:[]});
 assert.equal(emptyModel.acceptableForArtReview,false,'empty scene is never a valid NPC');
@@ -43,3 +44,17 @@ const history=[
 assert.deepEqual(replay(JSON.parse(JSON.stringify(history))).phase,'complete','save history roundtrip');
 assert.equal(replay(history).choice,'disclose');
 console.log('Narrative and NPC asset gates passed');
+
+const protecting=consequence(privateEnd,'caretaker');
+const disclosing=consequence(publicEnd,'courier');
+assert.equal(protecting.available,true);
+assert.equal(disclosing.available,true);
+assert.ok(availableLocations(privateEnd).includes('hall'));
+assert.ok(availableLocations(publicEnd).includes('refuge'));
+assert.notDeepEqual(availableLocations(privateEnd),availableLocations(publicEnd));
+const lowerTrust=transition(failed,{type:'ARRANGE',order:[...SOLUTION]});
+const lowerTrustSolved=transition(lowerTrust,{type:'SUBMIT'});
+const lowerTrustChoice=transition(lowerTrustSolved,{type:'CHOOSE',choice:'protect'});
+assert.equal(consequence(lowerTrustChoice,'caretaker').available,true);
+assert.ok(!availableLocations(lowerTrustChoice).includes('hall'), 'mistakes should remove recommendation');
+console.log('Post-choice behavior and access tests passed');

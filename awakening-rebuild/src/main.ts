@@ -1,11 +1,13 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import {inspectNpc} from './assetGate';
+import { availableLocations, consequence } from './aftermath';
+import type { Witness } from './encounter';
 import './style.css';
 import {
   CLUES, FRAGMENTS, INITIAL, WITNESSES, WITNESS_ORDER, replay, transition
 } from './encounter';
-import type { Choice, Event, Fragment, State, Witness } from './encounter';
+import type { Choice, Event, Fragment, State } from './encounter';
 
 const SAVE_KEY='arcturian.rebuild.encounter.v1';
 const root=document.getElementById('content');
@@ -30,6 +32,8 @@ function dispatch(event:Event) {
   state=next;
   try{localStorage.setItem(SAVE_KEY,JSON.stringify(log));}catch{ /* memory-only */ }
   render();
+  const title=content.querySelector<HTMLElement>('#encounter-title');
+  if(title){title.tabIndex=-1;title.focus({preventScroll:true});}
 }
 function node<K extends keyof HTMLElementTagNameMap>(tag:K,text?:string,className?:string):HTMLElementTagNameMap[K] {
   const el=document.createElement(tag);
@@ -111,6 +115,21 @@ function render() {
         : 'Chule reveals the record after misreading the witnesses. Some welcome the truth, but his credibility has been damaged.');
     heading('A consequence, not a collectible',ending);
     content.append(node('p','The next scene is deliberately locked until the civilization, character performances, and approved script meet the quality gate.','instruction'));
+    const locations=availableLocations(state);
+    content.append(node('p','Revisit the district through individual accounts. Access and character willingness now depend on both your decision and the trust you earned. This is a mechanical prototype, not yet 3D gameplay.','instruction'));
+    const responses=node('div',undefined,'witnesses');
+    const result=node('p','Select someone to hear the later consequence.','instruction');
+    result.setAttribute('role','status');
+    for(const witness of ['caretaker','courier','apprentice'] as Witness[]){
+      const outcome=consequence(state,witness);
+      const card=node('article',undefined,'witness');
+      card.append(node('h3',WITNESSES[witness].role));
+      card.append(node('p',outcome.available?'Available to speak':'Unavailable because of earlier choices'));
+      const btn=action('Approach '+WITNESSES[witness].role,()=>{result.textContent=outcome.response;});
+      btn.disabled=!outcome.available;card.append(btn);responses.append(card);
+    }
+    content.append(responses,result);
+    content.append(node('p','Accessible destinations: '+(locations.join(', ')||'None unlocked')+' (world geometry pending).','counter'));
     content.append(node('span','MECHANIC PROTOTYPE COMPLETE / STORY NOT YET APPROVED','recorded'));
   }
 }
@@ -130,6 +149,8 @@ render();
 
 // Three.js r187: an intentionally nonrepresentational lighting calibration.
 // It is NOT an Arcturian location or a placeholder NPC/world asset.
+function startVisualStage(){
+try{
 const scene=new THREE.Scene();
 scene.background=new THREE.Color('#07122b');
 const camera=new THREE.PerspectiveCamera(40,1,.1,250);
@@ -203,4 +224,11 @@ function frame(){
   renderer.render(scene,camera);
 }
 frame();
-window.addEventListener('pagehide',()=>{cancelAnimationFrame(raf);observer.disconnect();});
+window.addEventListener('pagehide',()=>{cancelAnimationFrame(raf);observer.disconnect();renderer.dispose();});
+}catch(error){
+  const warning=node('p','3D lighting preview unavailable on this device; the narrative prototype remains playable.','render-fallback');
+  stage.append(warning);
+  console.warn('3D preview unavailable',error);
+}
+}
+startVisualStage();
