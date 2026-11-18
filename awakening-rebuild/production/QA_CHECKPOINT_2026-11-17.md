@@ -31,3 +31,16 @@
 5. Deploy an *isolated game preview* only once that in-engine scene meets the creative gate. Do not replace the live music website.
 
 **Source of truth:** `ASSET_MANIFEST.csv` 102 entries; CHR-002 remains `planned`. The art pipeline is not complete.
+
+
+## Source-grounded November 17 continuation
+
+- Exact recovered source files: `aa_cover_figure.webp` (768×1152) and `aa_mountain_repeat.webp` (1536×768), both original project assets, not full civilization documentation.
+- Source palette sampled from actual WebP image: `REFERENCE_PALETTE.json`, eight sRGB visual anchors. **Do not treat these values as authored PBR material albedos without lighting conversion and review.**
+- Asset production register now committed: `ASSET_REGISTER.json` with 102 distinct IDs, 83 first-slice priorities, all unapproved. Game CI integrity tests passed in [run 44205776830](https://github.com/ChuleBonga/cosmicsuprhero/actions/runs/44205776830).
+- New `DistrictSimulation.ts` records purposeful 30×20 metre rehearsal routes for caretaker, courier, and apprentice, with different destination/activity outcomes for player trust and disclosure. Pure-state and collision-separation tests passed; **there are no approved animated residents in-game**.
+- Source-art comparison viewer and browser celestial-continuity test passed in [Babylon run 44205274332](https://github.com/ChuleBonga/cosmicsuprhero/actions/runs/44205274332). One red-orange solar region in the cover plate, two in the repeat tile, proving it cannot be tiled as final sky.
+- PRP-001 civic receiver lookdev advanced to source-sampled color maps in 3D Jutsu revision 3. GLB 2.0 export inspected: 552,612 bytes, three texture images, six materials, 43 primitives with UV0 on 41. **Its device morphology is provisional; no art approval or gameplay integration.**
+- Production illustration image synthesis via a separate connected generation provider could not submit because it requires a higher account tier; no paid artwork was produced. A single-view 3D alternative quoted nine credits and was not submitted because it would invent geometry from an incomplete profile and require expense approval.
+
+**Verdict remains REJECTED for a final game release.** These are genuine source-validation, exported-asset and world-behavior advances, but not a finished inhabited photorealistic game.
