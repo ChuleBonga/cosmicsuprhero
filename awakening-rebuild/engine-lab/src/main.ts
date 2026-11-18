@@ -20,12 +20,13 @@ const wire=document.querySelector<HTMLInputElement>('#wireframe');
 const autoplay=document.querySelector<HTMLInputElement>('#autoplay');
 const reset=document.querySelector<HTMLButtonElement>('#reset-camera');
 const builtInButton=document.querySelector<HTMLButtonElement>('#load-civic-receiver');
+const hallButton=document.querySelector<HTMLButtonElement>('#load-listening-hall');
 const metrics=document.querySelector<HTMLElement>('#metrics');
 const status=document.querySelector<HTMLElement>('#status');
 const fallback=document.querySelector<HTMLElement>('#canvas-fallback');
-if(!canvas||!stageContainer||!stageEmpty||!input||!roleInput||!wire||!autoplay||!reset||!builtInButton||!metrics||!status||!fallback)
+if(!canvas||!stageContainer||!stageEmpty||!input||!roleInput||!wire||!autoplay||!reset||!builtInButton||!hallButton||!metrics||!status||!fallback)
   throw new Error('Asset review controls missing');
-const ui={canvas,stageContainer,stageEmpty,input,roleInput,wire,autoplay,reset,builtInButton,metrics,status,fallback};
+const ui={canvas,stageContainer,stageEmpty,input,roleInput,wire,autoplay,reset,builtInButton,hallButton,metrics,status,fallback};
 let activeFile: File|null=null;
 let fileRequestVersion=0;
 let lastHeight=0;
@@ -54,7 +55,11 @@ function frameModel(): number {
   const ext=max.subtract(min);
   if(Number.isFinite(ext.length())&&ext.length()>0){
     camera.setTarget(center);
-    camera.radius=Math.max(1.3,ext.length()*1.5);
+    camera.radius=Math.max(1.3,ext.length()*(activeFile?.name.startsWith('ENV-003')?1.1:1.5));
+    if(activeFile?.name.startsWith('ENV-003')){
+      camera.alpha=-Math.PI/2.7;
+      camera.beta=1.1;
+    }
     camera.lowerRadiusLimit=Math.max(.1,ext.length()*.35);
     camera.upperRadiusLimit=Math.max(4,ext.length()*5);
   }
@@ -128,6 +133,20 @@ async function loadBuiltInCivicReceiver(){
     if(fileRequestVersion===startVersion)setStatus('Original project receiver could not load: '+(error instanceof Error?error.message:String(error)));
   }
 }
+async function loadBuiltInHall(){
+  const startVersion=fileRequestVersion;
+  try{
+    const name='ENV-003-working-listening-hall-blockout-v01.glb';
+    const response=await fetch('/models/'+name);
+    if(!response.ok)throw new Error('Hall study HTTP '+response.status);
+    const bytes=await response.arrayBuffer();
+    if(fileRequestVersion!==startVersion)return;
+    ui.roleInput.value='environment';
+    await loadFile(new File([bytes],name,{type:'model/gltf-binary'}));
+  }catch(error){
+    if(fileRequestVersion===startVersion)setStatus('Unapproved hall study could not load: '+(error instanceof Error?error.message:String(error)));
+  }
+}
 function updateWireframe(){
   if(!active)return;
   for(const material of active.materials)material.wireframe=ui.wire.checked;
@@ -190,6 +209,7 @@ function init(){
   });
   ui.reset.addEventListener('click',frameModel);
   ui.builtInButton.addEventListener('click',()=>{void loadBuiltInCivicReceiver();});
+  ui.hallButton.addEventListener('click',()=>{void loadBuiltInHall();});
   void loadBuiltInCivicReceiver();
 }
 init();
