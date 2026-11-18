@@ -1,3 +1,4 @@
+import {PNG} from 'pngjs';
 import { test, expect } from '@playwright/test';
 
 test.describe('Actual player journeys', () => {
@@ -72,5 +73,98 @@ test.describe('Actual player journeys', () => {
     await page.goto('/');
     await page.screenshot({path:'artifacts/desktop-1440.png',fullPage:true});
     await expect(page.locator('#stage')).toBeVisible();
+  });
+});
+
+test.describe('Physical Arrival Quarter integration',()=>{
+  async function pixelCount(page){
+    const png=PNG.sync.read(await page.locator('#world-canvas').screenshot());
+    const base=[png.data[0],png.data[1],png.data[2]];
+    let visible=0;
+    for(let y=6;y<png.height-6;y+=4)for(let x=6;x<png.width-6;x+=4){
+      const i=(y*png.width+x)*4;
+      if(Math.abs(png.data[i]-base[0])+
+         Math.abs(png.data[i+1]-base[1])+
+         Math.abs(png.data[i+2]-base[2])>75)visible++;
+    }
+    return visible;
+  }
+
+  test('authored 3D GLBs render; player moves and physically inspects the courier case',async({page})=>{
+    const errors=[];
+    page.on('pageerror',e=>errors.push(e.message));
+    await page.setViewportSize({width:1440,height:900});
+    await page.goto('/');
+    await page.getByRole('button',{name:/Enter the Arrival Quarter/}).click();
+    const scene=page.locator('#world-rehearsal');
+    await expect(scene).toBeVisible();
+    await expect(scene).toHaveAttribute('data-assets','ready',{timeout:30000});
+    await expect.poll(()=>pixelCount(page),{timeout:30000}).toBeGreaterThan(1700);
+    const x0=Number(await scene.getAttribute('data-player-x'));
+    const z0=Number(await scene.getAttribute('data-player-z'));
+    expect(x0).toBeCloseTo(14,0);
+    expect(z0).toBeCloseTo(18,0);
+    await page.screenshot({path:'artifacts/field-world-desktop.png'});
+    await page.keyboard.down('d');
+    await expect.poll(async()=>Number(await scene.getAttribute('data-player-x')),{timeout:7000}).toBeGreaterThan(21.1);
+    await page.keyboard.up('d');
+    await page.keyboard.down('w');
+    await expect.poll(async()=>Number(await scene.getAttribute('data-player-z')),{timeout:7000}).toBeLessThan(7.35);
+    await page.keyboard.up('w');
+    await expect(page.getByRole('button',{name:'Inspect Courier case'})).toBeEnabled();
+    await page.keyboard.press('e');
+    await expect(page.locator('#world-prompt')).toContainText('Provisional Courier account');
+    await expect(page.locator('#world-chronology')).toContainText('1/3');
+    await page.getByRole('button',{name:'Return to chapter'}).click();
+    await expect(scene).toBeHidden();
+    await expect(page.getByText('1 / 3 accounts heard')).toBeVisible();
+    await page.reload();
+    await expect(page.getByText('1 / 3 accounts heard')).toBeVisible();
+    expect(errors).toEqual([]);
+  });
+
+  test('mobile spatial controls are accessible and render actual 3D pixels',async({page})=>{
+    await page.setViewportSize({width:390,height:844});
+    await page.goto('/');
+    const opener=page.getByRole('button',{name:/Enter the Arrival Quarter/});
+    await opener.click();
+    const scene=page.locator('#world-rehearsal');
+    await expect(scene).toHaveAttribute('data-assets','ready',{timeout:30000});
+    await expect.poll(()=>pixelCount(page),{timeout:30000}).toBeGreaterThan(300);
+    const start=Number(await scene.getAttribute('data-player-z'));
+    const btn=page.getByRole('button',{name:'Move north'});
+    const box=await btn.boundingBox();
+    expect(box?.height??0).toBeGreaterThanOrEqual(44);
+    await page.mouse.move(box.x+box.width/2,box.y+box.height/2);
+    await page.mouse.down();
+    await page.waitForTimeout(800);
+    await page.mouse.up();
+    await expect.poll(async()=>Number(await scene.getAttribute('data-player-z'))).toBeLessThan(start-1.2);
+    const overflow=await page.evaluate(()=>({
+      client:document.documentElement.clientWidth,scroll:document.documentElement.scrollWidth
+    }));
+    expect(overflow.scroll).toBeLessThanOrEqual(overflow.client+1);
+    await page.screenshot({path:'artifacts/field-world-mobile.png'});
+    await page.getByRole('button',{name:'Return to chapter'}).click();
+    await expect(scene).toBeHidden();
+    await expect(opener).toBeFocused();
+  });
+
+  test('a saved disclosure changes physical hall access and receiver state',async({page})=>{
+    await page.goto('/');
+    for(const role of ['Caretaker','Courier','Apprentice'])await page.getByRole('button',{name:'Hear '+role}).click();
+    const select=async name=>page.locator('.evidence-item').filter({
+      has:page.getByRole('heading',{name})
+    }).getByRole('button').click();
+    await select('Dispatch');await select('Refuge');await select('Silence');
+    await page.getByRole('button',{name:'Present your reconstruction'}).click();
+    await page.getByRole('button',{name:'Choose: Disclose the record'}).click();
+    await page.getByRole('button',{name:/Enter the Arrival Quarter/}).click();
+    await expect(page.locator('#world-chronology')).toContainText('Accessible: refuge, workshop');
+    await expect(page.locator('#world-status')).toContainText('access: refuge, workshop');
+    await page.getByRole('button',{name:'Return to chapter'}).click();
+    await page.reload();
+    await page.getByRole('button',{name:/Enter the Arrival Quarter/}).click();
+    await expect(page.locator('#world-chronology')).toContainText('Accessible: refuge, workshop');
   });
 });
