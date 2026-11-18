@@ -37,13 +37,22 @@
       "priority": "P0",
       "name": "Caretaker",
       "purpose": "Older working civilian; recognizes Chule and can help or refuse him",
-      "status": "Not made",
-      "reference_status": "cover-figure-partial-species-reference-only",
+      "status": "Original upper-bust morphology source and Blender authoring script created; no rig, original actor not approved",
+      "reference_status": "Uses only artist-owned album side-profile for skull, recessed dark eye, blue skin and heavy burgundy cloak; front/rear anatomy and identity remain unknown",
       "rights_status": "Verification required",
       "editable_source": "blend",
       "runtime_asset": "glb",
-      "visual_approval": "Not approved",
-      "runtime_test": "Not integrated into game"
+      "visual_approval": "Not approved: silhouette has not passed source comparison, no photoreal skin/cloth and no acting",
+      "runtime_test": "NOT IN GAME: separate 17-part 3D cloud maquette and reproducible GitHub Blender render workflow; artist compare proof pending",
+      "candidate": {
+        "sourceScript": "awakening-rebuild/art/chr002/create_headstudy.py",
+        "qaWorkflow": "https://github.com/ChuleBonga/cosmicsuprhero/actions/runs/44413946358",
+        "interactiveStudy": "https://higgsfield.ai/3d-jutsu/2e12654e-252d-4ebc-bd8f-97c5aa4d9910",
+        "state": "Source-proportioned head and cloak research only; no approved character model",
+        "noRig": true,
+        "nonCanon": true,
+        "notPlayerFacing": true
+      }
     },
     {
       "id": "CHR-003",
