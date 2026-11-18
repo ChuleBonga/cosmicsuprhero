@@ -1,0 +1,302 @@
+{
+  "schema": "arcturian.arrival-quarter.scene-contract.v0.2",
+  "status": "preproduction-provisional-not-approved",
+  "purpose": "Single 30x20m inhabited social space; source-aligned design contract linked to existing state simulation, not a claim that buildings or residents exist",
+  "coordinateFrame": {
+    "widthMetres": 30,
+    "depthMetres": 20,
+    "axis": "x increases right, z increases down on 2D plan",
+    "vertical": "world engine y axis up",
+    "geometry": "activity markers only, no certified navmesh or footprints"
+  },
+  "designReferences": {
+    "visualCanon": "game-walk/public/art/aa_cover_figure.webp",
+    "reviewArchive": "more.zip (artist-supplied, 43 inspiration images, rights unverified)",
+    "referenceRegister": "awakening-rebuild/production/M0_REFERENCE_DECISIONS_43.md",
+    "worldBible": "awakening-rebuild/production/M0_WORLD_BIBLE_v0.2.md",
+    "storyBoard": "awakening-rebuild/production/M0_OPENING_BEATS_v0.2.md"
+  },
+  "roles": [
+    {
+      "id": "caretaker",
+      "assetId": "CHR-002",
+      "startSite": "caretakerHome",
+      "actingMotive": "Protect household confidences while completing daily record work",
+      "interruptsWith": "notice_chule",
+      "source": [
+        "R06",
+        "R21"
+      ],
+      "approval": "pending original design/rig/acting"
+    },
+    {
+      "id": "courier",
+      "assetId": "CHR-003",
+      "startSite": "courierStall",
+      "actingMotive": "Carry a disputed message along a real service route",
+      "interruptsWith": "greet",
+      "source": [
+        "R16",
+        "R34"
+      ],
+      "approval": "pending original design/rig/acting"
+    },
+    {
+      "id": "apprentice",
+      "assetId": "CHR-004",
+      "startSite": "apprenticeWork",
+      "actingMotive": "Keep public communications working without abandoning assigned maintenance",
+      "interruptsWith": "inspect",
+      "source": [
+        "R26",
+        "R32"
+      ],
+      "approval": "pending original design/rig/acting"
+    }
+  ],
+  "sites": [
+    {
+      "id": "caretakerHome",
+      "position": {
+        "x": 4,
+        "z": 5
+      },
+      "zone": "household",
+      "owner": "caretaker",
+      "civicFunction": "Private messages, household consent, day-to-day steward work",
+      "assetIds": [
+        "ENV-005",
+        "PRP-015"
+      ],
+      "sourceIds": [
+        "R06",
+        "R21"
+      ],
+      "approval": "draft"
+    },
+    {
+      "id": "hall",
+      "position": {
+        "x": 10,
+        "z": 7
+      },
+      "zone": "communal hall",
+      "owner": "caretaker",
+      "civicFunction": "Public testimony, community listening and social accountability",
+      "assetIds": [
+        "ENV-003",
+        "ENV-004"
+      ],
+      "sourceIds": [
+        "R07",
+        "R22",
+        "R28"
+      ],
+      "approval": "draft"
+    },
+    {
+      "id": "courierStall",
+      "position": {
+        "x": 22,
+        "z": 5
+      },
+      "zone": "service shelter",
+      "owner": "courier",
+      "civicFunction": "Record handoff, route obligations, protection from weather",
+      "assetIds": [
+        "ENV-007",
+        "PRP-003"
+      ],
+      "sourceIds": [
+        "R16",
+        "R35"
+      ],
+      "approval": "draft"
+    },
+    {
+      "id": "refuge",
+      "position": {
+        "x": 27,
+        "z": 9
+      },
+      "zone": "refuge",
+      "owner": "courier",
+      "civicFunction": "Physical custody and community access to messages",
+      "assetIds": [
+        "ENV-005",
+        "PRP-016"
+      ],
+      "sourceIds": [
+        "R16",
+        "R22"
+      ],
+      "approval": "draft"
+    },
+    {
+      "id": "workshop",
+      "position": {
+        "x": 17,
+        "z": 14
+      },
+      "zone": "maintenance",
+      "owner": "apprentice",
+      "civicFunction": "Repair listening system with owned tools and real service panels",
+      "assetIds": [
+        "ENV-006",
+        "PRP-004",
+        "PRP-005"
+      ],
+      "sourceIds": [
+        "R26",
+        "R32",
+        "R35"
+      ],
+      "approval": "draft"
+    },
+    {
+      "id": "apprenticeWork",
+      "position": {
+        "x": 12,
+        "z": 15
+      },
+      "zone": "workstation",
+      "owner": "apprentice",
+      "civicFunction": "Independent work and failure diagnosis while player is elsewhere",
+      "assetIds": [
+        "ENV-006"
+      ],
+      "sourceIds": [
+        "R26",
+        "R32"
+      ],
+      "approval": "draft"
+    },
+    {
+      "id": "publicListening",
+      "position": {
+        "x": 15,
+        "z": 8
+      },
+      "zone": "public apron",
+      "owner": "apprentice",
+      "civicFunction": "Visible later-state public listening activity after disclosure",
+      "assetIds": [
+        "ENV-004",
+        "PRP-001"
+      ],
+      "sourceIds": [
+        "R07",
+        "R28"
+      ],
+      "approval": "draft"
+    },
+    {
+      "id": "ledger",
+      "position": {
+        "x": 4.4,
+        "z": 5.2
+      },
+      "zone": "household evidence",
+      "owner": "caretaker",
+      "civicFunction": "Owned physical source for timeline reconstruction, not collectible item",
+      "assetIds": [
+        "PRP-016"
+      ],
+      "sourceIds": [
+        "R06"
+      ],
+      "approval": "draft"
+    }
+  ],
+  "evidence": [
+    {
+      "id": "household_ledger",
+      "owner": "caretaker",
+      "position": {
+        "x": 4.4,
+        "z": 5.2
+      },
+      "learns": "Message dispatched before storm",
+      "physicalInteraction": "Inspect marked dates and consent context",
+      "accessibility": "Visible stamped chronology and narrated/captioned alternative",
+      "canon": "provisional source reducer"
+    },
+    {
+      "id": "courier_case",
+      "owner": "courier",
+      "position": {
+        "x": 22,
+        "z": 5.6
+      },
+      "learns": "Message reaches refuge while hall is still working",
+      "physicalInteraction": "Inspect custody record and case handling marks",
+      "accessibility": "Readable chain-of-custody timeline",
+      "canon": "provisional source reducer"
+    },
+    {
+      "id": "communal_receiver",
+      "owner": "apprentice",
+      "position": {
+        "x": 15,
+        "z": 7.5
+      },
+      "learns": "Public hall silences later; equipment condition can be examined",
+      "physicalInteraction": "Align serviceable receiver/recording to check sequence",
+      "accessibility": "Non-audio signal representation with keyboard/touch parity",
+      "canon": "provisional source reducer"
+    }
+  ],
+  "outcomes": {
+    "protect": {
+      "condition": "trust>0",
+      "expected": [
+        "caretaker offers to escort player toward hall",
+        "courier maintains private supply route",
+        "apprentice continues workshop repair"
+      ],
+      "navigableLocation": "hall",
+      "proof": "actor escort, door/room access and saved world-state screenshot"
+    },
+    "disclose": {
+      "condition": "choice=disclose",
+      "expected": [
+        "courier opens access to refuge",
+        "apprentice moves public listening task to apron",
+        "caretaker questions trust"
+      ],
+      "navigableLocation": "refuge",
+      "proof": "new public activity and actor schedule in same changed space"
+    },
+    "protect_low_trust": {
+      "condition": "trust=0",
+      "expected": [
+        "caretaker withholds escort",
+        "hall remains inaccessible"
+      ],
+      "proof": "refusal performance and changed entry affordance"
+    }
+  },
+  "audio": [
+    {
+      "track": "Meditate",
+      "status": "pending public cue rights"
+    },
+    {
+      "track": "First Contact",
+      "status": "sample marked preview-cleared only in source metadata; public cut pending"
+    },
+    {
+      "track": "Credo's Words",
+      "status": "pending public cue rights"
+    }
+  ],
+  "acceptance": {
+    "referenceFidelity": "artist reviewed, no hard fails",
+    "actors": "three individually rigged original residents, independent work",
+    "interaction": "one physical inference action, recoverable wrong attempt",
+    "consequence": "two world-visible persistent effects",
+    "devices": "1080p + 390x844 actual canvas/game capture",
+    "license": "all materials/voices/tracks have documented rights",
+    "production": "blocked"
+  }
+}
