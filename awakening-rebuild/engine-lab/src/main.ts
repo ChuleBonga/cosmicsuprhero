@@ -19,13 +19,15 @@ const roleInput=document.querySelector<HTMLSelectElement>('#asset-role');
 const wire=document.querySelector<HTMLInputElement>('#wireframe');
 const autoplay=document.querySelector<HTMLInputElement>('#autoplay');
 const reset=document.querySelector<HTMLButtonElement>('#reset-camera');
+const builtInButton=document.querySelector<HTMLButtonElement>('#load-civic-receiver');
 const metrics=document.querySelector<HTMLElement>('#metrics');
 const status=document.querySelector<HTMLElement>('#status');
 const fallback=document.querySelector<HTMLElement>('#canvas-fallback');
-if(!canvas||!stageContainer||!stageEmpty||!input||!roleInput||!wire||!autoplay||!reset||!metrics||!status||!fallback)
+if(!canvas||!stageContainer||!stageEmpty||!input||!roleInput||!wire||!autoplay||!reset||!builtInButton||!metrics||!status||!fallback)
   throw new Error('Asset review controls missing');
-const ui={canvas,stageContainer,stageEmpty,input,roleInput,wire,autoplay,reset,metrics,status,fallback};
+const ui={canvas,stageContainer,stageEmpty,input,roleInput,wire,autoplay,reset,builtInButton,metrics,status,fallback};
 let activeFile: File|null=null;
+let fileRequestVersion=0;
 let lastHeight=0;
 let engine:Engine;
 let scene:Scene;
@@ -87,12 +89,14 @@ function showMetrics(file:File,asset:AssetContainer) {
     : 'Technical intake passed for this asset role. Visual reference, provenance, performance and animation QA still required. NOT APPROVED.');
 }
 async function loadFile(file:File) {
+  const requestVersion=++fileRequestVersion;
   if(file.size>75*1024*1024){setStatus('File is too large for this review (>75 MB). Optimize and retry.');return;}
   if(!file.name.toLowerCase().endsWith('.glb')){setStatus('Please supply a self-contained GLB, not a folder or loose glTF.');return;}
   const objectURL=URL.createObjectURL(file);
   setStatus('Loading local GLB. No upload is performed.');
   try {
     const incoming=await LoadAssetContainerAsync(objectURL,scene,{pluginExtension:'.glb'});
+    if(requestVersion!==fileRequestVersion){incoming.dispose();return;}
     if(active){active.removeAllFromScene();active.dispose();}
     active=incoming;activeFile=file;active.addAllToScene();
     ui.stageEmpty.hidden=true;
@@ -101,8 +105,24 @@ async function loadFile(file:File) {
     showMetrics(file,active);
     if(ui.autoplay.checked)active.animationGroups[0]?.start(true);
     updateWireframe();
-  }catch(error){setStatus('GLB import failed: '+(error instanceof Error?error.message:String(error)));}
+  }catch(error){
+    if(requestVersion===fileRequestVersion)setStatus('GLB import failed: '+(error instanceof Error?error.message:String(error)));
+  }
   finally{URL.revokeObjectURL(objectURL);}
+}
+
+async function loadBuiltInCivicReceiver(){
+  const startVersion=fileRequestVersion;
+  try{
+    const response=await fetch('/models/PRP-001-civic-receiver-v04.glb');
+    if(!response.ok)throw new Error('Reference model HTTP '+response.status);
+    const bytes=await response.arrayBuffer();
+    if(fileRequestVersion!==startVersion)return;
+    ui.roleInput.value='prop';
+    await loadFile(new File([bytes],'PRP-001-civic-receiver-v04.glb',{type:'model/gltf-binary'}));
+  }catch(error){
+    if(fileRequestVersion===startVersion)setStatus('Original project receiver could not load: '+(error instanceof Error?error.message:String(error)));
+  }
 }
 function updateWireframe(){
   if(!active)return;
@@ -150,5 +170,7 @@ function init(){
     for(const a of active.animationGroups){if(ui.autoplay.checked)a.start(true);else a.stop();}
   });
   ui.reset.addEventListener('click',frameModel);
+  ui.builtInButton.addEventListener('click',()=>{void loadBuiltInCivicReceiver();});
+  void loadBuiltInCivicReceiver();
 }
 init();
