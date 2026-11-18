@@ -25,6 +25,13 @@ jobs:
         run: npm install --no-package-lock --no-audit --no-fund
       - name: Typecheck, review-gate tests and build
         run: npm run check
+      - name: Verify deterministic generated GLB matches committed bytes
+        run: |
+          original=$(sha256sum public/models/PRP-001-civic-receiver-v04.glb | cut -d' ' -f1)
+          node tools/generate-civic-receiver.mjs
+          rebuilt=$(sha256sum public/models/PRP-001-civic-receiver-v04.glb | cut -d' ' -f1)
+          test "$original" = "$rebuilt" || { echo "Model generator reproducibility failure"; exit 1; }
+          echo "GLB reproducible: $rebuilt"
       - name: Install Chromium
         run: npx playwright install chromium --with-deps
       - name: Fetch and fingerprint the licensed rig diagnostic asset
