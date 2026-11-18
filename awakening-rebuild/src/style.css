@@ -133,3 +133,16 @@ body.field-open .layout,body.field-open #stage{visibility:hidden}
  .world-footnote{font-size:9px}
 }
 @media(prefers-reduced-motion:reduce){.world-rehearsal *{transition:none!important;animation:none!important}}
+
+
+/* A close inspection is a composition, not an extension of the movement HUD. */
+.world-rehearsal[data-inspection]:not([data-inspection="none"]) .world-pad{
+  opacity:0;pointer-events:none;visibility:hidden
+}
+.world-rehearsal[data-inspection]:not([data-inspection="none"]) .world-footnote{display:none}
+.world-rehearsal[data-inspection]:not([data-inspection="none"]) .world-prompt{
+  max-width:780px;line-height:1.55
+}
+.world-rehearsal[data-inspection]:not([data-inspection="none"]) .world-top h2{
+  font-size:clamp(28px,4vw,44px)
+}
