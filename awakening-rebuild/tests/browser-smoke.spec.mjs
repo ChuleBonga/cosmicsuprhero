@@ -128,6 +128,8 @@ test.describe('Physical Arrival Quarter integration',()=>{
       {timeout:7000}
     ).toBeLessThan(-1.0);
     await expect(scene).toHaveAttribute('data-inspection','courier_case');
+    await expect(scene).toHaveAttribute('data-marker-visible','false');
+    await expect(page.locator('#world-title')).toHaveText('Courier case');
     await expect(page.getByRole('button',{name:'Return to survey'})).toBeEnabled();
     const beforeInspectionMove=Number(await scene.getAttribute('data-player-x'));
     await page.keyboard.down('d');
@@ -138,6 +140,8 @@ test.describe('Physical Arrival Quarter integration',()=>{
     await page.screenshot({path:'artifacts/field-world-courier-closeup-desktop.png'});
     await page.keyboard.press('Escape');
     await expect(scene).toHaveAttribute('data-inspection','none');
+    await expect(scene).toHaveAttribute('data-marker-visible','true');
+    await expect(page.locator('#world-title')).toHaveText('In the district');
     await expect(scene).toBeVisible();
     await expect(page.getByRole('button',{name:'Inspect Courier case'})).toBeEnabled();
     await page.getByRole('button',{name:'Return to chapter'}).click();
