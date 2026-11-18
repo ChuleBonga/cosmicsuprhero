@@ -14,6 +14,22 @@ async function renderedPixels(page){
   return visible;
 }
 
+
+async function occupiedCanvasBounds(page){
+  const png=PNG.sync.read(await page.locator('#viewer').screenshot());
+  const bg=[png.data[0],png.data[1],png.data[2]];
+  let xmin=png.width,xmax=0,ymin=png.height,ymax=0,visible=0;
+  for(let y=2;y<png.height-2;y+=3)for(let x=2;x<png.width-2;x+=3){
+    const p=(y*png.width+x)*4;
+    const diff=Math.abs(png.data[p]-bg[0])+Math.abs(png.data[p+1]-bg[1])+Math.abs(png.data[p+2]-bg[2]);
+    if(diff>65){
+      visible++;xmin=Math.min(xmin,x);xmax=Math.max(xmax,x);
+      ymin=Math.min(ymin,y);ymax=Math.max(ymax,y);
+    }
+  }
+  return {xmin,xmax,ymin,ymax,width:png.width,height:png.height,visible};
+}
+
 const fixture=path.resolve('test-fixtures/CesiumMan.glb');
 test('loads a real licensed rigged GLB and evaluates it without approving it',async({page})=>{
   const errors=[];
@@ -171,6 +187,12 @@ test('working listening hall GLB renders as a measured environment on desktop an
   expect(Number(values['Skinned skeletons'])).toBe(0);
   await expect(page.locator('#status')).toContainText('NOT APPROVED');
   await expect.poll(()=>renderedPixels(page),{timeout:30000}).toBeGreaterThan(1200);
+  const framing=await occupiedCanvasBounds(page);
+  expect(framing.visible).toBeGreaterThan(1500);
+  expect(framing.xmin).toBeGreaterThan(framing.width*.045);
+  expect(framing.xmax).toBeLessThan(framing.width*.955);
+  expect(framing.ymin).toBeGreaterThan(framing.height*.03);
+  expect(framing.ymax).toBeLessThan(framing.height*.97);
   await page.screenshot({path:'artifacts/ENV-003-hall-desktop.png',fullPage:true});
 
   await page.setViewportSize({width:390,height:844});
