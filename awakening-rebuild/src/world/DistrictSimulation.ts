@@ -4,9 +4,9 @@
  * The world geometry, actual rigged actors and location art are NOT yet made.
  * Positions are a *provisional* 30 x 20 metre rehearsal stage, not canonical map art.
  */
-import { availableLocations, consequence } from '../aftermath';
+import { availableLocations, consequence } from '../aftermath.ts';
 import type { Location } from '../aftermath';
-import type { State, Witness } from '../encounter';
+import type { State, Witness } from '../encounter.ts';
 
 export type ActorAction =
   | 'idle_work' | 'walk' | 'inspect' | 'greet'
