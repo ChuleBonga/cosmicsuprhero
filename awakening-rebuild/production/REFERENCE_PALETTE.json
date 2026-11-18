@@ -1,0 +1,90 @@
+{
+  "schema": "arcturian-source-palette-v1",
+  "source": {
+    "file": "game-walk/public/art/aa_cover_figure.webp",
+    "width": 768,
+    "height": 1152,
+    "format": "webp",
+    "description": "Actual artist-project illustration, not physically based material calibration"
+  },
+  "methods": {
+    "sample": "Median sRGB pixel values from inspected 2D reference art; coordinate rectangles measured at original 768x1152 resolution",
+    "ochre": "Median over a hand-masked mountain ROI selecting warm illuminated grains, not a single pixel",
+    "warning": "These values are color and contrast anchors. Final PBR albedo, roughness, subsurface and ACES display matching require scene-lighting tests."
+  },
+  "anchors": [
+    {
+      "id": "sky_cobalt",
+      "srgb": "#263B6B",
+      "sourceRegion": "x60,y130,r12",
+      "use": "background/atmosphere anchor"
+    },
+    {
+      "id": "sun_red_orange",
+      "srgb": "#E53F0B",
+      "sourceRegion": "x420,y140,r10",
+      "use": "single dominant celestial disc and warm key-response check"
+    },
+    {
+      "id": "mountain_ochre",
+      "srgb": "#6A4929",
+      "sourceRegion": "warm pixel mask across image mountain section",
+      "use": "sun-facing geological grain anchor; not a flat hillside tint"
+    },
+    {
+      "id": "mountain_indigo_shadow",
+      "srgb": "#06091C",
+      "sourceRegion": "x588,y389,r15",
+      "use": "land shadow floor; preserve texture visibility"
+    },
+    {
+      "id": "skin_cobalt",
+      "srgb": "#183E80",
+      "sourceRegion": "blue pixel mask across x397:598 y420:645",
+      "use": "species complexion midtone; not a plastic shader base color"
+    },
+    {
+      "id": "skin_deep",
+      "srgb": "#05124B",
+      "sourceRegion": "x552,y546,r10",
+      "use": "skin shadow, avoid black flattening"
+    },
+    {
+      "id": "cloak_burgundy",
+      "srgb": "#461F46",
+      "sourceRegion": "burgundy fabric mask on right-body section",
+      "use": "weathered textile color family"
+    },
+    {
+      "id": "cloak_indigo_shadow",
+      "srgb": "#060819",
+      "sourceRegion": "x560,y891,r15",
+      "use": "cloth fold shadow, keep weave readable"
+    }
+  ],
+  "composition_checks": [
+    {
+      "id": "cover_sun_count",
+      "reference": "aa_cover_figure.webp",
+      "expected": 1,
+      "method": "large red-orange connected regions at native resolution"
+    },
+    {
+      "id": "tile_sun_count",
+      "reference": "aa_mountain_repeat.webp",
+      "expected": 2,
+      "method": "duplicate celestial discs in repeat; tile not approved as game sky"
+    },
+    {
+      "id": "npc_360_sculpt",
+      "status": "blocked",
+      "why": "Profile cover art does not define front/rear anatomy"
+    },
+    {
+      "id": "architecture",
+      "status": "blocked",
+      "why": "No civilization buildings shown in these two plates"
+    }
+  ],
+  "approval": "reference-only"
+}
