@@ -84,6 +84,7 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
  const canvas=requireElement<HTMLCanvasElement>('world-canvas');
  const status=requireElement<HTMLElement>('world-status');
  const prompt=requireElement<HTMLElement>('world-prompt');
+ const worldTitle=requireElement<HTMLElement>('world-title');
  const position=requireElement<HTMLElement>('world-position');
  const inspectBtn=requireElement<HTMLButtonElement>('world-interact');
  const panel=requireElement<HTMLElement>('world-chronology');
@@ -325,6 +326,8 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
  }
  function leaveInspection(){
   inspectedId=null;
+  worldTitle.textContent='In the district';
+  position.hidden=false;
   root.dataset.inspection='none';
   prompt.textContent='Move with W A S D, arrows or touch. Press E to inspect nearby physical evidence.';
   inspectBtn.textContent='Inspect nearby evidence';
@@ -338,6 +341,8 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    return;
   }
   inspectedId=nearestId;
+  worldTitle.textContent=item.label;
+  position.hidden=true;
   root.dataset.inspection=inspectedId??'none';
   keys.clear();touch.clear();
   inspectBtn.disabled=false;
@@ -349,7 +354,7 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    opts.dispatch({type:'HEAR',witness:item.witness});
    prompt.textContent=item.label+': '+item.detail+
     ' Provisional '+WITNESSES[item.witness].role+' account: '+WITNESSES[item.witness].statement+
-    ' No resident performance or voice is represented in this build.';
+    ' This is a source-linked, provisional account.';
    message('Account connected to evidence at '+item.label+'.');
   }else{
    message('Physical '+item.label+' inspected. Recorded story state unchanged.');
@@ -433,7 +438,11 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
   last=time;worldTime+=dt;
   const v=inspectedId?{x:0,z:0}:movementVector();
   if(v.x||v.z)current=movePlayer(current,v.x*WALK_SPEED*dt,v.z*WALK_SPEED*dt,gateClosed());
-  if(playerMarker)playerMarker.position.set(current.x,0,current.z);
+  if(playerMarker){
+   playerMarker.position.set(current.x,0,current.z);
+   playerMarker.visible=!inspectedId;
+   root.dataset.markerVisible=String(playerMarker.visible);
+  }
   if(camera&&scene&&renderer){
    const narrow=canvas.clientWidth/Math.max(1,canvas.clientHeight)<.75;
    const desiredFov=inspectedId?(narrow?59:49):(narrow?69:59);
@@ -463,7 +472,7 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    nearestId=currentEvidence();
    root.dataset.playerX=current.x.toFixed(2);
    root.dataset.playerZ=current.z.toFixed(2);
-   position.textContent='Survey coordinates: '+current.x.toFixed(1)+'m E / '+current.z.toFixed(1)+'m S';
+   if(!inspectedId)position.textContent='Survey coordinates: '+current.x.toFixed(1)+'m E / '+current.z.toFixed(1)+'m S';
    const object=nearestId?EVIDENCE[nearestId]:null;
    inspectBtn.disabled=!object&&!inspectedId;
    inspectBtn.textContent=inspectedId?'Return to survey':object?'Inspect '+object.label:'Inspect nearby evidence';
@@ -498,6 +507,8 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
   if(active)return;
   active=true;root.hidden=false;document.body.classList.add('field-open');
   inspectedId=null;root.dataset.inspection='none';
+  worldTitle.textContent='In the district';
+  position.hidden=false;
   document.querySelector<HTMLElement>('main#play')?.setAttribute('inert','');
   createScene();
   stageSize();last=0;refresh();
