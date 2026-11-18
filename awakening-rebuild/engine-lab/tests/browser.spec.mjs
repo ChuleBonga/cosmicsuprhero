@@ -6,6 +6,8 @@ test('loads a real licensed rigged GLB and evaluates it without approving it',as
   const errors=[];
   page.on('pageerror',error=>errors.push(error.message));
   await page.goto('/');
+  await expect(page.locator('#metrics')).toContainText('PRP-001-civic-receiver-v04.glb',{timeout:30000});
+  await page.locator('#asset-role').selectOption('character');
   await page.locator('#model').setInputFiles(fixture);
   await expect(page.locator('#metrics')).toContainText('CesiumMan.glb',{timeout:30000});
   await expect(page.locator('#stage-empty')).toBeHidden();
@@ -22,6 +24,7 @@ test('loads a real licensed rigged GLB and evaluates it without approving it',as
 
 test('rejects broken files while preserving the interactive page',async({page})=>{
   await page.goto('/');
+  await expect(page.locator('#metrics')).toContainText('PRP-001-civic-receiver-v04.glb',{timeout:30000});
   await page.locator('#model').setInputFiles({
     name:'broken.glb',mimeType:'model/gltf-binary',buffer:Buffer.from('not a glTF model')
   });
@@ -32,9 +35,8 @@ test('rejects broken files while preserving the interactive page',async({page})=
 test('asset review controls fit a narrow mobile viewport',async({page})=>{
   await page.setViewportSize({width:390,height:844});
   await page.goto('/');
-  await expect(page.locator('#stage-empty')).toBeVisible();
-  const emptyBounds=await page.locator('.stage').boundingBox();
-  expect(emptyBounds?.height ?? Infinity).toBeLessThanOrEqual(220);
+  await expect(page.locator('#metrics')).toContainText('PRP-001-civic-receiver-v04.glb',{timeout:30000});
+  await expect(page.locator('#stage-empty')).toBeHidden();
   await page.locator('#asset-role').selectOption('prop');
   await expect(page.locator('#asset-role')).toHaveValue('prop');
   const size=await page.evaluate(()=>({
@@ -99,4 +101,24 @@ test('celestial continuity: cover has one sun and repeat plate has two (not a us
     ];
   });
   expect(counts).toEqual([1,2]);
+});
+
+test('authored project receiver imports with PBR textures and readable desktop staging',async({page})=>{
+  const errors=[];
+  const failedRequests=[];
+  page.on('pageerror',error=>errors.push(error.message));
+  page.on('response',response=>{if(response.url().endsWith('.glb')&&response.status()>=400)failedRequests.push(response.url());});
+  await page.setViewportSize({width:1440,height:900});
+  await page.goto('/');
+  await expect(page.locator('#metrics')).toContainText('PRP-001-civic-receiver-v04.glb',{timeout:30000});
+  await expect(page.locator('#metrics')).toContainText('Textures');
+  await expect(page.locator('#metrics')).toContainText('Materials');
+  await expect(page.locator('#status')).toContainText('NOT APPROVED');
+  const metrics=await page.locator('#metrics').textContent();
+  expect(metrics).toMatch(/PRP-001/);
+  await page.screenshot({path:'artifacts/PRP-001-original-civic-receiver-desktop.png',fullPage:true});
+  await page.getByRole('button',{name:'Inspect original receiver'}).click();
+  await expect(page.locator('#metrics')).toContainText('PRP-001-civic-receiver-v04.glb',{timeout:30000});
+  expect(failedRequests).toEqual([]);
+  expect(errors).toEqual([]);
 });
