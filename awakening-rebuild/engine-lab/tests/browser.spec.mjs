@@ -37,6 +37,7 @@ test('asset review controls fit a narrow mobile viewport',async({page})=>{
   await page.goto('/');
   await expect(page.locator('#metrics')).toContainText('PRP-001-civic-receiver-v04.glb',{timeout:30000});
   await expect(page.locator('#stage-empty')).toBeHidden();
+  await expect(page.locator('#status')).toContainText('NOT APPROVED');
   await page.locator('#asset-role').selectOption('prop');
   await expect(page.locator('#asset-role')).toHaveValue('prop');
   const size=await page.evaluate(()=>({
@@ -113,6 +114,16 @@ test('authored project receiver imports with PBR textures and readable desktop s
   await expect(page.locator('#metrics')).toContainText('PRP-001-civic-receiver-v04.glb',{timeout:30000});
   await expect(page.locator('#metrics')).toContainText('Textures');
   await expect(page.locator('#metrics')).toContainText('Materials');
+  const actual=await page.locator('#metrics').evaluate(element=>{
+    const dt=Array.from(element.querySelectorAll('dt')).map(e=>e.textContent?.trim());
+    const dd=Array.from(element.querySelectorAll('dd')).map(e=>e.textContent?.trim());
+    return Object.fromEntries(dt.map((name,index)=>[name,dd[index]]));
+  });
+  expect(Number(actual['Meshes'])).toBeGreaterThanOrEqual(36);
+  expect(Number(actual['Textures'])).toBeGreaterThanOrEqual(3);
+  expect(Number(actual['Materials'])).toBeGreaterThanOrEqual(5);
+  expect(Number(actual['Height (m)'])).toBeGreaterThan(1.7);
+  expect(Number(actual['Height (m)'])).toBeLessThan(2.2);
   await expect(page.locator('#status')).toContainText('NOT APPROVED');
   const metrics=await page.locator('#metrics').textContent();
   expect(metrics).toMatch(/PRP-001/);
