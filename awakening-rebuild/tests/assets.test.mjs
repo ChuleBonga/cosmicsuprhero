@@ -14,7 +14,7 @@ for(const asset of assets){
 }
 const receiver=assets.find(x=>x.id==='PRP-001');
 assert.ok(receiver.candidate?.textureCount===3);
-assert.match(receiver.status,/not approved/i);
+assert.match(receiver.visual_approval,/not approved/i);
 assert.equal(anchors.anchors.length,8);
 assert.deepEqual(anchors.composition_checks.slice(0,2).map(c=>c.expected),[1,2]);
 assert.ok(anchors.anchors.every(a=>/^#[A-F0-9]{6}$/.test(a.srgb)));
