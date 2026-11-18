@@ -101,6 +101,10 @@ async function loadFile(file:File) {
     active=incoming;activeFile=file;active.addAllToScene();
     ui.stageEmpty.hidden=true;
     ui.stageContainer.classList.remove('is-empty');
+    // The initial empty-state stage is much shorter on mobile. Its height
+    // changes when the model loads, without a window resize event.
+    engine.resize();
+    requestAnimationFrame(()=>engine.resize());
     frameModel();
     showMetrics(file,active);
     if(ui.autoplay.checked)active.animationGroups[0]?.start(true);
@@ -150,9 +154,16 @@ function init(){
     scene.imageProcessingConfiguration.exposure=1.18;
     scene.imageProcessingConfiguration.contrast=1.06;
     engine.runRenderLoop(()=>{if(!document.hidden)scene.render();});
+    const containerObserver=new ResizeObserver(()=>engine.resize());
+    containerObserver.observe(ui.stageContainer);
     window.addEventListener('resize',()=>engine.resize());
     document.addEventListener('visibilitychange',()=>{if(!document.hidden)engine.resize();});
-    window.addEventListener('pagehide',()=>{active?.dispose();scene.dispose();engine.dispose();});
+    window.addEventListener('pagehide',()=>{
+      containerObserver.disconnect();
+      active?.dispose();
+      scene.dispose();
+      engine.dispose();
+    });
   }catch(error){
     ui.fallback.hidden=false;
     ui.canvas.hidden=true;
