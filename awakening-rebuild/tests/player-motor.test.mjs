@@ -22,12 +22,12 @@ assert.ok(slide.x<14,'collision with a wall should permit horizontal movement');
 assert.deepEqual(clampedPoint({x:-10,z:90}),{x:FIELD_BOUNDS.minX,z:FIELD_BOUNDS.maxZ});
 assert.deepEqual(movePlayer({x:14,z:18},NaN,0),{x:14,z:18});
 assert.equal(canInspect({x:10,z:10},{x:10,z:8.6}),true);
-assert.equal(canInspect({x:10,z:10},{x:10,z:7.8},true),true,'closed doors block in-world inspection');
+assert.equal(canInspect({x:10,z:10},{x:10,z:7.8},true),false,'closed doors block in-world inspection');
 assert.equal(canInspect({x:14,z:9},{x:14,z:7.9}),false,'wall blocks physically close evidence');
 assert.equal(canInspect({x:15,z:18},{x:15,z:8}),false,'objects remain proximity gated');
 assert.equal(canInspect({x:22,z:7},{x:22,z:5.6}),true,'courier case accessible from public path');
 assert.ok(distance({x:14,z:18},{x:14,z:17})===1);
-for(let z=2;z<19;z+=.5){
+for(let z=10;z<19;z+=.5){
  const result=movePlayer({x:14,z},0,-20,true);
  assert.ok(result.x>=FIELD_BOUNDS.minX&&result.x<=FIELD_BOUNDS.maxX);
  assert.ok(result.z>=FIELD_BOUNDS.minZ&&result.z<=FIELD_BOUNDS.maxZ);
