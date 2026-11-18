@@ -127,6 +127,19 @@ test.describe('Physical Arrival Quarter integration',()=>{
       Number(await scene.getAttribute('data-case-lid-angle')),
       {timeout:7000}
     ).toBeLessThan(-1.0);
+    await expect(scene).toHaveAttribute('data-inspection','courier_case');
+    await expect(page.getByRole('button',{name:'Return to survey'})).toBeEnabled();
+    const beforeInspectionMove=Number(await scene.getAttribute('data-player-x'));
+    await page.keyboard.down('d');
+    await page.waitForTimeout(400);
+    await page.keyboard.up('d');
+    const afterInspectionMove=Number(await scene.getAttribute('data-player-x'));
+    expect(afterInspectionMove).toBeCloseTo(beforeInspectionMove,1);
+    await page.screenshot({path:'artifacts/field-world-courier-closeup-desktop.png'});
+    await page.keyboard.press('Escape');
+    await expect(scene).toHaveAttribute('data-inspection','none');
+    await expect(scene).toBeVisible();
+    await expect(page.getByRole('button',{name:'Inspect Courier case'})).toBeEnabled();
     await page.getByRole('button',{name:'Return to chapter'}).click();
     await expect(scene).toBeHidden();
     await expect(page.getByText('1 / 3 accounts heard')).toBeVisible();
