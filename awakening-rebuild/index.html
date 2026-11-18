@@ -15,7 +15,8 @@
       <span class="eyebrow">Cosmicsuprhero / Arcturian Awakening</span>
       <h1>The Return</h1>
       <p class="lede">Before Chule can find Credo, three people ask him to listen to what happened while he was gone.</p>
-      <div class="metadata"><span>CHAPTER 01</span><span>INVESTIGATION PROTOTYPE</span><span>ART NOT APPROVED</span></div>
+      <div class="metadata"><span>CHAPTER 01</span><span>INTERACTIVE DEVELOPMENT BUILD</span><span>ART NOT APPROVED</span></div>
+      <button id="enter-quarter" type="button" class="enter-quarter">Enter the Arrival Quarter <span>3D spatial rehearsal, not final art</span></button>
     </header>
     <section id="content" class="encounter" aria-labelledby="encounter-title"></section>
     <footer>
@@ -23,6 +24,32 @@
       <button id="reset" type="button">Restart encounter</button>
     </footer>
   </main>
+  <section id="world-rehearsal" class="world-rehearsal" role="dialog" aria-modal="true" aria-label="Arrival Quarter spatial development build" hidden>
+    <canvas id="world-canvas" aria-hidden="true"></canvas>
+    <div class="world-top">
+      <p class="eyebrow">ARRIVAL QUARTER / ORIGINAL ART STUDY / NOT RELEASE-APPROVED</p>
+      <h2>In the district</h2>
+      <p id="world-status">Entering the physical scene.</p>
+      <p id="world-position">Survey coordinates pending</p>
+    </div>
+    <div class="world-bottom">
+      <p id="world-prompt" class="world-prompt" role="status" aria-live="polite">Use W A S D or arrows to move. Press E near the household ledger, courier case, or communal receiver. Residents are not modeled yet.</p>
+      <div id="world-chronology" class="world-chronology"></div>
+      <div class="world-controls">
+        <div class="world-pad" aria-label="Movement controls">
+          <button type="button" data-world-move="KeyW" aria-label="Move north">N</button>
+          <button type="button" data-world-move="KeyA" aria-label="Move west">W</button>
+          <button type="button" data-world-move="KeyS" aria-label="Move south">S</button>
+          <button type="button" data-world-move="KeyD" aria-label="Move east">E</button>
+        </div>
+        <div class="world-actions">
+          <button type="button" id="world-interact" disabled>Inspect nearby evidence</button>
+          <button type="button" id="world-exit">Return to chapter</button>
+        </div>
+      </div>
+      <p class="world-footnote">Physical evidence test / no finished NPCs / full controls and artist materials pending</p>
+    </div>
+  </section>
   <script type="module" src="/src/main.ts"></script>
 </body>
 </html>
