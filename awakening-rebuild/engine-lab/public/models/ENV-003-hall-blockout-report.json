@@ -1,0 +1,623 @@
+{
+  "asset_id": "ENV-003/ENV-004",
+  "status": "NOT APPROVED - construction study only",
+  "file": "ENV-003-working-listening-hall-blockout-v01.glb",
+  "bytes": 49540,
+  "parts": 85,
+  "triangles": 1020,
+  "bounds_m": [
+    12.05,
+    4.0,
+    12.23
+  ],
+  "entry_width_m": 2.6,
+  "entry_height_m": 3.0,
+  "seat_height_m": 0.46,
+  "has_rigged_residents": false,
+  "has_original_pbr_textures": false,
+  "rights": "Original construction blockout only",
+  "limitations": [
+    "No finalized cultural grammar",
+    "No sculpted materials or character models",
+    "No navmesh or physical gameplay",
+    "No artist approval",
+    "Accessibility requires verification"
+  ],
+  "part_inventory": [
+    {
+      "id": "STR_floor_structural_slab",
+      "material": "base",
+      "function": "Continuous level floor",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FIN_floor_wear_surface",
+      "material": "floor",
+      "function": "Repairable walkable surface",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FIN_central_circulation_inlay",
+      "material": "inlay",
+      "function": "Legible social circulation aisle",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_front_pier_L",
+      "material": "mineral",
+      "function": "Roof-supporting wall with entrance gap",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_front_pier_R",
+      "material": "mineral",
+      "function": "Roof-supporting wall with entrance gap",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_portal_header",
+      "material": "mineral",
+      "function": "Load transfer above 2.6m public opening",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FIN_door_jamb_left",
+      "material": "bronze",
+      "function": "Durable public door edge",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FIN_door_jamb_right",
+      "material": "bronze",
+      "function": "Durable public door edge",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_side_wall_lower_L",
+      "material": "mineral",
+      "function": "Shelter wall with true upper ventilation void",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_side_wall_top_cap_L",
+      "material": "mineral",
+      "function": "Cap over clerestory",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_clerestory_divider_L_00",
+      "material": "bronze",
+      "function": "Divider between physically open ventilators",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_clerestory_divider_L_01",
+      "material": "bronze",
+      "function": "Divider between physically open ventilators",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_clerestory_divider_L_02",
+      "material": "bronze",
+      "function": "Divider between physically open ventilators",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_clerestory_divider_L_03",
+      "material": "bronze",
+      "function": "Divider between physically open ventilators",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_clerestory_divider_L_04",
+      "material": "bronze",
+      "function": "Divider between physically open ventilators",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_clerestory_divider_L_05",
+      "material": "bronze",
+      "function": "Divider between physically open ventilators",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_clerestory_divider_L_06",
+      "material": "bronze",
+      "function": "Divider between physically open ventilators",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_clerestory_divider_L_07",
+      "material": "bronze",
+      "function": "Divider between physically open ventilators",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_clerestory_divider_L_08",
+      "material": "bronze",
+      "function": "Divider between physically open ventilators",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_side_wall_lower_R",
+      "material": "mineral",
+      "function": "Shelter wall with true upper ventilation void",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_side_wall_top_cap_R",
+      "material": "mineral",
+      "function": "Cap over clerestory",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_clerestory_divider_R_00",
+      "material": "bronze",
+      "function": "Divider between physically open ventilators",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_clerestory_divider_R_01",
+      "material": "bronze",
+      "function": "Divider between physically open ventilators",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_clerestory_divider_R_02",
+      "material": "bronze",
+      "function": "Divider between physically open ventilators",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_clerestory_divider_R_03",
+      "material": "bronze",
+      "function": "Divider between physically open ventilators",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_clerestory_divider_R_04",
+      "material": "bronze",
+      "function": "Divider between physically open ventilators",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_clerestory_divider_R_05",
+      "material": "bronze",
+      "function": "Divider between physically open ventilators",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_clerestory_divider_R_06",
+      "material": "bronze",
+      "function": "Divider between physically open ventilators",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_clerestory_divider_R_07",
+      "material": "bronze",
+      "function": "Divider between physically open ventilators",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_clerestory_divider_R_08",
+      "material": "bronze",
+      "function": "Divider between physically open ventilators",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_back_wall",
+      "material": "mineral",
+      "function": "Acoustic rear enclosure",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_roof_span",
+      "material": "mineral",
+      "function": "Shelter with 1.5m street canopy overhang",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FIN_roof_drip_front",
+      "material": "bronze",
+      "function": "Guides roof runoff beyond entrance",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_end_beam_L",
+      "material": "base",
+      "function": "Transfers canopy loading",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STR_end_beam_R",
+      "material": "base",
+      "function": "Transfers canopy loading",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "SHADE_louver_00",
+      "material": "bronze",
+      "function": "Shields entrance from low-angle sun",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "SHADE_louver_01",
+      "material": "bronze",
+      "function": "Shields entrance from low-angle sun",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "SHADE_louver_02",
+      "material": "bronze",
+      "function": "Shields entrance from low-angle sun",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "SHADE_louver_03",
+      "material": "bronze",
+      "function": "Shields entrance from low-angle sun",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "SHADE_louver_04",
+      "material": "bronze",
+      "function": "Shields entrance from low-angle sun",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "SHADE_louver_05",
+      "material": "bronze",
+      "function": "Shields entrance from low-angle sun",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "SHADE_louver_06",
+      "material": "bronze",
+      "function": "Shields entrance from low-angle sun",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "SHADE_louver_07",
+      "material": "bronze",
+      "function": "Shields entrance from low-angle sun",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "ACCESS_sill",
+      "material": "ledge",
+      "function": "Near-flush public entry",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "ACCESS_ramp",
+      "material": "base",
+      "function": "Gradual entrance transition; needs real-world accessibility check",
+      "room": "public entrance",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_group_L_0_seat",
+      "material": "ledge",
+      "function": "Bench for social listening",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_seat_leg_L_0_0",
+      "material": "base",
+      "function": "Load-bearing seat support",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_seat_leg_L_0_1",
+      "material": "base",
+      "function": "Load-bearing seat support",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_group_L_1_seat",
+      "material": "ledge",
+      "function": "Bench for social listening",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_seat_leg_L_1_0",
+      "material": "base",
+      "function": "Load-bearing seat support",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_seat_leg_L_1_1",
+      "material": "base",
+      "function": "Load-bearing seat support",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_group_L_2_seat",
+      "material": "ledge",
+      "function": "Bench for social listening",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_seat_leg_L_2_0",
+      "material": "base",
+      "function": "Load-bearing seat support",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_seat_leg_L_2_1",
+      "material": "base",
+      "function": "Load-bearing seat support",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_group_R_0_seat",
+      "material": "ledge",
+      "function": "Bench for social listening",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_seat_leg_R_0_0",
+      "material": "base",
+      "function": "Load-bearing seat support",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_seat_leg_R_0_1",
+      "material": "base",
+      "function": "Load-bearing seat support",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_group_R_1_seat",
+      "material": "ledge",
+      "function": "Bench for social listening",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_seat_leg_R_1_0",
+      "material": "base",
+      "function": "Load-bearing seat support",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_seat_leg_R_1_1",
+      "material": "base",
+      "function": "Load-bearing seat support",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_group_R_2_seat",
+      "material": "ledge",
+      "function": "Bench for social listening",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_seat_leg_R_2_0",
+      "material": "base",
+      "function": "Load-bearing seat support",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_seat_leg_R_2_1",
+      "material": "base",
+      "function": "Load-bearing seat support",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "SERVICE_access_housing",
+      "material": "base",
+      "function": "Receiver service enclosure",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "SERVICE_inspection_panel",
+      "material": "bronze",
+      "function": "Replaceable maintenance hatch",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "SERVICE_fastener_0_0",
+      "material": "shadow",
+      "function": "Accessible physical fastener",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "SERVICE_fastener_0_1",
+      "material": "shadow",
+      "function": "Accessible physical fastener",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "SERVICE_fastener_1_0",
+      "material": "shadow",
+      "function": "Accessible physical fastener",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "SERVICE_fastener_1_1",
+      "material": "shadow",
+      "function": "Accessible physical fastener",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "SERVICE_handle_grip",
+      "material": "cloth",
+      "function": "Hand-contact wrap",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STORAGE_shared_record_ledge_0",
+      "material": "ledge",
+      "function": "Shared record storage",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STORAGE_shared_record_ledge_1",
+      "material": "ledge",
+      "function": "Shared record storage",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "STORAGE_shared_record_ledge_2",
+      "material": "ledge",
+      "function": "Shared record storage",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_conversation_bench",
+      "material": "ledge",
+      "function": "Non-ceremonial discussion seat",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_conversation_leg_-1.1",
+      "material": "base",
+      "function": "Load-bearing seat support",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_conversation_leg_1.1",
+      "material": "base",
+      "function": "Load-bearing seat support",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "ACOUSTIC_frame_L_0",
+      "material": "bronze",
+      "function": "Replaceable textile frame",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "ACOUSTIC_burgundy_fabric_L_0",
+      "material": "cloth",
+      "function": "Social sound dampening",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "ACOUSTIC_frame_L_1",
+      "material": "bronze",
+      "function": "Replaceable textile frame",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "ACOUSTIC_burgundy_fabric_L_1",
+      "material": "cloth",
+      "function": "Social sound dampening",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "ACOUSTIC_frame_R_0",
+      "material": "bronze",
+      "function": "Replaceable textile frame",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "ACOUSTIC_burgundy_fabric_R_0",
+      "material": "cloth",
+      "function": "Social sound dampening",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "ACOUSTIC_frame_R_1",
+      "material": "bronze",
+      "function": "Replaceable textile frame",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "ACOUSTIC_burgundy_fabric_R_1",
+      "material": "cloth",
+      "function": "Social sound dampening",
+      "room": "civic hall",
+      "triangles": 12
+    },
+    {
+      "id": "FURN_public_handoff_shelf",
+      "material": "ledge",
+      "function": "Public records exchange",
+      "room": "civic hall",
+      "triangles": 12
+    }
+  ]
+}
