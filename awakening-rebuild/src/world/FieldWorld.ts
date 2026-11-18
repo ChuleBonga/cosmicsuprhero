@@ -141,7 +141,9 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    renderer.toneMapping=THREE.ACESFilmicToneMapping;
    renderer.toneMappingExposure=1.55;
    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.4));
-   renderer.shadowMap.enabled=true;
+   // Authoring-stage materials still need baked contact detail. Disable
+   // expensive multi-mesh shadow passes until device-budgeted assets exist.
+   renderer.shadowMap.enabled=false;
    renderer.shadowMap.type=THREE.PCFSoftShadowMap;
    const ambient=new THREE.HemisphereLight(0xa6c2f5,0x344b77,2.15);scene.add(ambient);
    // Sky-side bounce reveals the public facade without eliminating the red-sun rim.
@@ -363,8 +365,8 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
   if(playerMarker)playerMarker.position.set(current.x,0,current.z);
   if(camera&&scene&&renderer){
    const narrow=canvas.clientWidth/Math.max(1,canvas.clientHeight)<.75;
-   camera.fov=narrow?69:59;
-   camera.updateProjectionMatrix();
+   const desiredFov=narrow?69:59;
+   if(camera.fov!==desiredFov){camera.fov=desiredFov;camera.updateProjectionMatrix();}
    const target=new THREE.Vector3(current.x,1.25,current.z-(narrow?1.7:0));
    const desired=narrow
     ? new THREE.Vector3(current.x+1.35,6.3,current.z+10.3)
