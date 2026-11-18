@@ -179,6 +179,38 @@ test.describe('Physical Arrival Quarter integration',()=>{
     await expect(opener).toBeFocused();
   });
 
+
+  test('mobile evidence examination uses the same physical camera and accessible button',async({page})=>{
+    await page.setViewportSize({width:390,height:844});
+    await page.goto('/');
+    // A saved legitimate survey position lets this verify touch inspection
+    // without depending on unreliable host-side pointer-hold timing.
+    await page.evaluate(()=>localStorage.setItem(
+      'arcturian.rebuild.spatial-player.v1',
+      JSON.stringify({x:22,z:6.6})
+    ));
+    await page.reload();
+    await page.getByRole('button',{name:/Enter the Arrival Quarter/}).click();
+    const scene=page.locator('#world-rehearsal');
+    await expect(scene).toHaveAttribute('data-assets','ready',{timeout:30000});
+    const open=page.getByRole('button',{name:'Inspect Courier case'});
+    await expect(open).toBeEnabled();
+    await open.click();
+    await expect(scene).toHaveAttribute('data-inspection','courier_case');
+    await expect(scene).toHaveAttribute('data-marker-visible','false');
+    await expect(page.locator('#world-title')).toHaveText('Courier case');
+    await expect.poll(async()=>
+      Number(await scene.getAttribute('data-case-lid-angle')),
+      {timeout:10000}
+    ).toBeLessThan(-1);
+    await page.screenshot({path:'artifacts/field-world-mobile-evidence-closeup.png'});
+    await page.getByRole('button',{name:'Return to survey'}).click();
+    await expect(scene).toHaveAttribute('data-inspection','none');
+    await expect(scene).toHaveAttribute('data-marker-visible','true');
+    await page.getByRole('button',{name:'Return to chapter'}).click();
+    await expect(page.getByText('1 / 3 accounts heard')).toBeVisible();
+  });
+
   test('a saved disclosure changes physical hall access and receiver state',async({page})=>{
     await page.goto('/');
     for(const role of ['Caretaker','Courier','Apprentice'])await page.getByRole('button',{name:'Hear '+role}).click();
