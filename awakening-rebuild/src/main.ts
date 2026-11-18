@@ -1,6 +1,4 @@
-import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import {inspectNpc} from './assetGate';
+import { createFieldWorld } from './world/FieldWorld';
 import { availableLocations, consequence } from './aftermath';
 import type { Witness } from './encounter';
 import './style.css';
@@ -11,10 +9,9 @@ import type { Choice, Event, Fragment, State } from './encounter';
 
 const SAVE_KEY='arcturian.rebuild.encounter.v1';
 const root=document.getElementById('content');
-const stage=document.getElementById('stage');
-if(!root||!stage)throw new Error('Required root nodes are missing');
+if(!root)throw new Error('Required root node is missing');
 const content=root;
-const stageElement: HTMLElement = stage;
+let fieldWorld:ReturnType<typeof createFieldWorld>|null=null;
 let log:Event[]=[];
 try {
   const stored=localStorage.getItem(SAVE_KEY);
@@ -33,6 +30,7 @@ function dispatch(event:Event) {
   state=next;
   try{localStorage.setItem(SAVE_KEY,JSON.stringify(log));}catch{ /* memory-only */ }
   render();
+  fieldWorld?.refresh();
   const title=content.querySelector<HTMLElement>('#encounter-title');
   if(title){title.tabIndex=-1;title.focus({preventScroll:true});}
 }
@@ -145,96 +143,16 @@ reset?.addEventListener('click',()=>{
   log=[];state=INITIAL;
   try{localStorage.removeItem(SAVE_KEY);}catch{}
   render();
+  fieldWorld?.refresh();
 });
 render();
 
-// Three.js r187: an intentionally nonrepresentational lighting calibration.
-// It is NOT an Arcturian location or a placeholder NPC/world asset.
-function startVisualStage(){
-try{
-const scene=new THREE.Scene();
-scene.background=new THREE.Color('#07122b');
-const camera=new THREE.PerspectiveCamera(40,1,.1,250);
-camera.position.set(0,0,28);
-const renderer=new THREE.WebGLRenderer({alpha:false,antialias:true,powerPreference:'low-power'});
-renderer.outputColorSpace=THREE.SRGBColorSpace;
-renderer.toneMapping=THREE.ACESFilmicToneMapping;
-renderer.toneMappingExposure=1;
-renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.6));
-stageElement.append(renderer.domElement);
-const light=new THREE.HemisphereLight(0x25447f,0x111021,1.4);scene.add(light);
-const rim=new THREE.DirectionalLight(0xff914e,2.0);rim.position.set(-5,8,4);scene.add(rim);
-const sun=new THREE.Mesh(
-  new THREE.SphereGeometry(5.4,64,32),
-  new THREE.MeshBasicMaterial({color:0xdd381d,depthWrite:false})
-);
-sun.position.set(5,0,-25);
-scene.add(sun);
-const halo=new THREE.Mesh(
-  new THREE.RingGeometry(5.55,6.02,96),
-  new THREE.MeshBasicMaterial({color:0x9e382b,transparent:true,opacity:.25,side:THREE.DoubleSide})
-);
-halo.position.copy(sun.position);scene.add(halo);
-
-// Asset gate: no invented procedural humanoids. Renderer only loads approved GLB.
-const APPROVED_WORLD: string|null=null;
-const APPROVED_NPCS: readonly {id:Witness;url:string;position:[number,number,number];approved:boolean;rights:string;reference:string}[]=[];
-const characterMixers:THREE.AnimationMixer[]=[];
-async function loadApprovedAssets() {
-  const loader=new GLTFLoader();
-  if(APPROVED_WORLD){
-    try{const asset=await loader.loadAsync(APPROVED_WORLD);scene.add(asset.scene);}
-    catch(error){console.warn('Approved world asset failed to load',error);}
-  }
-  for(const npc of APPROVED_NPCS){
-    if(!npc.approved||!npc.rights||!npc.reference){
-      console.warn('Unapproved or undocumented character skipped',npc.id);continue;
-    }
-    try{
-      const asset=await loader.loadAsync(npc.url);
-      const assessment=inspectNpc(asset);
-      if(!assessment.acceptableForArtReview){
-        console.warn('Character failed technical art gate',npc.id,assessment.warnings);continue;
-      }
-      asset.scene.position.set(...npc.position);
-      scene.add(asset.scene);
-      const idle=asset.animations.find(clip=>clip.name.toLowerCase().includes('idle'));
-      if(idle){
-        const mixer=new THREE.AnimationMixer(asset.scene);
-        mixer.clipAction(idle).play();characterMixers.push(mixer);
-      }
-    }catch(error){console.warn('Approved character asset failed to load',npc.id,error);}
-  }
-}
-void loadApprovedAssets();
-const reduced=matchMedia('(prefers-reduced-motion: reduce)');
-const size=()=>{
-  const w=Math.max(1,stageElement.clientWidth),h=Math.max(1,stageElement.clientHeight);
-  camera.aspect=w/h;
-  // Keep the red celestial calibration sphere out of the title/copy region.
-  const compact=camera.aspect < 1.6;
-  sun.position.set(compact ? 18 : 35, compact ? 9 : 3, -25);
-  halo.position.copy(sun.position);
-  camera.updateProjectionMatrix();renderer.setSize(w,h,false);
-};
-const observer=new ResizeObserver(size);observer.observe(stageElement);
-size();
-let raf=0;
-const clock=new THREE.Clock();
-function frame(){
-  raf=requestAnimationFrame(frame);
-  const delta=clock.getDelta();
-  if(document.hidden)return;
-  for(const mixer of characterMixers)mixer.update(delta);
-  if(!reduced.matches)halo.rotation.z+=.00018;
-  renderer.render(scene,camera);
-}
-frame();
-window.addEventListener('pagehide',()=>{cancelAnimationFrame(raf);observer.disconnect();renderer.dispose();});
-}catch(error){
-  const warning=node('p','3D lighting preview unavailable on this device; the narrative prototype remains playable.','render-fallback');
-  stageElement.append(warning);
-  console.warn('3D preview unavailable',error);
-}
-}
-startVisualStage();
+// One renderer for the authored 3D spatial slice. The legacy decorative
+// light-only renderer has been removed. Story cards remain as the accessible
+// fallback until the physical dialogue and characters pass their art gates.
+fieldWorld=createFieldWorld({
+ getState:()=>state,
+ dispatch,
+ onExit:()=>{ /* Keeps the investigation page and current saved state intact. */ }
+});
+document.getElementById('enter-quarter')?.addEventListener('click',()=>fieldWorld?.open());
