@@ -112,6 +112,7 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
  const keys=new Set<string>();
  const touch=new Set<string>();
  let nearestId:string|null=null;
+ let inspectedId:string|null=null;
  const sceneObjects:THREE.Object3D[]=[];
  const focusBefore=document.getElementById('enter-quarter');
  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -322,12 +323,25 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
   }
   return id;
  }
+ function leaveInspection(){
+  inspectedId=null;
+  root.dataset.inspection='none';
+  prompt.textContent='Move with W A S D, arrows or touch. Press E to inspect nearby physical evidence.';
+  inspectBtn.textContent='Inspect nearby evidence';
+  message('Survey resumed.');
+ }
  function interact(){
+  if(inspectedId){leaveInspection();return;}
   const item=nearestId?EVIDENCE[nearestId]:null;
   if(!item){
    message('Move closer to a record site. Walls and closed doors block inspection.');
    return;
   }
+  inspectedId=nearestId;
+  root.dataset.inspection=inspectedId??'none';
+  keys.clear();touch.clear();
+  inspectBtn.disabled=false;
+  inspectBtn.textContent='Return to survey';
   prompt.textContent=item.label+': '+item.detail;
   if(nearestId==='communal_receiver')crankMotionSeconds=1.3;
   const story=opts.getState();
@@ -417,17 +431,27 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
   // subdivides each physical move, so larger elapsed deltas cannot tunnel.
   const dt=Math.min(.25,Math.max(0,last?(time-last)/1000:0));
   last=time;worldTime+=dt;
-  const v=movementVector();
+  const v=inspectedId?{x:0,z:0}:movementVector();
   if(v.x||v.z)current=movePlayer(current,v.x*WALK_SPEED*dt,v.z*WALK_SPEED*dt,gateClosed());
   if(playerMarker)playerMarker.position.set(current.x,0,current.z);
   if(camera&&scene&&renderer){
    const narrow=canvas.clientWidth/Math.max(1,canvas.clientHeight)<.75;
-   const desiredFov=narrow?69:59;
+   const desiredFov=inspectedId?(narrow?59:49):(narrow?69:59);
    if(camera.fov!==desiredFov){camera.fov=desiredFov;camera.updateProjectionMatrix();}
-   const target=new THREE.Vector3(current.x,1.25,current.z-(narrow?1.7:0));
-   const desired=narrow
+   let target=new THREE.Vector3(current.x,1.25,current.z-(narrow?1.7:0));
+   let desired=narrow
     ? new THREE.Vector3(current.x+1.35,6.3,current.z+10.3)
     : new THREE.Vector3(current.x+3.1,5.1,current.z+7.8);
+   // The same 3D world supplies an actual close inspection camera: no
+   // disconnected image or HTML-only evidence view.
+   const inspected=inspectedId?EVIDENCE[inspectedId]:null;
+   if(inspected){
+    const {x,z}=inspected.site;
+    const height=inspectedId==='communal_receiver'?1.13:inspectedId==='household_ledger'?.88:.49;
+    const space=narrow?1.5:1;
+    target=new THREE.Vector3(x,height,z);
+    desired=new THREE.Vector3(x+1.40*space,height+1.30*space,z+1.85*space);
+   }
    const ratio=reduced.matches?1:1-Math.exp(-dt*7.5);
    camera.position.lerp(desired,ratio);
    camera.lookAt(target);
@@ -441,19 +465,25 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    root.dataset.playerZ=current.z.toFixed(2);
    position.textContent='Survey coordinates: '+current.x.toFixed(1)+'m E / '+current.z.toFixed(1)+'m S';
    const object=nearestId?EVIDENCE[nearestId]:null;
-   inspectBtn.disabled=!object;
-   inspectBtn.textContent=object?'Inspect '+object.label:'Inspect nearby evidence';
+   inspectBtn.disabled=!object&&!inspectedId;
+   inspectBtn.textContent=inspectedId?'Return to survey':object?'Inspect '+object.label:'Inspect nearby evidence';
    const frame=worldFrame(opts.getState(),worldTime);
    const state=opts.getState();
    const access=frame.accessibleLocations;
    const zone=access.length?access.join(', '):'no earned locations';
-   if(!assetErrors.length)status.textContent='Investigation: '+state.phase+' · Accessible: '+zone;
+   if(!assetErrors.length)status.textContent=inspectedId
+    ? 'Inspecting '+EVIDENCE[inspectedId].label+' · Evidence '+state.heard.length+'/3'
+    : 'Investigation: '+state.phase+' · Accessible: '+zone;
    refresh();
   }
  }
  function keydown(event:KeyboardEvent){
   if(!active)return;
-  if(event.code==='Escape'){event.preventDefault();close();return;}
+  if(event.code==='Escape'){
+   event.preventDefault();
+   if(inspectedId)leaveInspection();else close();
+   return;
+  }
   if(event.code==='KeyE'){
    if(!event.repeat){event.preventDefault();interact();}
    return;
@@ -467,6 +497,7 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
  function open(){
   if(active)return;
   active=true;root.hidden=false;document.body.classList.add('field-open');
+  inspectedId=null;root.dataset.inspection='none';
   document.querySelector<HTMLElement>('main#play')?.setAttribute('inert','');
   createScene();
   stageSize();last=0;refresh();
@@ -481,6 +512,7 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
   if(!active)return;
   active=false;cancelAnimationFrame(raf);
   keys.clear();touch.clear();persist();
+  inspectedId=null;root.dataset.inspection='none';
   root.hidden=true;document.body.classList.remove('field-open');
   document.querySelector<HTMLElement>('main#play')?.removeAttribute('inert');
   window.removeEventListener('keydown',keydown);
