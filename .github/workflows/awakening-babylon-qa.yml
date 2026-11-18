@@ -41,6 +41,10 @@ jobs:
           PY
       - name: Browser GLB loader / animation and mobile inspection
         run: npm run test:browser
+      - name: Preserve exact source plates with captured comparisons
+        run: |
+          mkdir -p artifacts/artist-source-plates
+          cp public/references/*.webp artifacts/artist-source-plates/
       - name: Upload screenshots and report
         if: always()
         uses: actions/upload-artifact@v4
