@@ -138,9 +138,17 @@ function init(){
     camera.lowerBetaLimit=.1;camera.upperBetaLimit=Math.PI-.1;
     camera.wheelDeltaPercentage=.04;
     const hemi=new HemisphericLight('cool bounce',new Vector3(0,1,0),scene);
-    hemi.intensity=.72;hemi.diffuse=new Color3(.38,.53,.88);hemi.groundColor=new Color3(.07,.07,.12);
+    // Studio look-development light is physically restrained but readable:
+    // a warm key and diffuse cobalt fill, without cosmetic bloom/glow.
+    hemi.intensity=1.32;
+    hemi.diffuse=new Color3(.53,.62,.90);
+    hemi.groundColor=new Color3(.13,.15,.25);
     const key=new DirectionalLight('warm key',new Vector3(-.7,-1,.4),scene);
-    key.intensity=1.7;key.diffuse=new Color3(1,.69,.45);
+    key.intensity=2.35;key.diffuse=new Color3(1,.73,.51);
+    const rim=new DirectionalLight('cool edge',new Vector3(.8,-.5,-.7),scene);
+    rim.intensity=.86;rim.diffuse=new Color3(.48,.61,1);
+    scene.imageProcessingConfiguration.exposure=1.18;
+    scene.imageProcessingConfiguration.contrast=1.06;
     engine.runRenderLoop(()=>{if(!document.hidden)scene.render();});
     window.addEventListener('resize',()=>engine.resize());
     document.addEventListener('visibilitychange',()=>{if(!document.hidden)engine.resize();});
