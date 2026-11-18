@@ -552,7 +552,7 @@
       "rights_status": "Verification required",
       "editable_source": "blend",
       "runtime_asset": "glb",
-      "visual_approval": "Rejected as final civilization design: generic silhouette, insufficient authentic material wear, no canonical technology validation",
+      "visual_approval": "Not approved: rejected as final civilization design because silhouette and surface wear lack verified cultural specificity",
       "runtime_test": "Babylon 9.37 imported original textured GLB in desktop and 390px mobile; screenshot pixel gate, outward face orientation and byte-reproducibility passed in CI run 44211077026",
       "candidate": {
         "project": "https://higgsfield.ai/3d-jutsu/20c1e6ef-08d9-4fbf-9071-44c569cb4506",
