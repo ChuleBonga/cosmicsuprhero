@@ -57,3 +57,46 @@ test('archived artist reference plates load at correct resolution',async({page})
   expect(responses.filter(x=>x.status>=400)).toEqual([]);
   await page.screenshot({path:'artifacts/source-reference-comparison.png',fullPage:true});
 });
+
+
+test('celestial continuity: cover has one sun and repeat plate has two (not a usable sky)',async({page})=>{
+  await page.goto('/');
+  const counts=await page.evaluate(async()=>{
+    async function countLargeSuns(url){
+      const image=new Image();image.src=url;await image.decode();
+      const cvs=document.createElement('canvas');cvs.width=image.naturalWidth;cvs.height=image.naturalHeight;
+      const ctx=cvs.getContext('2d',{willReadFrequently:true});
+      if(!ctx)throw new Error('Canvas not available');
+      ctx.drawImage(image,0,0);
+      const {data}=ctx.getImageData(0,0,cvs.width,cvs.height);
+      const n=cvs.width*cvs.height;
+      const mask=new Uint8Array(n),seen=new Uint8Array(n),queue=new Int32Array(n);
+      for(let i=0;i<n;i++){
+        const j=i*4,r=data[j],g=data[j+1],b=data[j+2];
+        if(r>180 && r>g*1.3 && r>b*2 && g>45)mask[i]=1;
+      }
+      let components=0;
+      for(let i=0;i<n;i++){
+        if(!mask[i]||seen[i])continue;
+        let head=0,tail=1;queue[0]=i;seen[i]=1;
+        while(head<tail){
+          const p=queue[head++],x=p%cvs.width,y=Math.floor(p/cvs.width);
+          const testNeighbor=(q)=>{
+            if(mask[q]&&!seen[q]){seen[q]=1;queue[tail++]=q;}
+          };
+          if(x>0)testNeighbor(p-1);
+          if(x<cvs.width-1)testNeighbor(p+1);
+          if(y>0)testNeighbor(p-cvs.width);
+          if(y<cvs.height-1)testNeighbor(p+cvs.width);
+        }
+        if(tail>3000)components++;
+      }
+      return components;
+    }
+    return [
+      await countLargeSuns('/references/aa_cover_figure.webp'),
+      await countLargeSuns('/references/aa_mountain_repeat.webp')
+    ];
+  });
+  expect(counts).toEqual([1,2]);
+});
