@@ -148,3 +148,40 @@ test('authored project receiver imports with PBR textures and readable desktop s
   expect(failedRequests).toEqual([]);
   expect(errors).toEqual([]);
 });
+
+
+test('working listening hall GLB renders as a measured environment on desktop and mobile',async({page})=>{
+  const errors=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  await page.setViewportSize({width:1440,height:900});
+  await page.goto('/');
+  await expect(page.locator('#metrics')).toContainText('PRP-001-civic-receiver-v04.glb',{timeout:30000});
+  await page.getByRole('button',{name:'Inspect hall study'}).click();
+  await expect(page.locator('#metrics')).toContainText('ENV-003-working-listening-hall-blockout-v01.glb',{timeout:30000});
+  await expect(page.locator('#asset-role')).toHaveValue('environment');
+  const values=await page.locator('#metrics').evaluate(element=>{
+    const names=Array.from(element.querySelectorAll('dt')).map(x=>x.textContent?.trim());
+    const details=Array.from(element.querySelectorAll('dd')).map(x=>x.textContent?.trim());
+    return Object.fromEntries(names.map((name,i)=>[name,details[i]]));
+  });
+  expect(Number(values['Meshes'])).toBeGreaterThanOrEqual(85);
+  expect(Number(String(values['Triangles']).replaceAll(',',''))).toBe(1020);
+  expect(Number(values['Height (m)'])).toBeGreaterThan(3.8);
+  expect(Number(values['Height (m)'])).toBeLessThan(4.2);
+  expect(Number(values['Skinned skeletons'])).toBe(0);
+  await expect(page.locator('#status')).toContainText('NOT APPROVED');
+  await expect.poll(()=>renderedPixels(page),{timeout:30000}).toBeGreaterThan(1200);
+  await page.screenshot({path:'artifacts/ENV-003-hall-desktop.png',fullPage:true});
+
+  await page.setViewportSize({width:390,height:844});
+  await expect.poll(()=>renderedPixels(page),{timeout:30000}).toBeGreaterThan(400);
+  const overflow=await page.evaluate(()=>({
+    page:document.documentElement.scrollWidth,
+    viewport:document.documentElement.clientWidth
+  }));
+  expect(overflow.page).toBeLessThanOrEqual(overflow.viewport+1);
+  await page.screenshot({path:'artifacts/ENV-003-hall-mobile.png',fullPage:true});
+  await page.getByRole('button',{name:'Inspect original receiver'}).click();
+  await expect(page.locator('#metrics')).toContainText('PRP-001-civic-receiver-v04.glb',{timeout:30000});
+  expect(errors).toEqual([]);
+});
