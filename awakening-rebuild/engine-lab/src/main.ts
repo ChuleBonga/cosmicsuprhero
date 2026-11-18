@@ -55,10 +55,18 @@ function frameModel(): number {
   const ext=max.subtract(min);
   if(Number.isFinite(ext.length())&&ext.length()>0){
     camera.setTarget(center);
-    camera.radius=Math.max(1.3,ext.length()*(activeFile?.name.startsWith('ENV-003')?1.1:1.5));
-    if(activeFile?.name.startsWith('ENV-003')){
+    const isEnvironment=Boolean(activeFile?.name.startsWith('ENV-003'));
+    if(isEnvironment){
+      // Fit the actual scene bounding sphere to the narrower of the two
+      // vertical/horizontal FOVs. The old diagonal multiplier cropped roofs
+      // when the review canvas was taller than wide.
+      const aspect=Math.max(.3,ui.canvas.clientWidth/Math.max(1,ui.canvas.clientHeight));
+      const smallerTangent=Math.tan(camera.fov/2)*Math.min(1,aspect);
+      camera.radius=Math.max(3,(ext.length()/2)/smallerTangent*1.33);
       camera.alpha=-Math.PI/2.7;
       camera.beta=1.1;
+    }else{
+      camera.radius=Math.max(1.3,ext.length()*1.5);
     }
     camera.lowerRadiusLimit=Math.max(.1,ext.length()*.35);
     camera.upperRadiusLimit=Math.max(4,ext.length()*5);
