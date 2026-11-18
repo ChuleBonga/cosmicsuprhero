@@ -547,13 +547,13 @@
       "priority": "P0",
       "name": "Communal listening fixture",
       "purpose": "Public repairable communication instrument",
-      "status": "Authored GLB candidate, mapped texture prototype, not approved",
+      "status": "Original textured runtime GLB candidate committed; not artist-approved",
       "reference_status": "Measured album palette applied, device morphology not yet supported by civilization refs",
       "rights_status": "Verification required",
       "editable_source": "blend",
       "runtime_asset": "glb",
-      "visual_approval": "Not approved: render and reference-fit gate outstanding",
-      "runtime_test": "Exported glTF 2.0 with 3 textures and 41 UV-bearing primitives; not integrated in player world",
+      "visual_approval": "Not approved: no civilization reference confirmation; no in-game interaction",
+      "runtime_test": "QA lab auto-load integration committed; awaiting browser render evidence",
       "candidate": {
         "project": "https://higgsfield.ai/3d-jutsu/20c1e6ef-08d9-4fbf-9071-44c569cb4506",
         "revision": 3,
@@ -561,7 +561,16 @@
         "textureCount": 3,
         "uvBearingPrimitives": 41,
         "materialCount": 6,
-        "sourcePalette": "awakening-rebuild/production/REFERENCE_PALETTE.json"
+        "sourcePalette": "awakening-rebuild/production/REFERENCE_PALETTE.json",
+        "authoredBlendRevision3": "https://higgsfield.ai/3d-jutsu/20c1e6ef-08d9-4fbf-9071-44c569cb4506",
+        "runtimeGlb": "awakening-rebuild/engine-lab/public/models/PRP-001-civic-receiver-v04.glb",
+        "sourceGenerator": "awakening-rebuild/engine-lab/tools/generate-civic-receiver.mjs",
+        "glbGithubBlobSha": "bc7ae34bcf3ad9117f8e59fedc3e90c8b3a53570",
+        "runtimeAssetBytes": 178028,
+        "runtimeModelMeshes": 36,
+        "runtimeTextures": 3,
+        "runtimePBRMaterials": 5,
+        "note": "v04 is a separately generated runtime reconstruction of civic receiver concept v03, not a direct export of the .blend and not approved canon."
       }
     },
     {
