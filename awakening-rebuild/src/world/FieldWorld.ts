@@ -351,7 +351,9 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
  function animate(time:number){
   if(!active)return;
   raf=requestAnimationFrame(animate);
-  const dt=Math.min(.05,Math.max(0,last?(time-last)/1000:0));
+  // Preserve walking speed under slower rendering. The collision motor
+  // subdivides each physical move, so larger elapsed deltas cannot tunnel.
+  const dt=Math.min(.25,Math.max(0,last?(time-last)/1000:0));
   last=time;worldTime+=dt;
   const v=movementVector();
   if(v.x||v.z)current=movePlayer(current,v.x*WALK_SPEED*dt,v.z*WALK_SPEED*dt,gateClosed());
