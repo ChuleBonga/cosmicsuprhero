@@ -130,20 +130,23 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
   loading=true;
   try{
    scene=new THREE.Scene();
-   scene.background=new THREE.Color('#09172f');
-   scene.fog=new THREE.Fog('#111e3c',34,115);
-   camera=new THREE.PerspectiveCamera(57,1,.12,220);
+   scene.background=new THREE.Color('#1a3768');
+   scene.fog=new THREE.Fog('#223e71',55,135);
+   camera=new THREE.PerspectiveCamera(59,1,.12,220);
    camera.position.set(current.x+4,5,current.z+7.5);
    renderer=new THREE.WebGLRenderer({
     canvas,alpha:false,antialias:true,powerPreference:'high-performance'
    });
    renderer.outputColorSpace=THREE.SRGBColorSpace;
    renderer.toneMapping=THREE.ACESFilmicToneMapping;
-   renderer.toneMappingExposure=1.22;
+   renderer.toneMappingExposure=1.55;
    renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.4));
    renderer.shadowMap.enabled=true;
    renderer.shadowMap.type=THREE.PCFSoftShadowMap;
-   const ambient=new THREE.HemisphereLight(0x7892ca,0x0c1120,1.45);scene.add(ambient);
+   const ambient=new THREE.HemisphereLight(0xa6c2f5,0x344b77,2.15);scene.add(ambient);
+   // Sky-side bounce reveals the public facade without eliminating the red-sun rim.
+   const skyFill=new THREE.DirectionalLight(0xa7bbeb,2.15);
+   skyFill.position.set(11,17,25);scene.add(skyFill);
    const sunKey=new THREE.DirectionalLight(0xf08c50,2.65);
    sunKey.position.set(-20,34,-25);
    sunKey.castShadow=true;sunKey.shadow.mapSize.set(1024,1024);
@@ -152,9 +155,9 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    sunKey.shadow.normalBias=.025;scene.add(sunKey);
    const sun=new THREE.Mesh(new THREE.SphereGeometry(7,40,24),
     new THREE.MeshBasicMaterial({color:0xe3471b,toneMapped:false}));
-   sun.position.set(-34,32,-100);scene.add(sun);
+   sun.position.set(-11,24,-53);scene.add(sun);
    const ground=new THREE.Mesh(new THREE.PlaneGeometry(44,38),
-    new THREE.MeshStandardMaterial({color:0x1b3666,roughness:1}));
+    new THREE.MeshStandardMaterial({color:0x2b4777,roughness:1}));
    ground.rotation.x=-Math.PI/2;ground.receiveShadow=true;
    ground.position.set(15,-.07,10);scene.add(ground);
    // Paths here are navigation surfaces, not falsely completed architecture.
@@ -296,7 +299,7 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
   panel.replaceChildren();
   if(story.phase==='hear'){
    const paragraph=document.createElement('p');
-   paragraph.textContent='Record sites surveyed: '+story.heard.length+'/3. Locate the ledger, courier case and public receiver. Their owners are NOT modeled yet.';
+   paragraph.textContent='Evidence reviewed: '+story.heard.length+'/3 · Ledger · Case · Receiver';
    panel.append(paragraph);
   }else if(story.phase==='reconstruct'){
    const h=document.createElement('h3');h.textContent='Reconstruct the dispatch';panel.append(h);
@@ -359,8 +362,13 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
   if(v.x||v.z)current=movePlayer(current,v.x*WALK_SPEED*dt,v.z*WALK_SPEED*dt,gateClosed());
   if(playerMarker)playerMarker.position.set(current.x,0,current.z);
   if(camera&&scene&&renderer){
-   const target=new THREE.Vector3(current.x,1.25,current.z);
-   const desired=new THREE.Vector3(current.x+4.1,4.7,current.z+7.1);
+   const narrow=canvas.clientWidth/Math.max(1,canvas.clientHeight)<.75;
+   camera.fov=narrow?69:59;
+   camera.updateProjectionMatrix();
+   const target=new THREE.Vector3(current.x,1.25,current.z-(narrow?1.7:0));
+   const desired=narrow
+    ? new THREE.Vector3(current.x+1.35,6.3,current.z+10.3)
+    : new THREE.Vector3(current.x+3.1,5.1,current.z+7.8);
    const ratio=reduced.matches?1:1-Math.exp(-dt*7.5);
    camera.position.lerp(desired,ratio);
    camera.lookAt(target);
@@ -380,8 +388,7 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    const state=opts.getState();
    const access=frame.accessibleLocations;
    const zone=access.length?access.join(', '):'no earned locations';
-   if(!assetErrors.length)status.textContent='Spatial rehearsal / '+state.phase+' / access: '+zone+
-    ' / 3 residents not yet modeled';
+   if(!assetErrors.length)status.textContent='Investigation: '+state.phase+' · Accessible: '+zone;
    refresh();
   }
  }
