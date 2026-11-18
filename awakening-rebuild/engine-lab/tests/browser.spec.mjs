@@ -1,5 +1,18 @@
 import {test,expect} from '@playwright/test';
 import path from 'node:path';
+import {PNG} from 'pngjs';
+
+async function renderedPixels(page){
+  const png=PNG.sync.read(await page.locator('#viewer').screenshot());
+  const bg=[png.data[0],png.data[1],png.data[2]];
+  let visible=0;
+  for(let y=8;y<png.height-8;y+=4)for(let x=8;x<png.width-8;x+=4){
+    const i=(y*png.width+x)*4;
+    const diff=Math.abs(png.data[i]-bg[0])+Math.abs(png.data[i+1]-bg[1])+Math.abs(png.data[i+2]-bg[2]);
+    if(diff>70)visible++;
+  }
+  return visible;
+}
 
 const fixture=path.resolve('test-fixtures/CesiumMan.glb');
 test('loads a real licensed rigged GLB and evaluates it without approving it',async({page})=>{
@@ -38,6 +51,7 @@ test('asset review controls fit a narrow mobile viewport',async({page})=>{
   await expect(page.locator('#metrics')).toContainText('PRP-001-civic-receiver-v04.glb',{timeout:30000});
   await expect(page.locator('#stage-empty')).toBeHidden();
   await expect(page.locator('#status')).toContainText('NOT APPROVED');
+  await expect.poll(()=>renderedPixels(page),{timeout:30000}).toBeGreaterThan(400);
   await page.locator('#asset-role').selectOption('prop');
   await expect(page.locator('#asset-role')).toHaveValue('prop');
   const size=await page.evaluate(()=>({
@@ -127,6 +141,7 @@ test('authored project receiver imports with PBR textures and readable desktop s
   await expect(page.locator('#status')).toContainText('NOT APPROVED');
   const metrics=await page.locator('#metrics').textContent();
   expect(metrics).toMatch(/PRP-001/);
+  await expect.poll(()=>renderedPixels(page),{timeout:30000}).toBeGreaterThan(1200);
   await page.screenshot({path:'artifacts/PRP-001-original-civic-receiver-desktop.png',fullPage:true});
   await page.getByRole('button',{name:'Inspect original receiver'}).click();
   await expect(page.locator('#metrics')).toContainText('PRP-001-civic-receiver-v04.glb',{timeout:30000});
