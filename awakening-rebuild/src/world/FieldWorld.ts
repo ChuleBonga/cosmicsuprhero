@@ -95,6 +95,10 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
  let playerMarker:THREE.Group|null=null;
  let receiverLight:THREE.MeshBasicMaterial|null=null;
  let refugeMarker:THREE.MeshBasicMaterial|null=null;
+ let ledgerCover:THREE.Group|null=null;
+ let courierLid:THREE.Group|null=null;
+ let receiverCrank:THREE.Group|null=null;
+ let crankMotionSeconds=0;
  let doorPanels:THREE.Mesh[]=[];
  let raf=0;
  let last=0;
@@ -167,9 +171,26 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    addBox(scene,'courier service route',11,.04,1.5,0x3e4566,20,.005,12.2);
    addBox(scene,'workshop walkway',1.6,.04,7.0,0x55506b,16.9,.003,15.4);
    addBox(scene,'record stand',.7,.8,.5,0x504260,4.4,.4,5.2);
-   addBox(scene,'household ledger',.55,.07,.36,0x674961,4.4,.84,5.2);
-   addBox(scene,'courier case',.82,.36,.54,0x725645,22,.23,5.6);
-   addBox(scene,'case handle',.27,.09,.08,0x47314a,22,.47,5.6);
+   // Three independent physical evidence mechanisms, deliberately
+   // simple enough to replace with approved authored art later.
+   addBox(scene,'ledger paper stack',.52,.055,.33,0xc8b497,4.4,.857,5.2);
+   addBox(scene,'ledger date trace',.43,.012,.042,0x765d4d,4.4,.895,5.16);
+   ledgerCover=new THREE.Group();ledgerCover.name='ledger book-cover pivot';
+   ledgerCover.position.set(4.125,.902,5.2);scene.add(ledgerCover);
+   const cover=new THREE.Mesh(new THREE.BoxGeometry(.55,.028,.37),
+    new THREE.MeshStandardMaterial({color:0x603b57,roughness:.94}));
+   cover.position.set(.275,.0,0);ledgerCover.add(cover);
+   addBox(scene,'courier case body',.82,.36,.54,0x725645,22,.23,5.6);
+   addBox(scene,'case dark interior',.72,.018,.43,0x252238,22,.417,5.6);
+   addBox(scene,'recording cartridge evidence',.34,.024,.19,0x9a7e65,22,.435,5.61);
+   courierLid=new THREE.Group();courierLid.name='courier case hinge';
+   courierLid.position.set(22,.444,5.33);scene.add(courierLid);
+   const caseTop=new THREE.Mesh(new THREE.BoxGeometry(.84,.065,.56),
+    new THREE.MeshStandardMaterial({color:0x68465a,roughness:.88}));
+   caseTop.position.set(0,0,.28);courierLid.add(caseTop);
+   const caseHandle=new THREE.Mesh(new THREE.BoxGeometry(.28,.09,.09),
+    new THREE.MeshStandardMaterial({color:0x9c8267,roughness:.75,metalness:.12}));
+   caseHandle.position.set(0,.085,.28);courierLid.add(caseHandle);
    for(const obj of Object.values(EVIDENCE))addMarker(scene,obj.site,0xc99d66,.62);
    const refugeRing=addMarker(scene,SITES.refuge,0x6776b0,.9);
    refugeMarker=refugeRing.material as THREE.MeshBasicMaterial;
@@ -235,6 +256,21 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    model.name=spec.name;
    world.add(model);
    sceneObjects.push(model);
+   if(i===1){
+    const crank=new THREE.Group();
+    crank.name='Manual receiver crank pivot';
+    crank.position.set(.50,.81,-.02);
+    model.add(crank);
+    crank.updateWorldMatrix(true,true);
+    const parts:THREE.Object3D[]=[];
+    model.traverse(object=>{
+     const name=object.name.toLowerCase().replaceAll('_',' ');
+     if(name.includes('crank rise')||name.includes('fabric-wrapped manual handle'))
+      parts.push(object);
+    });
+    for(const part of parts)crank.attach(part);
+    if(parts.length>=2)receiverCrank=crank;
+   }
   });
   return warnings;
  }
@@ -248,6 +284,26 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
   if(!receiverLight||!refugeMarker)return;
   const story=opts.getState();
   const disclose=story.phase==='complete'&&story.choice==='disclose';
+  if(ledgerCover){
+   const target=story.heard.includes('caretaker')?1.55:0;
+   ledgerCover.rotation.z+=(target-ledgerCover.rotation.z)*Math.min(1,dt*4.5);
+   root.dataset.ledgerAngle=ledgerCover.rotation.z.toFixed(2);
+  }
+  if(courierLid){
+   const target=story.heard.includes('courier')?-1.48:0;
+   courierLid.rotation.x+=(target-courierLid.rotation.x)*Math.min(1,dt*4.5);
+   root.dataset.caseLidAngle=courierLid.rotation.x.toFixed(2);
+  }
+  if(receiverCrank){
+   if(crankMotionSeconds>0){
+    const turn=Math.min(dt,crankMotionSeconds);
+    receiverCrank.rotation.x+=turn*Math.PI/1.3;
+    crankMotionSeconds=Math.max(0,crankMotionSeconds-turn);
+   }else if(story.heard.includes('apprentice')&&receiverCrank.rotation.x<Math.PI){
+    receiverCrank.rotation.x=Math.PI;
+   }
+   root.dataset.receiverCrankAngle=receiverCrank.rotation.x.toFixed(2);
+  }
   const hallAllowed=story.phase!=='complete'||availableLocations(story).includes('hall');
   receiverLight.color.setHex(disclose?0x9bd8d5:0x8e7375);
   refugeMarker.color.setHex(disclose?0xd1b082:0x6476a6);
@@ -273,6 +329,7 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    return;
   }
   prompt.textContent=item.label+': '+item.detail;
+  if(nearestId==='communal_receiver')crankMotionSeconds=1.3;
   const story=opts.getState();
   if(story.phase==='hear'&&!story.heard.includes(item.witness)){
    opts.dispatch({type:'HEAR',witness:item.witness});
