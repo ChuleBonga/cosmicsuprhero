@@ -1,0 +1,23 @@
+{
+  "id": "REF-CHAR-000",
+  "version": "1.0",
+  "status": "PROFILE_ONLY_ARTIST_SOURCE_NOT_RIGGED_NPC",
+  "source": "engine-lab/public/references/aa_cover_figure.webp",
+  "source_sha256": "79b3ece42a9ec091e050387b7b8efeff27670ca526b2f2aa498bcbeba0101311",
+  "source_dimensions": [
+    768,
+    1152
+  ],
+  "cutout_dimensions": [
+    508,
+    811
+  ],
+  "opaque_pixels": 226904,
+  "restrictions": [
+    "Does not define actor identity",
+    "No front/rear view",
+    "No inferred anatomy beyond source",
+    "Cutout ends at original image boundary",
+    "Source art is not a 3D mesh or NPC"
+  ]
+}
