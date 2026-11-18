@@ -1,0 +1,53 @@
+name: Arcturian original head morphology study
+on:
+  push:
+    branches: [rebuild/arcturian-awakening-20261113]
+    paths:
+      - 'awakening-rebuild/art/chr002/create_headstudy.py'
+      - '.github/workflows/author-chr002-headstudy.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  generate:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    defaults:
+      run:
+        working-directory: awakening-rebuild
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender headless
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq blender
+          blender --version | head -2
+      - name: Render editable source maquette and export GLB
+        run: |
+          blender -b -t 2 --python art/chr002/create_headstudy.py
+          test -s art/chr002/out/CHR002-head-study.glb
+          test -s art/chr002/out/CHR002-head-study.blend
+          test -s art/chr002/out/profile.png
+      - name: Make explicit source-to-sculpt comparison
+        run: |
+          python -m pip install -q pillow==12.3.0
+          python - <<'PY'
+          from PIL import Image,ImageOps,ImageDraw
+          src=Image.open('public/references/aa_cover_figure.webp').convert('RGB').crop((340,380,752,1070))
+          frames=[src,Image.open('art/chr002/out/three-quarter.png'),Image.open('art/chr002/out/profile.png')]
+          labels=['Original source crop','Provisional three-quarter','Provisional profile']
+          result=Image.new('RGB',(660*3,710),(14,22,41))
+          draw=ImageDraw.Draw(result)
+          for i,(im,label) in enumerate(zip(frames,labels)):
+              im=ImageOps.contain(im,(640,670))
+              result.paste(im,(i*660+(660-im.width)//2,35+(670-im.height)//2))
+              draw.text((i*660+20,12),label,fill=(236,211,178))
+          result.save('art/chr002/out/source-comparison.jpg',quality=90)
+          PY
+      - name: Keep outputs isolated from released game
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: original-CHR002-unapproved-study
+          path: awakening-rebuild/art/chr002/out
+          retention-days: 21
