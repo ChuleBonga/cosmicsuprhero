@@ -1,0 +1,46 @@
+name: Canonical authored civic receiver GLB
+
+on:
+  push:
+    branches:
+      - rebuild/arcturian-awakening-20261113
+    paths:
+      - 'awakening-rebuild/engine-lab/tools/generate-civic-receiver.mjs'
+      - '.github/workflows/author-civic-receiver.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: awakening-rebuild/engine-lab
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Generate a canonical Node 22 artifact
+        run: |
+          node tools/generate-civic-receiver.mjs
+          first=$(sha256sum public/models/PRP-001-civic-receiver-v04.glb | cut -d' ' -f1)
+          node tools/generate-civic-receiver.mjs
+          second=$(sha256sum public/models/PRP-001-civic-receiver-v04.glb | cut -d' ' -f1)
+          test "$first" = "$second" || { echo "Generator not reproducible within canonical Node environment"; exit 1; }
+          echo "Canonical Node GLB SHA256 $first"
+      - name: Commit only the authored binary to the isolated branch
+        run: |
+          if git diff --quiet -- public/models/PRP-001-civic-receiver-v04.glb; then
+            echo "GLB already matches canonical authoring environment"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/models/PRP-001-civic-receiver-v04.glb
+          git commit -m "build(art): normalize civic receiver to reproducible Node 22 export"
+          git push origin HEAD:refs/heads/rebuild/arcturian-awakening-20261113
