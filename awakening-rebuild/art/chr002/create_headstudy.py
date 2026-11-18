@@ -104,6 +104,20 @@ drape('CHR002_plain_burgundy_drape',[
 drape('CHR002_weighted_hood',[
  (1.4,.17,.19,.12),(1.47,.19,.214,.14),
  (1.54,.18,.22,.16),(1.60,.12,.154,.175)],hood,.012)
+# Silhouette gate: the first model's head was .85m against a ~1m visible
+# cloak, an unsupported caricature. This provisional .575m head preserves
+# the source's long posterior dome without treating one profile as anatomy.
+for o in list(bpy.context.scene.objects):
+    if o.type!='MESH' or not o.name.startswith('CHR002_'):continue
+    if o.name in ('CHR002_neck','CHR002_plain_burgundy_drape','CHR002_weighted_hood'):continue
+    if o.name=='CHR002_original_skull_contour':
+        for v in o.data.vertices:v.co.z=1.505+(v.co.z-1.505)*.68
+    else:
+        for v in o.data.vertices:v.co.z*=.68
+        o.location.z=1.505+(o.location.z-1.505)*.68
+bpy.context.view_layer.update()
+assert .56<bpy.data.objects['CHR002_original_skull_contour'].dimensions.z<.59
+
 def aim(o,target):
     o.rotation_euler=(Vector(target)-o.location).to_track_quat('-Z','Y').to_euler()
 bpy.ops.object.camera_add(location=(2.45,-2.85,2.06))
@@ -128,6 +142,7 @@ report={
  "blender":bpy.app.version_string,
  "source":"Original aa_cover_figure.webp profile only",
  "has_rig":False,"has_animations":False,
+ "skull_height_m":round(bpy.data.objects["CHR002_original_skull_contour"].dimensions.z,3),
  "identity_canon":"unverified",
  "limits":["No front/back canon","No original acting","Not photoreal character art",
  "Procedural Blender bump may not transfer to glTF"]

@@ -6,6 +6,9 @@ on:
       - 'awakening-rebuild/art/chr002/create_headstudy.py'
       - '.github/workflows/author-chr002-headstudy.yml'
   workflow_dispatch:
+concurrency:
+  group: chr002-headstudy-isolated
+  cancel-in-progress: true
 permissions:
   contents: read
 jobs:
