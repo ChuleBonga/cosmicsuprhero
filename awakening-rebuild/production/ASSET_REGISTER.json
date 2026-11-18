@@ -1,7 +1,7 @@
 {
   "schema": "arcturian-assets-v1",
   "updated": "2026-11-17",
-  "scope": "Project planning register only: every status is truthful; no implication of finished assets",
+  "scope": "Artist reference recovery and preliminary prop lookdev. 0 original character assets approved; 0 finished locations approved.",
   "total": 102,
   "first_slice": 83,
   "source_references": [
@@ -547,13 +547,22 @@
       "priority": "P0",
       "name": "Communal listening fixture",
       "purpose": "Public repairable communication instrument",
-      "status": "Blender candidate made, unapproved",
-      "reference_status": "multi-view-source-required",
+      "status": "Authored GLB candidate, mapped texture prototype, not approved",
+      "reference_status": "Measured album palette applied, device morphology not yet supported by civilization refs",
       "rights_status": "Verification required",
       "editable_source": "blend",
       "runtime_asset": "glb",
-      "visual_approval": "Not approved",
-      "runtime_test": "Not integrated into game"
+      "visual_approval": "Not approved: render and reference-fit gate outstanding",
+      "runtime_test": "Exported glTF 2.0 with 3 textures and 41 UV-bearing primitives; not integrated in player world",
+      "candidate": {
+        "project": "https://higgsfield.ai/3d-jutsu/20c1e6ef-08d9-4fbf-9071-44c569cb4506",
+        "revision": 3,
+        "exportSizeBytes": 552612,
+        "textureCount": 3,
+        "uvBearingPrimitives": 41,
+        "materialCount": 6,
+        "sourcePalette": "awakening-rebuild/production/REFERENCE_PALETTE.json"
+      }
     },
     {
       "id": "PRP-002",
