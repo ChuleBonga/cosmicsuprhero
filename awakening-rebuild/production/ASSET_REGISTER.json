@@ -547,13 +547,13 @@
       "priority": "P0",
       "name": "Communal listening fixture",
       "purpose": "Public repairable communication instrument",
-      "status": "Original textured runtime GLB candidate committed; not artist-approved",
+      "status": "Authored and browser-tested 3D prop candidate, not artist-approved",
       "reference_status": "Measured album palette applied, device morphology not yet supported by civilization refs",
       "rights_status": "Verification required",
       "editable_source": "blend",
       "runtime_asset": "glb",
-      "visual_approval": "Not approved: no civilization reference confirmation; no in-game interaction",
-      "runtime_test": "QA lab auto-load integration committed; awaiting browser render evidence",
+      "visual_approval": "Rejected as final civilization design: generic silhouette, insufficient authentic material wear, no canonical technology validation",
+      "runtime_test": "Babylon 9.37 imported original textured GLB in desktop and 390px mobile; screenshot pixel gate, outward face orientation and byte-reproducibility passed in CI run 44211077026",
       "candidate": {
         "project": "https://higgsfield.ai/3d-jutsu/20c1e6ef-08d9-4fbf-9071-44c569cb4506",
         "revision": 3,
@@ -565,12 +565,16 @@
         "authoredBlendRevision3": "https://higgsfield.ai/3d-jutsu/20c1e6ef-08d9-4fbf-9071-44c569cb4506",
         "runtimeGlb": "awakening-rebuild/engine-lab/public/models/PRP-001-civic-receiver-v04.glb",
         "sourceGenerator": "awakening-rebuild/engine-lab/tools/generate-civic-receiver.mjs",
-        "glbGithubBlobSha": "bc7ae34bcf3ad9117f8e59fedc3e90c8b3a53570",
-        "runtimeAssetBytes": 178028,
+        "glbGithubBlobSha": "eafb47f432383057b975ce336cd072791d8ee0ee",
+        "runtimeAssetBytes": 182304,
         "runtimeModelMeshes": 36,
         "runtimeTextures": 3,
         "runtimePBRMaterials": 5,
-        "note": "v04 is a separately generated runtime reconstruction of civic receiver concept v03, not a direct export of the .blend and not approved canon."
+        "note": "v04 is a separately generated runtime reconstruction of civic receiver concept v03, not a direct export of the .blend and not approved canon.",
+        "observedHeightMetres": 1.92,
+        "observedTriangleCount": 5072,
+        "verifiedCiRun": "https://github.com/ChuleBonga/cosmicsuprhero/actions/runs/44211077026",
+        "caveat": "The exported runtime GLB is a reproducible derivative of the Blender concept, not the original Blender file; no NPC or environment model is approved."
       }
     },
     {
@@ -1563,5 +1567,11 @@
       "visual_approval": "Not approved",
       "runtime_test": "Not integrated into game"
     }
-  ]
+  ],
+  "sourceCharacterReference": {
+    "id": "REF-CHAR-000",
+    "status": "Profile-only source art cutout, visually reviewed; not a model or approved NPC",
+    "reference": "awakening-rebuild/production/assets/REF-CHAR-000-original-profile-transparent.png",
+    "metadata": "awakening-rebuild/production/assets/REF-CHAR-000-metadata.json"
+  }
 }
