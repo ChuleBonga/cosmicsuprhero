@@ -6,20 +6,22 @@
   <header class="heading">
     <p class="eyebrow">COSMICSUPRHERO / ARCTURIAN AWAKENING / PRODUCTION LAB</p>
     <h1>Asset review room.</h1>
-    <p>Babylon.js 9.37.0 GLB inspection. Technical measurements and an interactive turntable do not establish artistic approval. Select the correct asset category before reviewing.</p>
+    <p>Babylon.js 9.37.0 GLB inspection. Technical measurements and an interactive turntable do not establish artistic approval. The built-in original civic receiver loads automatically. Other GLBs can be inspected separately; no item is artist-approved by this tool.</p>
   </header>
   <section class="review" aria-labelledby="review-title">
     <div class="stage is-empty">
       <canvas id="viewer" aria-label="Interactive 3D model turntable"></canvas>
-      <div id="stage-empty" class="stage-empty">No model loaded. Select a GLB from the review controls to begin.</div>
+      <div id="stage-empty" class="stage-empty">Loading the authored civic receiver. If it cannot load, choose a GLB below.</div>
       <div id="canvas-fallback" class="canvas-fallback" hidden>WebGL is unavailable here. You can still read the asset report and quality criteria.</div>
     </div>
     <div class="control-panel">
       <h2 id="review-title">Review controls</h2>
+      <p class="help"><strong>PRP-001</strong> Original communal receiver, 3D look-development candidate. Its function and cultural design are provisional.</p>
+      <button id="load-civic-receiver" type="button">Inspect original receiver</button>
       <label for="asset-role">Asset category</label>
       <select id="asset-role" aria-label="Asset category">
         <option value="character">Character / NPC</option>
-        <option value="prop">Prop / object</option>
+        <option value="prop" selected>Prop / object</option>
         <option value="environment">Environment</option>
       </select>
       <label for="model">Load original GLB</label>
