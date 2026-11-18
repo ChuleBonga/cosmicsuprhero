@@ -123,6 +123,10 @@ test.describe('Physical Arrival Quarter integration',()=>{
     await page.keyboard.press('e');
     await expect(page.locator('#world-prompt')).toContainText('Provisional Courier account');
     await expect(page.locator('#world-chronology')).toContainText('1/3');
+    await expect.poll(async()=>
+      Number(await scene.getAttribute('data-case-lid-angle')),
+      {timeout:7000}
+    ).toBeLessThan(-1.0);
     await page.getByRole('button',{name:'Return to chapter'}).click();
     await expect(scene).toBeHidden();
     await expect(page.getByText('1 / 3 accounts heard')).toBeVisible();
