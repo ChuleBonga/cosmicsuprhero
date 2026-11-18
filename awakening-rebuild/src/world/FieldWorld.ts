@@ -113,7 +113,11 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
  const reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
  function gateClosed(){
   const state=opts.getState();
-  return state.phase==='complete'&&!availableLocations(state).includes('hall');
+  if(state.phase!=='complete'||availableLocations(state).includes('hall'))return false;
+  // Never trap a player already within the building when a story decision
+  // changes public access. The panels lock only after safe egress.
+  const inside=current.x>4.7&&current.x<15.3&&current.z>.3&&current.z<8.25;
+  return !inside;
  }
  function persist(){
   try{localStorage.setItem(PLAYER_SAVE,JSON.stringify(current));}catch{ /* optional */ }
@@ -190,6 +194,7 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    loading=false;
    void loadAuthoredModels(scene).then(warnings=>{
     assetErrors=warnings;
+    root.dataset.assets=warnings.length?'partial':'ready';
     if(warnings.length)message('Spatial study partly available: '+warnings.join(' '));
     else message('Hall and receiver loaded. Investigate their physical locations.');
    });
@@ -394,6 +399,7 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
  function open(){
   if(active)return;
   active=true;root.hidden=false;document.body.classList.add('field-open');
+  document.querySelector<HTMLElement>('main#play')?.setAttribute('inert','');
   createScene();
   stageSize();last=0;refresh();
   closeBtn.focus({preventScroll:true});
@@ -408,6 +414,7 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
   active=false;cancelAnimationFrame(raf);
   keys.clear();touch.clear();persist();
   root.hidden=true;document.body.classList.remove('field-open');
+  document.querySelector<HTMLElement>('main#play')?.removeAttribute('inert');
   window.removeEventListener('keydown',keydown);
   window.removeEventListener('keyup',keyup);
   window.removeEventListener('blur',blur);
