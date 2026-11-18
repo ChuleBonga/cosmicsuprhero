@@ -105,11 +105,19 @@ test.describe('Physical Arrival Quarter integration',()=>{
     expect(x0).toBeCloseTo(14,0);
     expect(z0).toBeCloseTo(18,0);
     await page.screenshot({path:'artifacts/field-world-desktop.png'});
+    // Observe the position on browser animation frames rather than coarse
+    // host-side polling, which can overshoot an evidence object at low FPS.
     await page.keyboard.down('d');
-    await expect.poll(async()=>Number(await scene.getAttribute('data-player-x')),{timeout:7000}).toBeGreaterThan(21.1);
+    await page.waitForFunction(
+      ()=>Number(document.getElementById('world-rehearsal')?.dataset.playerX)>21.65,
+      null,{polling:'raf',timeout:12000}
+    );
     await page.keyboard.up('d');
     await page.keyboard.down('w');
-    await expect.poll(async()=>Number(await scene.getAttribute('data-player-z')),{timeout:7000}).toBeLessThan(7.35);
+    await page.waitForFunction(
+      ()=>Number(document.getElementById('world-rehearsal')?.dataset.playerZ)<6.55,
+      null,{polling:'raf',timeout:12000}
+    );
     await page.keyboard.up('w');
     await expect(page.getByRole('button',{name:'Inspect Courier case'})).toBeEnabled();
     await page.keyboard.press('e');
@@ -161,7 +169,7 @@ test.describe('Physical Arrival Quarter integration',()=>{
     await page.getByRole('button',{name:'Choose: Disclose the record'}).click();
     await page.getByRole('button',{name:/Enter the Arrival Quarter/}).click();
     await expect(page.locator('#world-chronology')).toContainText('Accessible: refuge, workshop');
-    await expect(page.locator('#world-status')).toContainText('access: refuge, workshop');
+    await expect(page.locator('#world-status')).toContainText('Accessible: refuge, workshop');
     await page.getByRole('button',{name:'Return to chapter'}).click();
     await page.reload();
     await page.getByRole('button',{name:/Enter the Arrival Quarter/}).click();
