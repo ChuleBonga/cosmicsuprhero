@@ -1,6 +1,6 @@
 {
   "schema": "arcturian-assets-v1",
-  "updated": "2026-11-17",
+  "updated": "2026-11-18",
   "scope": "Artist reference recovery and preliminary prop lookdev. 0 original character assets approved; 0 finished locations approved.",
   "total": 102,
   "first_slice": 83,
@@ -352,13 +352,27 @@
       "priority": "P0",
       "name": "Community listening hall exterior",
       "purpose": "Civic building with readable function",
-      "status": "Not made",
-      "reference_status": "multi-view-source-required",
+      "status": "Original metric construction/occupancy blockout authored; not production environment art",
+      "reference_status": "M0 world bible and source art inform purpose/palette; construction grammar not visually approved",
       "rights_status": "Verification required",
       "editable_source": "blend",
       "runtime_asset": "glb",
-      "visual_approval": "Not approved",
-      "runtime_test": "Not integrated into game"
+      "visual_approval": "Not approved: simple massing, no photoreal surface material or inhabited use",
+      "runtime_test": "Babylon review imported 85 mesh parts, 1020 triangles, 4m height; initial desktop camera framing failed and was corrected pending screenshot verification",
+      "candidate": {
+        "version": "v01",
+        "role": "Working hall exterior",
+        "repositoryGlb": "awakening-rebuild/engine-lab/public/models/ENV-003-working-listening-hall-blockout-v01.glb",
+        "originalSource": "awakening-rebuild/engine-lab/tools/build-hall-study.py",
+        "glbGitBlobSha": "866ac4ba09d4a4848453847555dff1fd51e84a79",
+        "glbBytes": 49540,
+        "meshes": 85,
+        "triangles": 1020,
+        "heightMetres": 4,
+        "clearEntryMetres": 2.6,
+        "note": "Shared source building for interior/exterior study, not two completed environment assets",
+        "productionReady": false
+      }
     },
     {
       "id": "ENV-004",
@@ -367,13 +381,27 @@
       "priority": "P0",
       "name": "Community listening hall interior",
       "purpose": "Assembly, gathering and social circulation",
-      "status": "Not made",
-      "reference_status": "multi-view-source-required",
+      "status": "Original metric construction/occupancy blockout authored; not production environment art",
+      "reference_status": "M0 world bible and source art inform purpose/palette; construction grammar not visually approved",
       "rights_status": "Verification required",
       "editable_source": "blend",
       "runtime_asset": "glb",
-      "visual_approval": "Not approved",
-      "runtime_test": "Not integrated into game"
+      "visual_approval": "Not approved: simple massing, no photoreal surface material or inhabited use",
+      "runtime_test": "Babylon review imported 85 mesh parts, 1020 triangles, 4m height; initial desktop camera framing failed and was corrected pending screenshot verification",
+      "candidate": {
+        "version": "v01",
+        "role": "Working hall interior",
+        "repositoryGlb": "awakening-rebuild/engine-lab/public/models/ENV-003-working-listening-hall-blockout-v01.glb",
+        "originalSource": "awakening-rebuild/engine-lab/tools/build-hall-study.py",
+        "glbGitBlobSha": "866ac4ba09d4a4848453847555dff1fd51e84a79",
+        "glbBytes": 49540,
+        "meshes": 85,
+        "triangles": 1020,
+        "heightMetres": 4,
+        "clearEntryMetres": 2.6,
+        "note": "Shared source building for interior/exterior study, not two completed environment assets",
+        "productionReady": false
+      }
     },
     {
       "id": "ENV-005",
