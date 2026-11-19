@@ -508,7 +508,7 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    root.dataset.playerZ=current.z.toFixed(2);
    if(!inspectedId)position.textContent='Survey coordinates: '+current.x.toFixed(1)+'m E / '+current.z.toFixed(1)+'m S';
    const object=nearestId?EVIDENCE[nearestId]:null;
-   inspectBtn.disabled=!object&&!inspectedId;
+   inspectBtn.disabled=!object&&nearestId!=='signal_bench'&&!inspectedId;
    inspectBtn.textContent=inspectedId?'Return to survey':nearestId==='signal_bench'?'Inspect chronology instrument':object?'Inspect '+object.label:'Inspect nearby evidence';
    const frame=worldFrame(opts.getState(),worldTime);
    const state=opts.getState();
