@@ -404,6 +404,12 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
   });
   if(fingerprint===lastPhase)return;
   lastPhase=fingerprint;
+  // When the action that had keyboard focus is replaced by the next phase,
+  // move focus to the next relevant action, or the stable exit control.
+  // Otherwise Chrome drops focus to <body> behind the active modal.
+  const focusedBefore=document.activeElement;
+  const focusWasInPanel=Boolean(focusedBefore&&panel.contains(focusedBefore));
+  const previousLabel=focusWasInPanel?(focusedBefore as HTMLElement).textContent?.trim():null;
   panel.replaceChildren();
   if(story.phase==='hear'){
    const paragraph=document.createElement('p');
@@ -449,6 +455,12 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    p.textContent='Accessible: '+(access.join(', ')||'none')+
     '. The hall doorway and receiver light now respond to saved narrative state. NPC art and performances remain unbuilt.';
    panel.append(p);
+  }
+  if(active&&focusWasInPanel){
+   const candidates=Array.from(panel.querySelectorAll<HTMLButtonElement>('button:not([disabled])'));
+   const next=candidates.find(button=>button.textContent?.trim()===previousLabel)
+    ??candidates[0]??closeBtn;
+   next.focus({preventScroll:true});
   }
  }
  function movementVector(){
