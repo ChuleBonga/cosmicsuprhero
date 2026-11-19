@@ -14,17 +14,18 @@ permissions:
 jobs:
   generate:
     runs-on: ubuntu-24.04
-    timeout-minutes: 18
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: awakening-rebuild
     steps:
       - uses: actions/checkout@v4
-      - name: Install Blender headless
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -y -qq blender
-          blender --version | head -2
+      - name: Install current stable Blender from official release
+        uses: BradyAJohnston/setup-blender@1006ec809db1af1422bd1197e107e2c4d368d81e
+        with:
+          version: '5.3.0'
+      - name: Confirm Blender and save implementation version
+        run: blender --version | head -3
       - name: Render editable source maquette and export GLB
         run: |
           blender -b -t 2 --python art/chr002/create_headstudy.py
