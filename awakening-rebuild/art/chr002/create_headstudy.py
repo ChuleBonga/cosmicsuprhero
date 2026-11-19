@@ -8,8 +8,12 @@ OUT.mkdir(exist_ok=True,parents=True)
 bpy.ops.object.select_all(action='SELECT');bpy.ops.object.delete(use_global=False)
 S=bpy.context.scene;S.unit_settings.system='METRIC'
 engines=[x.identifier for x in S.render.bl_rna.properties['engine'].enum_items]
-S.render.engine=next(x for x in ('BLENDER_EEVEE','BLENDER_EEVEE_NEXT','BLENDER_WORKBENCH') if x in engines)
-S.render.resolution_x=640;S.render.resolution_y=640;S.render.resolution_percentage=100
+# Hosted GitHub runners are CPU-only; Cycles avoids Eevee's GPU requirement.
+S.render.engine='CYCLES'
+S.cycles.device='CPU'
+S.cycles.samples=12
+S.cycles.use_denoising=True
+S.render.resolution_x=640;S.render.resolution_y=640;S.render.resolution_percentage=80
 S.render.image_settings.file_format='PNG'
 S.view_settings.view_transform='AgX'
 world=bpy.data.worlds.new('Neutral_cobalt_study')
