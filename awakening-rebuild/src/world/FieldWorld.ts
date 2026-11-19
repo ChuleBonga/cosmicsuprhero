@@ -13,6 +13,9 @@ import type { Choice, Event, Fragment, State, Witness } from '../encounter.ts';
 import { SITES, worldFrame } from './DistrictSimulation.ts';
 import type { Point } from './DistrictSimulation.ts';
 import { canInspect, distance, movePlayer, WALK_SPEED } from './PlayerMotor.ts';
+import { createChronologyInstrument } from './ReconstructionStation.ts';
+import type { ChronologyInstrument } from './ReconstructionStation.ts';
+import { canUseStation, STATION_POSITION, STATION_INPUT, selectedStationOrder } from './ReconstructionLogic.ts';
 
 const PLAYER_SAVE='arcturian.rebuild.spatial-player.v1';
 const EVIDENCE:Readonly<Record<string,{label:string;witness:Witness;site:Point;detail:string}>>={
@@ -99,6 +102,7 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
  let ledgerCover:THREE.Group|null=null;
  let courierLid:THREE.Group|null=null;
  let receiverCrank:THREE.Group|null=null;
+ let chronologyInstrument:ChronologyInstrument|null=null;
  let crankMotionSeconds=0;
  let doorPanels:THREE.Mesh[]=[];
  let raf=0;
@@ -172,6 +176,7 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    addBox(scene,'public approach',2.7,.045,10.7,0x5b5870,10,.0,13.9);
    addBox(scene,'courier service route',11,.04,1.5,0x3e4566,20,.005,12.2);
    addBox(scene,'workshop walkway',1.6,.04,7.0,0x55506b,16.9,.003,15.4);
+   chronologyInstrument=createChronologyInstrument(scene);
    addBox(scene,'record stand',.7,.8,.5,0x504260,4.4,.4,5.2);
    // Three independent physical evidence mechanisms, deliberately
    // simple enough to replace with approved authored art later.
@@ -285,6 +290,8 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
  function updateVisualState(dt:number){
   if(!receiverLight||!refugeMarker)return;
   const story=opts.getState();
+  chronologyInstrument?.update(story,dt);
+  root.dataset.stationOrder=story.order.join(',');
   const disclose=story.phase==='complete'&&story.choice==='disclose';
   if(ledgerCover){
    const target=story.heard.includes('caretaker')?1.55:0;
@@ -316,6 +323,7 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
   });
  }
  function currentEvidence(){
+  if(canUseStation(current,opts.getState()))return 'signal_bench';
   let id:string|null=null,near=Infinity;
   const gate=gateClosed();
   for(const [item,data] of Object.entries(EVIDENCE)){
@@ -333,8 +341,30 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
   inspectBtn.textContent='Inspect nearby evidence';
   message('Survey resumed.');
  }
+ function selectChronologySlug(fragment:Fragment){
+  const story=opts.getState();
+  if(inspectedId!=='signal_bench'||story.phase!=='reconstruct')return;
+  const order=selectedStationOrder(story.order,fragment);
+  if(order.length===story.order.length&&order.every((f,i)=>f===story.order[i]))return;
+  opts.dispatch({type:'ARRANGE',order});
+  prompt.textContent='Sequence: '+(order.map(f=>CLUES[f].title).join(' → ')||'empty')+
+   '. Select 1–3 or tap the physical slugs; Enter checks the sequence.';
+  refresh();
+ }
  function interact(){
   if(inspectedId){leaveInspection();return;}
+  if(nearestId==='signal_bench'){
+   inspectedId='signal_bench';
+   root.dataset.inspection='signal_bench';
+   worldTitle.textContent='Chronology instrument';
+   position.hidden=true;
+   keys.clear();touch.clear();
+   inspectBtn.disabled=false;inspectBtn.textContent='Return to survey';
+   prompt.textContent='Reconstruct the night: choose physical event slugs. Tap them or use keys 1–3, then Enter to test your sequence.';
+   status.textContent='Source-linked signal reconstruction · provisional gameplay object';
+   refresh();
+   return;
+  }
   const item=nearestId?EVIDENCE[nearestId]:null;
   if(!item){
    message('Move closer to a record site. Walls and closed doors block inspection.');
@@ -453,13 +483,17 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
     : new THREE.Vector3(current.x+3.1,5.1,current.z+7.8);
    // The same 3D world supplies an actual close inspection camera: no
    // disconnected image or HTML-only evidence view.
-   const inspected=inspectedId?EVIDENCE[inspectedId]:null;
+   const inspected=inspectedId==='signal_bench'
+    ? {site:STATION_POSITION}
+    : inspectedId?EVIDENCE[inspectedId]:null;
    if(inspected){
     const {x,z}=inspected.site;
-    const height=inspectedId==='communal_receiver'?1.13:inspectedId==='household_ledger'?.88:.49;
+    const height=inspectedId==='signal_bench'?1.06:inspectedId==='communal_receiver'?1.13:inspectedId==='household_ledger'?.88:.49;
     const space=narrow?1.5:1;
     target=new THREE.Vector3(x,height,z);
-    desired=new THREE.Vector3(x+1.40*space,height+1.30*space,z+1.85*space);
+    desired=inspectedId==='signal_bench'
+     ? new THREE.Vector3(x+1.0*space,height+1.7*space,z+2.0*space)
+     : new THREE.Vector3(x+1.40*space,height+1.30*space,z+1.85*space);
    }
    const ratio=reduced.matches?1:1-Math.exp(-dt*7.5);
    camera.position.lerp(desired,ratio);
@@ -475,13 +509,15 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    if(!inspectedId)position.textContent='Survey coordinates: '+current.x.toFixed(1)+'m E / '+current.z.toFixed(1)+'m S';
    const object=nearestId?EVIDENCE[nearestId]:null;
    inspectBtn.disabled=!object&&!inspectedId;
-   inspectBtn.textContent=inspectedId?'Return to survey':object?'Inspect '+object.label:'Inspect nearby evidence';
+   inspectBtn.textContent=inspectedId?'Return to survey':nearestId==='signal_bench'?'Inspect chronology instrument':object?'Inspect '+object.label:'Inspect nearby evidence';
    const frame=worldFrame(opts.getState(),worldTime);
    const state=opts.getState();
    const access=frame.accessibleLocations;
    const zone=access.length?access.join(', '):'no earned locations';
    if(!assetErrors.length)status.textContent=inspectedId
-    ? 'Inspecting '+EVIDENCE[inspectedId].label+' · Evidence '+state.heard.length+'/3'
+    ? inspectedId==='signal_bench'
+      ? 'Signal reconstruction · '+state.order.length+'/3 positions entered'
+      : 'Inspecting '+EVIDENCE[inspectedId].label+' · Evidence '+state.heard.length+'/3'
     : 'Investigation: '+state.phase+' · Accessible: '+zone;
    refresh();
   }
@@ -492,6 +528,19 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    event.preventDefault();
    if(inspectedId)leaveInspection();else close();
    return;
+  }
+  if(inspectedId==='signal_bench'&&opts.getState().phase==='reconstruct'){
+   const map:{[key:string]:number}={Digit1:0,Digit2:1,Digit3:2,Numpad1:0,Numpad2:1,Numpad3:2};
+   if(map[event.code]!==undefined){
+    event.preventDefault();
+    if(!event.repeat)selectChronologySlug(STATION_INPUT[map[event.code]]);
+    return;
+   }
+   if(event.code==='Enter'){
+    event.preventDefault();
+    if(!event.repeat&&opts.getState().order.length===3)opts.dispatch({type:'SUBMIT'});
+    return;
+   }
   }
   if(event.code==='KeyE'){
    if(!event.repeat){event.preventDefault();interact();}
@@ -534,6 +583,11 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
  }
  inspectBtn.addEventListener('click',interact);
  closeBtn.addEventListener('click',close);
+ canvas.addEventListener('pointerdown',event=>{
+  if(!active||inspectedId!=='signal_bench'||!camera||!chronologyInstrument)return;
+  const fragment=chronologyInstrument.chooseAt(event,canvas,camera);
+  if(fragment){event.preventDefault();selectChronologySlug(fragment);}
+ });
  for(const button of touchControls){
   const code=button.dataset.worldMove;
   if(!code||!DIRECTION[code])continue;
