@@ -502,9 +502,15 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
     const {x,z}=inspected.site;
     const height=inspectedId==='signal_bench'?1.06:inspectedId==='communal_receiver'?1.13:inspectedId==='household_ledger'?.88:.49;
     const space=narrow?1.5:1;
-    target=new THREE.Vector3(x,height,z);
+    target=inspectedId==='signal_bench'
+     ? new THREE.Vector3(x,narrow?.04:.19,z)
+     : new THREE.Vector3(x,height,z);
+    // Readable, uncropped physical chronology: the board must stay above
+    // the narrative and accessible input region, including on portrait screens.
     desired=inspectedId==='signal_bench'
-     ? new THREE.Vector3(x+1.0*space,height+1.7*space,z+2.0*space)
+     ? narrow
+       ? new THREE.Vector3(x+1.7,4.9,z+5.1)
+       : new THREE.Vector3(x+1.9,3.4,z+3.5)
      : new THREE.Vector3(x+1.40*space,height+1.30*space,z+1.85*space);
    }
    const ratio=reduced.matches?1:1-Math.exp(-dt*7.5);
