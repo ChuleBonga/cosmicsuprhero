@@ -245,7 +245,11 @@ test.describe('Physical Arrival Quarter integration',()=>{
     await expect(page.locator('#world-exit')).toBeFocused();
     await page.getByRole('button',{name:'Disclose the record'}).click();
     await expect(page.locator('#world-chronology')).toContainText('Accessible: refuge, workshop');
-    await expect(page.locator('#world-exit')).toBeFocused();
+    // Choosing inside the overlay may keep focus on that control; it must
+    // never jump to the inert narrative chapter behind the modal.
+    expect(await page.evaluate(()=>
+      document.getElementById('world-rehearsal')?.contains(document.activeElement)
+    )).toBe(true);
     await page.keyboard.press('Escape');
     await expect(world).toHaveAttribute('data-inspection','none');
     await page.getByRole('button',{name:'Return to chapter'}).click();
