@@ -31,8 +31,15 @@ function dispatch(event:Event) {
   try{localStorage.setItem(SAVE_KEY,JSON.stringify(log));}catch{ /* memory-only */ }
   render();
   fieldWorld?.refresh();
+  // Do not send keyboard/screen-reader focus into the inert chapter while
+  // the full-screen spatial investigation is active. The active world owns
+  // the interaction until the player explicitly returns to the chapter.
+  const world=document.getElementById('world-rehearsal');
   const title=content.querySelector<HTMLElement>('#encounter-title');
-  if(title){title.tabIndex=-1;title.focus({preventScroll:true});}
+  if(title && (!world || world.hidden)){
+    title.tabIndex=-1;
+    title.focus({preventScroll:true});
+  }
 }
 function node<K extends keyof HTMLElementTagNameMap>(tag:K,text?:string,className?:string):HTMLElementTagNameMap[K] {
   const el=document.createElement(tag);
