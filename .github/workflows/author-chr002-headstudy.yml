@@ -26,7 +26,10 @@ jobs:
           version: '5.3.0'
       - name: Install missing headless rendering libraries (bounded)
         run: |
-          sudo timeout 120 apt-get install -y --no-install-recommends libegl1 libgl1 libxi6 libxrender1 libxkbcommon0 libxxf86vm1
+          # The hosted image can retain stale Mesa package indices; refresh
+          # with strict per-connection and overall limits before installing.
+          sudo timeout 105 apt-get update -o Acquire::Retries=0 -o Acquire::http::Timeout=12
+          sudo timeout 105 apt-get install -y --no-install-recommends libegl1 libgl1 libxi6 libxrender1 libxkbcommon0 libxxf86vm1
       - name: Confirm Blender and save implementation version
         run: blender --version | head -3
       - name: Render editable source maquette and export GLB
