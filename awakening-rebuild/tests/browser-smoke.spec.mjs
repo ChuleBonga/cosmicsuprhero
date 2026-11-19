@@ -211,6 +211,50 @@ test.describe('Physical Arrival Quarter integration',()=>{
     await expect(page.getByText('1 / 3 accounts heard')).toBeVisible();
   });
 
+
+  test('physical chronology instrument drives the reducer and keeps focus inside world',async({page})=>{
+    await page.setViewportSize({width:1440,height:900});
+    await page.goto('/');
+    await page.evaluate(()=>{
+      localStorage.setItem('arcturian.rebuild.encounter.v1',JSON.stringify([
+       {type:'HEAR',witness:'caretaker'},
+       {type:'HEAR',witness:'courier'},
+       {type:'HEAR',witness:'apprentice'}
+      ]));
+      localStorage.setItem('arcturian.rebuild.spatial-player.v1',
+       JSON.stringify({x:16.9,z:13.3}));
+    });
+    await page.reload();
+    await page.getByRole('button',{name:/Enter the Arrival Quarter/}).click();
+    const world=page.locator('#world-rehearsal');
+    await expect(world).toHaveAttribute('data-assets','ready',{timeout:30000});
+    await expect(page.getByRole('button',{name:'Inspect chronology instrument'})).toBeEnabled();
+    await page.keyboard.press('e');
+    await expect(world).toHaveAttribute('data-inspection','signal_bench');
+    await expect(page.locator('#world-title')).toHaveText('Chronology instrument');
+    await expect(page.locator('#world-exit')).toBeFocused();
+    await page.screenshot({path:'artifacts/physical-chronology-station-empty.png'});
+    // Actual 3D slugs use the same order as the accessible controls.
+    // Digits follow physical source layout: 1 Silence, 2 Dispatch, 3 Refuge.
+    for(const key of ['2','3','1'])await page.keyboard.press(key);
+    await expect(world).toHaveAttribute('data-station-order','departure,shelter,silence');
+    await expect(page.locator('#world-chronology')).toContainText('Dispatch');
+    await page.screenshot({path:'artifacts/physical-chronology-station-solved.png'});
+    await page.keyboard.press('Enter');
+    await expect(page.locator('#world-chronology')).toContainText('Who should control the record?');
+    await expect(page.locator('#world-exit')).toBeFocused();
+    await page.getByRole('button',{name:'Disclose the record'}).click();
+    await expect(page.locator('#world-chronology')).toContainText('Accessible: refuge, workshop');
+    await expect(page.locator('#world-exit')).toBeFocused();
+    await page.keyboard.press('Escape');
+    await expect(world).toHaveAttribute('data-inspection','none');
+    await page.getByRole('button',{name:'Return to chapter'}).click();
+    await expect(world).toBeHidden();
+    await expect(page.getByRole('button',{name:/Enter the Arrival Quarter/})).toBeFocused();
+    await page.reload();
+    await expect(page.getByText('Accessible destinations: refuge, workshop')).toBeVisible();
+  });
+
   test('a saved disclosure changes physical hall access and receiver state',async({page})=>{
     await page.goto('/');
     for(const role of ['Caretaker','Courier','Apprentice'])await page.getByRole('button',{name:'Hear '+role}).click();
