@@ -24,7 +24,8 @@ jobs:
         with:
           node-version: '22'
       - run: npm install --no-package-lock --no-audit --no-fund
-      - run: npx playwright install chromium --with-deps
+      - name: Verify runner-provided stable Chrome
+        run: google-chrome --version
       - run: mkdir -p artifacts && npm run test:browser
       - name: Preserve screenshots, report and traces
         if: always()
