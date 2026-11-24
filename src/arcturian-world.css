@@ -423,3 +423,51 @@ button.hero-enter{width:100%;text-align:left;cursor:pointer}
   .wordmark { font-size:18px; }
   .header-presave .inline-north-east, .masthead-actions .text-button .inline-north-east { display:none; }
 }
+
+/* Final album-launch composition: the original square album art, not a
+   cropped portrait. Preserve the approved cover as the visual authority. */
+.album-hero .painting {
+  width:min(100%,490px);
+  aspect-ratio:1;
+  box-shadow:0 16px 42px rgba(31,19,43,.12);
+}
+.album-hero .painting-image {
+  left:0;
+  top:0;
+  width:100%;
+  height:100%;
+  max-width:100%;
+  object-fit:contain;
+  object-position:center;
+  transform:none;
+}
+.album-hero .gold-band { display:none; }
+.album-hero .painting-wash,
+.album-hero .painting-horizon { opacity:0; }
+
+/* One clear conversion goal: pre-save is primary; tracklist is a quiet,
+   keyboard-accessible editorial action that does not compete visually. */
+.album-hero button.hero-enter {
+  display:inline-flex;
+  width:auto;
+  min-height:46px;
+  padding:9px 0;
+  background:transparent;
+  color:var(--wine);
+  border:0;
+  border-bottom:1px solid currentColor;
+  font-size:13px;
+  gap:34px;
+}
+.album-hero button.hero-enter:hover { background:transparent;color:#7b3659; }
+.album-hero button.hero-enter:focus-visible { outline:3px solid var(--orange);outline-offset:4px; }
+.album-hero .hero-actions { max-width:none; }
+
+@media(max-width:760px){
+  /* Pre-save, complete artwork, human story, secondary tracklist link. */
+  .album-hero .art-area { order:4; padding-top:18px; }
+  .album-hero .hero-story { order:5; margin:30px 20px 4px; }
+  .album-hero .hero-actions { order:6; margin:8px 20px 32px; }
+  .album-hero .painting { width:min(100%,450px);aspect-ratio:1; }
+  .album-hero button.hero-enter { min-height:48px; }
+}
