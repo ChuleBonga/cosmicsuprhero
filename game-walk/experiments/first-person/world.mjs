@@ -71,7 +71,10 @@ try{
  renderer=new THREE.WebGLRenderer({canvas,antialias:!mobile,alpha:false,depth:true,powerPreference:'high-performance'});
 }catch(err){
  intro.querySelector('h1').textContent='This world needs WebGL.';
- intro.querySelector('.study-label').textContent='A compatible WebGL browser is required for this study. The album and pre-save remain available without playing.';
+ intro.querySelector('.study-label').textContent='This browser cannot render the 3D study. The artwork below is the album cover, not a game screenshot. Pre-save or return to the album without playing.';
+ intro.classList.add('intro--webgl-unavailable');
+ const still=$('webgl-fallback-preview');
+ if(still)still.hidden=false;
  $('begin').disabled=true;$('status').textContent=String(err);throw err;
 }
 renderer.outputColorSpace=THREE.SRGBColorSpace;
