@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {existsSync,readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {stageW0,inspectResidentGLB,SHA256,BYTES} from '../scripts/stage-w0-review.mjs';
+import {W0_SITE,residentReviewDistance,residentReviewCanApproach} from '../src/world/ResidentStudy.ts';
+
+const staged=stageW0();
+assert.equal(staged.approval,'unapproved-review-only');
+assert.ok(existsSync(staged.path));
+const original=readFileSync(staged.path);
+assert.equal(original.byteLength,BYTES);
+assert.equal(createHash('sha256').update(original).digest('hex'),SHA256);
+assert.equal(inspectResidentGLB(original).meshes,41);
+assert.equal(inspectResidentGLB(original).clips.length,3);
+assert.equal(residentReviewDistance(W0_SITE),0);
+assert.equal(residentReviewCanApproach({x:W0_SITE.x,z:W0_SITE.z+2}),true);
+assert.equal(residentReviewCanApproach({x:W0_SITE.x,z:W0_SITE.z+2.5}),false);
+assert.equal(residentReviewCanApproach({x:NaN,z:W0_SITE.z}),false);
+assert.equal(residentReviewCanApproach({x:Infinity,z:W0_SITE.z}),false);
+console.log('Resident review: verified original W0 GLB, 3 clips, geometry gate and bounded interaction');
