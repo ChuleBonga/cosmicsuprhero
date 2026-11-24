@@ -1,8 +1,8 @@
 # ARCTURIAN AWAKENING — CONTROLLED PRODUCTION BOARD v1
-Date: 2026-11-17. Branch: `rebuild/arcturian-awakening-20261113`. **Planning artifact only; not a claim that work is completed.**
+Original board: 2026-11-17. Scope amended 2026-11-23 to remove sixteen-track gameplay mandate. Branch: `rebuild/arcturian-awakening-20261113`. **Planning artifact only; not a claim that work is completed.**
 
 ## What is being built
-An original inhabited third-person musical adventure derived from the artist's *Arcturian Awakening* world. The player explores a civilization whose people work and respond independently, encounters a story with personal stakes for Chule and Credo, investigates through physical actions, and sees choices persist. The sixteen-track album runs from **Meditate** to **Finale** in order. The first milestone for public evaluation is a coherent opening chapter, not the whole sixteen-track game.
+An original inhabited third-person musical adventure derived from the artist's *Arcturian Awakening* world. The player explores a civilization whose people work and respond independently, encounters a story with personal stakes for Chule and Credo, investigates through physical actions, and sees choices persist. The game is **not required to use 16 tracks or follow the album sequence**. Approved songs may be used selectively as dramatic cues. The first public-evaluation milestone is one coherent inhabited encounter; additional playtime must be earned through gameplay and storytelling.
 
 ## Baseline truth
 - `src/main.ts` loads no approved NPC or world. Three.js displays a decorative lighting calibration over a text-first witness exercise.
@@ -23,7 +23,7 @@ An original inhabited third-person musical adventure derived from the artist's *
 - [ ] **M0-01** Annotate all 43 supplied reference images by use, design decision and rights.
 - [ ] **M0-02** Write beat board: why Chule returns, why Credo matters, who is affected, player motive, two world-visible consequences. Provisional dialogue stays provisional.
 - [ ] **M0-03** Approve one-page architecture/costume/craft/material grammar, species multiview direction, and single-sun/ochre/cobalt lookdev.
-- [ ] **M0-04** Verify final 16 tracks, masters, cue cut points, voices and public sharing rights.
+- [ ] **M0-04** Identify only the cues this game actually needs; verify masters, excerpt/stem cut points, voices, and public playback rights before inclusion. No track-count requirement.
 - [ ] **M0-05** Lay out a cohesive 20–30m Arrival Quarter with hall, household/workshop, trade/circulation, social routines and camera sight lines.
 **Gate:** every place and important object has a function and cultural reference; artist signs off on world vocabulary and story premise.
 
@@ -55,7 +55,7 @@ An original inhabited third-person musical adventure derived from the artist's *
 **Gate:** witness story is experienced through people/places; choices visibly affect a later playable state; no walk→collect→continue substitute.
 
 ### M4 / Album, UX and emotional direction
-- [ ] **M4-01** Approved Meditate/First Contact/Credo cue timing and intentional user-started playback.
+- [ ] **M4-01** Artist-approved cue selection and timing only where the playable story benefits, with intentional user-started playback and a meaningful muted alternative.
 - [ ] **M4-02** Cleared ambient work, tactile foley and voiced performances where available, captions/transcripts always.
 - [ ] **M4-03** Nonintrusive subtitle, journal, prompts, touch/keyboard/controller and accessible alternative.
 - [ ] **M4-04** Pause/options, reduced motion, mute, loading/retry/save; accessible pre-save link without game-completion gate.
@@ -67,9 +67,9 @@ An original inhabited third-person musical adventure derived from the artist's *
 - [ ] **M5-03** Separate private preview with checked artifact checksum and rollback, explicit artist approval.
 **Gate:** one real full playthrough, no broken branches, no character/world/rights/performance hard fails. Passing CI alone is insufficient.
 
-### M6 / Full album and public release
-- [ ] **M6-01** Expand later chapters along actual 16-track order with unique emotions, encounters and locations; do not mass-generate assets before first-slice approval.
-- [ ] **M6-02** Finale encounter and transformed world, earned revelation and still-accessible pre-save.
+### M6 / Self-contained game and public release
+- [ ] **M6-01** Expand only when the story and playtesting justify new chapters and locations. Do not map gameplay one-to-one to songs or mass-generate assets before first-slice approval.
+- [ ] **M6-02** An earned ending and transformed world, with the album link still accessible. Do not require the recording titled Finale or a sixteen-stage arc.
 - [ ] **M6-03** Complete rights/credits/accessibility/security/hosting validation and explicit production approval.
 **Gate:** end-to-end release-qualified product, not a technical preview.
 

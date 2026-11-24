@@ -31,7 +31,7 @@ The production path is intentionally separate. Do not merge without creative and
 3. Produce **one approved** original resident model as `.glb` (including clean topology, physically based textures, skeleton, facial controls, gestures, idle/walk/talk animation). No generic model substituted as canon.
 4. Produce a coherent inhabited district with animated residents and visible daily activities, then integrate via asset manifest.
 5. Replace the lighting calibration with an art-reviewed 3D level; render first-person and third-person desktop/mobile captures.
-6. Integrate music with explicit artist clearance. Sequence starts `Meditate` and ends `Finale`; do not invent or substitute tracks.
+6. Music is optional and selective: only purposeful, explicitly cleared album cues may accompany the game. There is no 16-track sequence, mandatory start/end song or song-to-level mapping. Do not invent music or substitute tracks.
 7. Test camera, animation, input, performance, save state, narrative branches, accessibility and emotional comprehension with real users.
 
 ## Quality gate

@@ -7,10 +7,12 @@
  */
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { availableLocations } from '../aftermath.ts';
+import { availableLocations, consequence } from '../aftermath.ts';
 import { CLUES, FRAGMENTS, WITNESSES } from '../encounter.ts';
 import type { Choice, Event, Fragment, State, Witness } from '../encounter.ts';
 import { SITES, worldFrame } from './DistrictSimulation.ts';
+import {loadW0Resident,W0_SITE} from './ResidentStudy.ts';
+import type {ResidentReview} from './ResidentStudy.ts';
 import type { Point } from './DistrictSimulation.ts';
 import { canInspect, distance, movePlayer, WALK_SPEED } from './PlayerMotor.ts';
 import { createChronologyInstrument } from './ReconstructionStation.ts';
@@ -103,6 +105,8 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
  let courierLid:THREE.Group|null=null;
  let receiverCrank:THREE.Group|null=null;
  let chronologyInstrument:ChronologyInstrument|null=null;
+ let reviewResident:ResidentReview|null=null;
+ let residentLoadFailed=false;
  let crankMotionSeconds=0;
  let doorPanels:THREE.Mesh[]=[];
  let raf=0;
@@ -177,6 +181,19 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    addBox(scene,'courier service route',11,.04,1.5,0x3e4566,20,.005,12.2);
    addBox(scene,'workshop walkway',1.6,.04,7.0,0x55506b,16.9,.003,15.4);
    chronologyInstrument=createChronologyInstrument(scene);
+   root.dataset.resident='loading';
+   void loadW0Resident(scene).then(actor=>{
+    if(!scene||!renderer){actor.dispose();return;}
+    reviewResident=actor;
+    root.dataset.resident='ready';
+    root.dataset.residentMeshes=String(actor.diagnostics.meshes);
+    root.dataset.residentClips=String(actor.diagnostics.clips.length);
+   }).catch(error=>{
+    residentLoadFailed=true;
+    root.dataset.resident='error';
+    root.dataset.residentError=error instanceof Error?error.message:String(error);
+    message('Original resident failed to load; no substitute model rendered.');
+   });
    addBox(scene,'record stand',.7,.8,.5,0x504260,4.4,.4,5.2);
    // Three independent physical evidence mechanisms, deliberately
    // simple enough to replace with approved authored art later.
@@ -291,6 +308,9 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
   if(!receiverLight||!refugeMarker)return;
   const story=opts.getState();
   chronologyInstrument?.update(story,dt);
+  reviewResident?.update(story,current,dt);
+  root.dataset.residentAction=reviewResident?.action()??'unavailable';
+  root.dataset.residentCycles=String(reviewResident?.cycles()??0);
   root.dataset.stationOrder=story.order.join(',');
   const disclose=story.phase==='complete'&&story.choice==='disclose';
   if(ledgerCover){
@@ -324,6 +344,7 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
  }
  function currentEvidence(){
   if(canUseStation(current,opts.getState()))return 'signal_bench';
+  if(reviewResident?.canApproach(current))return 'resident_study';
   let id:string|null=null,near=Infinity;
   const gate=gateClosed();
   for(const [item,data] of Object.entries(EVIDENCE)){
@@ -364,6 +385,24 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    status.textContent='Source-linked signal reconstruction · provisional gameplay object';
    refresh();
    return;
+  }
+  if(nearestId==='resident_study'&&reviewResident?.acknowledge(current)){
+   inspectedId='resident_study';
+   worldTitle.textContent='Working resident / animation review';
+   position.hidden=true;root.dataset.inspection='resident_study';
+   keys.clear();touch.clear();
+   inspectBtn.disabled=false;inspectBtn.textContent='Return to survey';
+   const story=opts.getState();
+   if(story.phase==='hear'&&!story.heard.includes('apprentice')){
+    opts.dispatch({type:'HEAR',witness:'apprentice'});
+   }
+   const currentStory=opts.getState();
+   const later=currentStory.phase==='complete' ? consequence(currentStory,'apprentice').response : '';
+   prompt.textContent='Original Blender W0 study: the worker notices Chule, acknowledges him and returns to the task. '+
+    (later?'Provisional later consequence: '+later
+      :'Provisional apprentice testimony: '+WITNESSES.apprentice.statement+' Final identity and dialogue remain unapproved.');
+   message('One original rigged resident is in QA; facial acting and walk animation are not approved.');
+   refresh();return;
   }
   const item=nearestId?EVIDENCE[nearestId]:null;
   if(!item){
@@ -497,10 +536,11 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    // disconnected image or HTML-only evidence view.
    const inspected=inspectedId==='signal_bench'
     ? {site:STATION_POSITION}
+    : inspectedId==='resident_study'?{site:W0_SITE}
     : inspectedId?EVIDENCE[inspectedId]:null;
    if(inspected){
     const {x,z}=inspected.site;
-    const height=inspectedId==='signal_bench'?1.06:inspectedId==='communal_receiver'?1.13:inspectedId==='household_ledger'?.88:.49;
+    const height=inspectedId==='signal_bench'?1.06:inspectedId==='resident_study'?1.22:inspectedId==='communal_receiver'?1.13:inspectedId==='household_ledger'?.88:.49;
     const space=narrow?1.5:1;
     target=inspectedId==='signal_bench'
      ? new THREE.Vector3(x,narrow?.04:.19,z)
@@ -511,7 +551,9 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
      ? narrow
        ? new THREE.Vector3(x+1.7,4.9,z+5.1)
        : new THREE.Vector3(x+1.9,3.4,z+3.5)
-     : new THREE.Vector3(x+1.40*space,height+1.30*space,z+1.85*space);
+     : inspectedId==='resident_study'
+       ? new THREE.Vector3(x+1.0*space,2.1*space,z+2.4*space)
+       : new THREE.Vector3(x+1.40*space,height+1.30*space,z+1.85*space);
    }
    const ratio=reduced.matches?1:1-Math.exp(-dt*7.5);
    camera.position.lerp(desired,ratio);
@@ -526,8 +568,8 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    root.dataset.playerZ=current.z.toFixed(2);
    if(!inspectedId)position.textContent='Survey coordinates: '+current.x.toFixed(1)+'m E / '+current.z.toFixed(1)+'m S';
    const object=nearestId?EVIDENCE[nearestId]:null;
-   inspectBtn.disabled=!object&&nearestId!=='signal_bench'&&!inspectedId;
-   inspectBtn.textContent=inspectedId?'Return to survey':nearestId==='signal_bench'?'Inspect chronology instrument':object?'Inspect '+object.label:'Inspect nearby evidence';
+   inspectBtn.disabled=!object&&nearestId!=='signal_bench'&&nearestId!=='resident_study'&&!inspectedId;
+   inspectBtn.textContent=inspectedId?'Return to survey':nearestId==='signal_bench'?'Inspect chronology instrument':nearestId==='resident_study'?'Approach working resident':object?'Inspect '+object.label:'Inspect nearby evidence';
    const frame=worldFrame(opts.getState(),worldTime);
    const state=opts.getState();
    const access=frame.accessibleLocations;
@@ -535,8 +577,9 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    if(!assetErrors.length)status.textContent=inspectedId
     ? inspectedId==='signal_bench'
       ? 'Signal reconstruction · '+state.order.length+'/3 positions entered'
+      : inspectedId==='resident_study'?'Original resident animation study · not approved'
       : 'Inspecting '+EVIDENCE[inspectedId].label+' · Evidence '+state.heard.length+'/3'
-    : 'Investigation: '+state.phase+' · Accessible: '+zone;
+    : 'Investigation: '+state.phase+' · Accessible: '+zone+(residentLoadFailed?' · Resident asset unavailable':'');
    refresh();
   }
  }
