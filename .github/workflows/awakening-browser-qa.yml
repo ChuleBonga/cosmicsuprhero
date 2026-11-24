@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - rebuild/arcturian-awakening-20261113
+      - feature/arcturian-inhabited-scene-20261123
     paths:
       - 'awakening-rebuild/**'
       - '.github/workflows/awakening-browser-qa.yml'
