@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - rebuild/arcturian-awakening-20261113
+      - feature/arcturian-inhabited-scene-20261123
   workflow_dispatch:
 
 permissions:
