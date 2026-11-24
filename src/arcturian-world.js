@@ -1,5 +1,5 @@
-// The album website is a clear entry to ONE game, not another minigame.
-// Preserve tracklist accessibility and image fallback without game state.
+// The December 4 album landing page stands on its own.
+// The unapproved game remains unlinked; preserve tracklist accessibility.
 const $=(selector)=>document.querySelector(selector);
 const dialog=$("#tracklist-dialog");
 function openTracklist(){
@@ -13,6 +13,7 @@ function closeTracklist(){
   else dialog.removeAttribute("open");
 }
 $("#open-tracklist")?.addEventListener("click",openTracklist);
+$("#open-tracklist-hero")?.addEventListener("click",openTracklist);
 $("#open-tracklist-bottom")?.addEventListener("click",openTracklist);
 $("#close-tracklist")?.addEventListener("click",closeTracklist);
 dialog?.addEventListener("click",event=>{if(event.target===dialog)closeTracklist();});
