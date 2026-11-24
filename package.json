@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && npm install --prefix game-walk --no-audit --no-fund && npm run build --prefix game-walk && node scripts/embed-game.mjs",
+    "build": "vite build",
     "preview": "vite preview",
     "validate:assets": "node scripts/validate-public-assets.mjs",
     "check": "npm run build",
