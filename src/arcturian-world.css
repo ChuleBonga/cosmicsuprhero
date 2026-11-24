@@ -388,3 +388,18 @@ footer{background:var(--wine);color:#f9eddf;padding:45px clamp(20px,6vw,100px) 2
 
 /* Release-safe hero action is a real button opening the accessible tracklist dialog. */
 button.hero-enter{width:100%;text-align:left;cursor:pointer}
+
+/* Album launch quality pass: selectively adapted from the supplied
+   2026-11-24 launch patch. Preserve the static album-first journey.
+   No scene-transition veil or hidden-on-scroll content. */
+.wordmark span,.edition,.chapter-eyebrow,.stage-subtitle,
+.release-summary__date span { color:#5e3e4e; }
+.album-tracks li::before { color:#6a4d3b; }
+.tracklist-dialog { overflow-y:auto; overscroll-behavior:contain; max-height:min(92dvh,1000px); }
+@media (min-width:761px) {
+  .tracklist-dialog { padding:clamp(24px,3.2vw,46px); }
+  .tracklist-dialog h2 { margin:20px 0 24px; font-size:clamp(48px,6vw,92px); }
+  .album-tracks { margin-bottom:24px; }
+  .album-tracks li { padding:8px 0 8px 34px; font-size:clamp(18px,1.85vw,27px); }
+  .album-tracks li::before { top:10px; }
+}
