@@ -72,3 +72,14 @@ button,a{font:inherit}button{cursor:pointer}a{color:inherit}.experience{position
 .control-settings label.option input{width:1.25rem;height:1.25rem;accent-color:#e7be8d}
 @media (pointer:coarse){.touch-controls:not([hidden]){display:flex}}
 @media (max-width:600px){.touch-controls{bottom:calc(1rem + env(safe-area-inset-bottom))}.touch-stick{width:112px;height:128px}.touch-stick__ring{width:102px;height:102px}.touch-controls>span{margin-bottom:2.8rem}.pause-overlay{padding:1rem}}
+
+/* Deliberate non-WebGL fallback: album artwork is identified as artwork, never gameplay. */
+.intro--webgl-unavailable{overflow-y:auto;overscroll-behavior:contain;justify-content:flex-start}
+.webgl-fallback-preview{width:min(42vw,245px);max-width:100%;margin:1.1rem 0 0}
+.webgl-fallback-preview img{width:100%;height:auto;display:block;border:1px solid rgba(231,190,141,.48)}
+.webgl-fallback-preview figcaption{color:#d0c5b9;font-size:.75rem;line-height:1.5;margin-top:.5rem}
+@media(max-width:760px){
+ .intro--webgl-unavailable{padding-top:1.25rem;padding-bottom:3rem}
+ .intro--webgl-unavailable h1{font-size:clamp(2.65rem,10vw,4.5rem);margin:.85rem 0 1.1rem}
+ .webgl-fallback-preview{width:min(48vw,175px)}
+}
