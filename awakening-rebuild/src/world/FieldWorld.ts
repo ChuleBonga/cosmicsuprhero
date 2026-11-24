@@ -393,9 +393,14 @@ export function createFieldWorld(opts:WorldOptions):FieldWorld{
    keys.clear();touch.clear();
    inspectBtn.disabled=false;inspectBtn.textContent='Return to survey';
    const story=opts.getState();
-   const later=story.phase==='complete' ? consequence(story,'apprentice').response : '';
-   prompt.textContent='Original Blender W0 study: the worker notices Chule and returns to its task.'+
-    (later?' Provisional consequence: '+later:' Dialogue and final identity are not approved.');
+   if(story.phase==='hear'&&!story.heard.includes('apprentice')){
+    opts.dispatch({type:'HEAR',witness:'apprentice'});
+   }
+   const currentStory=opts.getState();
+   const later=currentStory.phase==='complete' ? consequence(currentStory,'apprentice').response : '';
+   prompt.textContent='Original Blender W0 study: the worker notices Chule, acknowledges him and returns to the task. '+
+    (later?'Provisional later consequence: '+later
+      :'Provisional apprentice testimony: '+WITNESSES.apprentice.statement+' Final identity and dialogue remain unapproved.');
    message('One original rigged resident is in QA; facial acting and walk animation are not approved.');
    refresh();return;
   }
