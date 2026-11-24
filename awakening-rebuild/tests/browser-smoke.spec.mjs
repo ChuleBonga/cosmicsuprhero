@@ -299,11 +299,45 @@ test('original W0 resident actually loads, notices Chule and gives a persistent-
   await approach.click();
   await expect(world).toHaveAttribute('data-inspection','resident_study');
   await expect(page.locator('#world-title')).toContainText('Working resident');
-  await expect(page.locator('#world-prompt')).toContainText('final identity are not approved');
+  await expect(page.locator('#world-prompt')).toContainText('Final identity and dialogue remain unapproved');
   await expect(world).toHaveAttribute('data-resident-action','acknowledging');
   await page.screenshot({path:'artifacts/W0-resident-closeup-desktop-unapproved.png'});
   await page.getByRole('button',{name:'Return to survey'}).click();
   await expect(world).toHaveAttribute('data-inspection','none');
   await page.getByRole('button',{name:'Return to chapter'}).click();
   expect(errors).toEqual([]);
+});
+
+test('saved disclosure changes the original worker performance on return',async({page})=>{
+  await page.setViewportSize({width:1440,height:900});
+  await page.goto('/');
+  const setStory=async choice=>{
+    await page.evaluate(choice=>{
+      const events=[
+       {type:'HEAR',witness:'caretaker'},
+       {type:'HEAR',witness:'courier'},
+       {type:'HEAR',witness:'apprentice'},
+       {type:'ARRANGE',order:['departure','shelter','silence']},
+       {type:'SUBMIT'},
+       {type:'CHOOSE',choice}
+      ];
+      localStorage.setItem('arcturian.rebuild.encounter.v1',JSON.stringify(events));
+      localStorage.setItem('arcturian.rebuild.spatial-player.v1',JSON.stringify({x:14,z:18}));
+    },choice);
+    await page.reload();
+    await page.getByRole('button',{name:/Enter the Arrival Quarter/}).click();
+    await expect(page.locator('#world-rehearsal')).toHaveAttribute('data-resident','ready',{timeout:30000});
+  };
+  await setStory('protect');
+  const world=page.locator('#world-rehearsal');
+  await expect(world).toHaveAttribute('data-resident-action','working');
+  await page.screenshot({path:'artifacts/W0-protect-work-continues-unapproved.png'});
+  await page.getByRole('button',{name:'Return to chapter'}).click();
+  await setStory('disclose');
+  await expect(world).toHaveAttribute('data-resident-action','public_listening');
+  await page.screenshot({path:'artifacts/W0-disclose-work-stops-unapproved.png'});
+  await page.getByRole('button',{name:'Return to chapter'}).click();
+  await page.reload();
+  await page.getByRole('button',{name:/Enter the Arrival Quarter/}).click();
+  await expect(world).toHaveAttribute('data-resident-action','public_listening');
 });
