@@ -385,3 +385,6 @@ footer{background:var(--wine);color:#f9eddf;padding:45px clamp(20px,6vw,100px) 2
   .album-hero .art-area{padding-top:12px}
 }
 @media(prefers-reduced-motion:reduce){.hero-enter{transition:none}}
+
+/* Release-safe hero action is a real button opening the accessible tracklist dialog. */
+button.hero-enter{width:100%;text-align:left;cursor:pointer}
