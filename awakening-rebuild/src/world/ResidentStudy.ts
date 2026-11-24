@@ -10,7 +10,7 @@ import type {State} from '../encounter.ts';
 
 export const W0_SITE:Readonly<Point>=Object.freeze({x:16.1,z:14.5});
 export const W0_INTERACTION_RANGE=2.25;
-export type ResidentReviewAction='working'|'noticing'|'acknowledging'|'returning';
+export type ResidentReviewAction='working'|'noticing'|'acknowledging'|'returning'|'public_listening';
 export type ResidentReview={
  readonly root:THREE.Group;
  readonly diagnostics:{readonly meshes:number;readonly clips:readonly string[];readonly heightM:number;readonly approval:'unapproved'};
@@ -92,15 +92,21 @@ export async function loadW0Resident(scene:THREE.Scene):Promise<ResidentReview>{
    // Moving the unapproved rig without a valid walk clip would cause foot slide.
    elapsed+=Math.min(.05,dt);
    const near=residentReviewDistance(player)<3.25;
+   const publicRecord=story.phase==='complete'&&story.choice==='disclose';
+   // Later world-state is visible as work stopping: no invented walk cycle.
+   if(publicRecord&&action==='working'){action='public_listening';elapsed=0;}
+   else if(!publicRecord&&action==='public_listening'){action='working';elapsed=0;}
    if(action==='working'){
     if(elapsed>=6){cycles+=Math.floor(elapsed/6);elapsed%=6;}
+    if(near){action='noticing';elapsed=0;}
+   }else if(action==='public_listening'){
     if(near){action='noticing';elapsed=0;}
    }else if(action==='noticing'){
     if(!near){action='returning';elapsed=0;}
    }else if(action==='acknowledging'){
     if(elapsed>=1.5){action='returning';elapsed=0;}
    }else if(elapsed>=1){
-    action=near?'noticing':'working';elapsed=0;
+    action=near?'noticing':publicRecord?'public_listening':'working';elapsed=0;
    }
    const active=action==='working';
    for(const clip of clips){
@@ -111,11 +117,14 @@ export async function loadW0Resident(scene:THREE.Scene):Promise<ResidentReview>{
    // The original actor faces its task by default. Attending turns it toward
    // Chule, rather than producing stock dialogue or duplicated NPC proxies.
    const target=(near||action==='acknowledging')
-    ? Math.atan2(-(player.x-W0_SITE.x),-(player.z-W0_SITE.z)) : 0;
+    ? Math.atan2(-(player.x-W0_SITE.x),-(player.z-W0_SITE.z))
+    : action==='public_listening'
+      ? Math.atan2(W0_SITE.x-15,W0_SITE.z-8):0;
    heading=turnToward(heading,target,dt*2.2);
    root.rotation.y=heading;
    // The role of this actor and its final performances remain undecided.
    root.userData.storyPhase=story.phase;
+   root.userData.recordIsPublic=publicRecord;
    root.userData.reviewAction=action;
   },
   dispose(){
