@@ -277,3 +277,33 @@ test.describe('Physical Arrival Quarter integration',()=>{
     await expect(page.locator('#world-chronology')).toContainText('Accessible: refuge, workshop');
   });
 });
+
+test('original W0 resident actually loads, notices Chule and gives a persistent-review consequence', async({page})=>{
+  const errors=[];
+  page.on('pageerror',e=>errors.push(e.message));
+  await page.setViewportSize({width:1440,height:900});
+  await page.goto('/');
+  await page.evaluate(()=>localStorage.setItem(
+    'arcturian.rebuild.spatial-player.v1',JSON.stringify({x:16.1,z:16.4})
+  ));
+  await page.reload();
+  await page.getByRole('button',{name:/Enter the Arrival Quarter/}).click();
+  const world=page.locator('#world-rehearsal');
+  await expect(world).toHaveAttribute('data-resident','ready',{timeout:30000});
+  await expect(world).toHaveAttribute('data-resident-meshes','41');
+  await expect(world).toHaveAttribute('data-resident-clips','3');
+  await expect(world).toHaveAttribute('data-resident-action','noticing');
+  const approach=page.getByRole('button',{name:'Approach working resident'});
+  await expect(approach).toBeEnabled();
+  await page.screenshot({path:'artifacts/W0-original-resident-desktop-unapproved.png'});
+  await approach.click();
+  await expect(world).toHaveAttribute('data-inspection','resident_study');
+  await expect(page.locator('#world-title')).toContainText('Working resident');
+  await expect(page.locator('#world-prompt')).toContainText('final identity are not approved');
+  await expect(world).toHaveAttribute('data-resident-action','acknowledging');
+  await page.screenshot({path:'artifacts/W0-resident-closeup-desktop-unapproved.png'});
+  await page.getByRole('button',{name:'Return to survey'}).click();
+  await expect(world).toHaveAttribute('data-inspection','none');
+  await page.getByRole('button',{name:'Return to chapter'}).click();
+  expect(errors).toEqual([]);
+});
