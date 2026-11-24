@@ -17,7 +17,7 @@ const touch=$('touch-controls'),panel=$('inspect-panel'),end=$('end'),perf=$('pe
 const soundbar=$('soundbar'),scoreState=$('score-state'),scoreToggle=$('score-toggle'),scoreVolume=$('score-volume'),scoreRetry=$('score-retry');
 if(publicAudioRestricted){
   const note=intro.querySelector('.study-label');
-  if(note)note.textContent='Explore this early playable 3D world before the album arrives December 4, 2026. The full story and music experience are still in development. This public preview is silent while audio publication approvals are completed.';
+  if(note)note.textContent='This silent 3D environment study is not the finished game. The inhabited world and story are still in development. Game audio is withheld while publication approvals are completed. Album release: December 4, 2026.';
   const controls=intro.querySelector('.controls-note');
   if(controls)controls.textContent='Desktop: WASD to walk, mouse to look, E to inspect, Esc to pause. Mobile: left thumbstick to move and drag the right side to look. Pause for camera-comfort settings.';
 }
@@ -70,8 +70,11 @@ let renderer;
 try{
  renderer=new THREE.WebGLRenderer({canvas,antialias:!mobile,alpha:false,depth:true,powerPreference:'high-performance'});
 }catch(err){
- intro.querySelector('h1').textContent='This world needs WebGL.';
- intro.querySelector('.study-label').textContent='A compatible WebGL browser is required for this study. The album and pre-save remain available without playing.';
+ intro.querySelector('h1').textContent='The 3D scene could not load.';
+ intro.querySelector('.study-label').textContent='This browser could not render the 3D study. The image below is album artwork, not gameplay. You can still pre-save the album or return to its tracklist.';
+ intro.classList.add('intro--webgl-unavailable');
+ const still=$('webgl-fallback-preview');
+ if(still)still.hidden=false;
  $('begin').disabled=true;$('status').textContent=String(err);throw err;
 }
 renderer.outputColorSpace=THREE.SRGBColorSpace;
