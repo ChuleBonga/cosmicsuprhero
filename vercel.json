@@ -1,23 +1,28 @@
 {
   "redirects": [
     {
+      "source": "/world",
+      "destination": "/",
+      "permanent": false
+    },
+    {
+      "source": "/world/",
+      "destination": "/",
+      "permanent": false
+    },
+    {
       "source": "/play",
-      "destination": "/play/experiments/first-person/index.html",
+      "destination": "/",
       "permanent": false
     },
     {
       "source": "/play/",
-      "destination": "/play/experiments/first-person/index.html",
+      "destination": "/",
       "permanent": false
     },
     {
-      "source": "/play/index.html",
-      "destination": "/play/experiments/first-person/index.html",
-      "permanent": false
-    },
-    {
-      "source": "/play/experiments/movement/lab.html",
-      "destination": "/play/experiments/first-person/index.html",
+      "source": "/play/(.*)",
+      "destination": "/",
       "permanent": false
     }
   ],
