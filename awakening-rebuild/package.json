@@ -6,10 +6,12 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "typecheck": "tsc --noEmit",
-    "test": "node --experimental-strip-types tests/encounter.test.mjs && node --experimental-strip-types tests/district.test.mjs && node --experimental-strip-types tests/assets.test.mjs && node --experimental-strip-types tests/scene-contract.test.mjs && node --experimental-strip-types tests/player-motor.test.mjs && node --experimental-strip-types tests/reconstruction-station.test.mjs",
+    "test": "node --experimental-strip-types tests/encounter.test.mjs && node --experimental-strip-types tests/district.test.mjs && node --experimental-strip-types tests/assets.test.mjs && node --experimental-strip-types tests/scene-contract.test.mjs && node --experimental-strip-types tests/player-motor.test.mjs && node --experimental-strip-types tests/reconstruction-station.test.mjs && node --experimental-strip-types tests/resident-study.test.mjs",
     "build": "npm run typecheck && npm test && vite build",
     "preview": "vite preview --host 0.0.0.0",
-    "test:browser": "playwright test"
+    "test:browser": "playwright test",
+    "predev": "node scripts/stage-w0-review.mjs",
+    "prebuild": "node scripts/stage-w0-review.mjs"
   },
   "engines": {
     "node": ">=22.12.0"
